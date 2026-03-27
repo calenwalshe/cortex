@@ -1,0 +1,6 @@
+[submodule "upstream/superpowers"]
+	path = upstream/superpowers
+	url = https://github.com/obra/superpowers.git
+[submodule "upstream/gstack"]
+	path = upstream/gstack
+	url = https://github.com/garrytan/gstack.git
