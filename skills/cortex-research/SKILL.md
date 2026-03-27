@@ -1,0 +1,182 @@
+# Cortex Research — Deep Multi-Source, Multi-LLM Research
+
+Systematic research pipeline using Tavily (search), Jina Reader (extraction), Firecrawl (crawling), Crawl4AI (site crawling), Perplexity (deep research), Gemini (cross-reference), and OpenAI (gpt-researcher backend). Produces structured intelligence briefs stored in ~/research/.
+
+## User-invocable
+When the user types `/cortex-research`, run this skill.
+Also trigger when: "research this", "deep dive on", "investigate topic", "what do we know about", "intelligence brief on".
+
+## Arguments
+- `/cortex-research <topic>` — full multi-source research
+- `/cortex-research <topic> --quick` — Perplexity single-shot only
+- `/cortex-research <topic> --deep` — autonomous gpt-researcher run
+- `/cortex-research <URL>` — extract and analyze a specific source
+- `/cortex-research <youtube-url>` — extract transcript via Gemini
+
+## Instructions
+
+### 1. Determine Research Depth
+
+| Depth | When | Tools | Time |
+|-------|------|-------|------|
+| Quick | Simple factual question | Perplexity sonar | ~30s |
+| Standard | Most research tasks | Tavily + Jina + Claude synthesis | ~2-5 min |
+| Deep | Complex investigation | gpt-researcher + all sources | ~5-15 min |
+| YouTube | Video content needed | Gemini multimodal | ~1 min |
+
+### 2. Execute Research
+
+#### Quick Path (--quick or simple question)
+```bash
+curl -s https://api.perplexity.ai/chat/completions \
+  -H "Authorization: Bearer $PPLX_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"model\":\"sonar-pro\",\"messages\":[{\"role\":\"user\",\"content\":\"$QUERY\"}],\"max_tokens\":2000}"
+```
+Save response to `~/research/processed/briefs/<topic-slug>.md`
+
+#### Standard Path (default)
+
+**Step 1: Multi-source search (parallel)**
+```python
+# Tavily advanced search
+from tavily import TavilyClient
+client = TavilyClient()
+results = client.search(query, search_depth="advanced", max_results=7, include_raw_content=True)
+```
+
+```bash
+# Jina Reader on top results
+curl -s "https://r.jina.ai/<url>" -H "Accept: text/markdown"
+```
+
+**Step 2: Analyze and identify gaps**
+Read all sources. What's consistent? What conflicts? What's missing?
+Generate follow-up queries for gaps.
+
+**Step 3: Fill gaps (iterate)**
+Run 1-2 more Tavily searches on follow-up queries. Extract with Jina.
+
+**Step 4: Cross-reference with Gemini**
+Send consolidated findings to Gemini for a second-opinion analysis:
+```bash
+curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$GEMINI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"contents\":[{\"parts\":[{\"text\":\"Cross-reference and fact-check these research findings: $FINDINGS\"}]}]}"
+```
+
+**Step 5: Synthesize into brief**
+
+#### Deep Path (--deep)
+```python
+from gpt_researcher import GPTResearcher
+import asyncio
+
+async def research():
+    researcher = GPTResearcher(query, "research_report")
+    report = await researcher.conduct_research()
+    return report
+
+report = asyncio.run(research())
+```
+Uses OpenAI API + Tavily automatically. Save to `~/research/processed/briefs/`.
+
+#### YouTube Path (YouTube URL detected)
+```python
+import google.generativeai as genai
+import os
+
+genai.configure(api_key=os.environ['GEMINI_API_KEY'])
+model = genai.GenerativeModel('gemini-2.5-flash')
+
+response = model.generate_content([
+    f"Provide a detailed transcript and summary of this video: {url}"
+])
+```
+Save to `~/research/intake/youtube/<date>_<title>.md`
+
+#### URL Path (non-YouTube URL detected)
+```bash
+# Extract with Jina Reader
+curl -s "https://r.jina.ai/$URL" -H "Accept: text/markdown" > ~/research/intake/web/<slug>.md
+```
+
+For full site crawling:
+```python
+from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
+import asyncio
+
+async def crawl():
+    async with AsyncWebCrawler() as crawler:
+        result = await crawler.arun(url=url, config=CrawlerRunConfig())
+        return result.markdown
+
+content = asyncio.run(crawl())
+```
+
+### 3. Store Results
+
+All research outputs go to `~/research/`:
+
+| Type | Location |
+|------|----------|
+| YouTube transcripts | `~/research/intake/youtube/` |
+| Web page extracts | `~/research/intake/web/` |
+| Search results (raw) | `~/research/intake/web/` |
+| Intelligence briefs | `~/research/processed/briefs/` |
+| Cross-source comparisons | `~/research/processed/comparisons/` |
+| Key extracts | `~/research/processed/extracts/` |
+
+### 4. Output Format — Intelligence Brief
+
+```markdown
+# Intelligence Brief: [Topic]
+
+**Generated:** [date]
+**Sources:** [N] ([tool breakdown])
+**Depth:** [quick/standard/deep]
+**Confidence:** [High/Medium/Low]
+
+---
+
+## Executive Summary
+[2-3 sentence overview]
+
+## Key Findings
+1. [Finding with source attribution]
+2. [Finding with source attribution]
+3. [Finding with source attribution]
+
+## Cross-Reference Notes
+[Where sources agree/disagree. Gemini's second-opinion if used.]
+
+## Sources
+1. [Title — URL]
+2. [Title — URL]
+
+---
+*Generated by Cortex Research — [tools used]*
+*Stored at: ~/research/processed/briefs/[filename]*
+```
+
+### 5. Query Existing Research
+
+When asked "what do we know about X":
+```bash
+# Search existing research
+grep -rl "keyword" ~/research/ 2>/dev/null
+```
+Read and synthesize from existing files before doing new research.
+Only run new searches if existing research doesn't cover the question.
+
+## Available APIs
+
+| API | Env Var | Use For |
+|-----|---------|---------|
+| Tavily | `TAVILY_API_KEY` | Search (primary) |
+| Jina Reader | None needed | URL extraction (free) |
+| Firecrawl | `FIRECRAWL_API_KEY` | Web scraping |
+| Crawl4AI | None needed | Full site crawling |
+| Perplexity | `PPLX_API_KEY` | Quick deep research |
+| Gemini | `GEMINI_API_KEY` | Cross-reference, YouTube, second opinion |
+| OpenAI | `OPENAI_API_KEY` | gpt-researcher backend |
