@@ -427,6 +427,157 @@
     .t-out      { color: var(--text); opacity: 0.75; }
     .t-label    { color: var(--accent); font-weight: 700; }
 
+    /* ── ARCHITECTURE ── */
+    .arch-wrap {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: 48px;
+    }
+
+    .stack-layer {
+      border-radius: 10px;
+      padding: 22px 28px;
+      position: relative;
+    }
+
+    .stack-layer-top {
+      background: linear-gradient(135deg, rgba(124,106,247,0.2), rgba(167,139,250,0.1));
+      border: 1px solid rgba(124,106,247,0.5);
+    }
+
+    .stack-layer-mid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      background: transparent;
+      padding: 0;
+    }
+
+    .stack-layer-mid-l {
+      background: rgba(103,232,249,0.06);
+      border: 1px solid rgba(103,232,249,0.2);
+      border-radius: 10px 0 0 10px;
+      padding: 22px 28px;
+    }
+
+    .stack-layer-mid-r {
+      background: rgba(167,139,250,0.06);
+      border: 1px solid rgba(167,139,250,0.2);
+      border-radius: 0 10px 10px 0;
+      padding: 22px 28px;
+    }
+
+    .stack-layer-bot {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+    }
+
+    .layer-badge {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .badge-cortex   { color: var(--accent2); }
+    .badge-gstack   { color: var(--cyan); }
+    .badge-super    { color: var(--accent2); opacity: 0.7; }
+    .badge-gsd      { color: var(--muted); }
+
+    .layer-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .layer-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .layer-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .layer-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: rgba(255,255,255,0.03);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .arrow-down {
+      text-align: center;
+      color: var(--muted);
+      font-size: 18px;
+      padding: 4px 0;
+      opacity: 0.4;
+    }
+
+    .skill-source-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 40px;
+    }
+
+    .skill-source-table th {
+      text-align: left;
+      padding: 10px 16px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .skill-source-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    .skill-source-table tr:last-child td { border-bottom: none; }
+
+    .src-cmd {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent2);
+      font-size: 12px;
+    }
+
+    .src-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .src-gstack { background: rgba(103,232,249,0.1); color: var(--cyan); border: 1px solid rgba(103,232,249,0.2); }
+    .src-super  { background: rgba(167,139,250,0.1); color: var(--accent2); border: 1px solid rgba(167,139,250,0.2); }
+    .src-native { background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid rgba(74,222,128,0.2); }
+    .src-gsd    { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid var(--border); }
+
     /* ── FOOTER ── */
     footer {
       position: relative;
@@ -758,6 +909,127 @@
       <h3 class="pillar-title">Evidence before fixes</h3>
       <p class="pillar-desc">The Iron Law: no fix without a confirmed root cause. Reviews grep for actual usage before recommending additions. No guessing.</p>
     </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ ARCHITECTURE ════════════════════════ -->
+<section>
+  <hr class="divider">
+  <p class="section-label">Architecture</p>
+  <h2 class="section-title">Three layers. One interface.</h2>
+
+  <div class="arch-wrap">
+
+    <div class="stack">
+
+      <!-- CORTEX -->
+      <div class="stack-layer stack-layer-top">
+        <div class="layer-badge badge-cortex">Layer 3 — Cortex (Integration)</div>
+        <h3 class="layer-title">What you invoke</h3>
+        <p class="layer-desc">Packages GStack + Superpowers protocols as Claude Code SKILL.md files. Adds the research pipeline (Cortex-native). Routes session state through GSD.</p>
+        <div class="layer-items">
+          <span class="layer-tag">/cortex-audit</span>
+          <span class="layer-tag">/cortex-research</span>
+          <span class="layer-tag">/cortex-investigate</span>
+          <span class="layer-tag">/cortex-review</span>
+          <span class="layer-tag">/cortex-status</span>
+        </div>
+      </div>
+
+      <div class="arrow-down">↑ assembles ↑</div>
+
+      <!-- MID ROW -->
+      <div class="stack-layer-mid">
+        <div class="stack-layer-mid-l">
+          <div class="layer-badge badge-gstack">Layer 2a — GStack (Thinking)</div>
+          <h3 class="layer-title">Expert protocols</h3>
+          <p class="layer-desc">Security audit (/cso v2), Iron Law investigation, engineering + security review lenses.</p>
+          <div class="layer-items">
+            <span class="layer-tag">OWASP</span>
+            <span class="layer-tag">STRIDE</span>
+            <span class="layer-tag">Iron Law</span>
+            <span class="layer-tag">Scope Lock</span>
+            <span class="layer-tag">Review Lenses</span>
+          </div>
+        </div>
+        <div class="stack-layer-mid-r">
+          <div class="layer-badge badge-super">Layer 2b — Superpowers (Discipline)</div>
+          <h3 class="layer-title">Behavioural constraints</h3>
+          <p class="layer-desc">TDD discipline (failing test before fix), anti-sycophancy rules, forcing questions.</p>
+          <div class="layer-items">
+            <span class="layer-tag">TDD</span>
+            <span class="layer-tag">Anti-Sycophancy</span>
+            <span class="layer-tag">Forcing Questions</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arrow-down">↑ runs inside ↑</div>
+
+      <!-- GSD -->
+      <div class="stack-layer stack-layer-bot">
+        <div class="layer-badge badge-gsd">Layer 1 — GSD (Workflow)</div>
+        <h3 class="layer-title">The outer loop</h3>
+        <p class="layer-desc">Discuss → plan → execute → verify → advance. Phase management, state tracking, atomic commits. <code style="font-size:12px;color:var(--accent2)">/gsd:debug</code> delegates session state to <code style="font-size:12px;color:var(--accent2)">/cortex-investigate</code>. <code style="font-size:12px;color:var(--accent2)">/cortex-status</code> surfaces active GSD phase.</p>
+        <div class="layer-items">
+          <span class="layer-tag">Phase Management</span>
+          <span class="layer-tag">State Tracking</span>
+          <span class="layer-tag">Atomic Commits</span>
+          <span class="layer-tag">Verification Gates</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SOURCE TABLE -->
+    <table class="skill-source-table">
+      <thead>
+        <tr>
+          <th>Skill</th>
+          <th>Protocol Sources</th>
+          <th>What each contributes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="src-cmd">/cortex-audit</span></td>
+          <td><span class="src-badge src-gstack">GStack /cso v2</span></td>
+          <td style="color:var(--muted)">6-phase audit, OWASP Top 10, STRIDE, confidence gates, Security Posture Report</td>
+        </tr>
+        <tr>
+          <td><span class="src-cmd">/cortex-research</span></td>
+          <td><span class="src-badge src-native">Cortex-native</span></td>
+          <td style="color:var(--muted)">Multi-source pipeline: Tavily, Jina, Firecrawl, Perplexity, Gemini, gpt-researcher</td>
+        </tr>
+        <tr>
+          <td><span class="src-cmd">/cortex-investigate</span></td>
+          <td>
+            <span class="src-badge src-gstack">GStack /investigate</span>&nbsp;
+            <span class="src-badge src-super">Superpowers TDD</span>&nbsp;
+            <span class="src-badge src-gsd">GSD</span>
+          </td>
+          <td style="color:var(--muted)">Iron Law + scope lock + Debug Report (GStack) · failing test first (Superpowers) · session state (GSD)</td>
+        </tr>
+        <tr>
+          <td><span class="src-cmd">/cortex-review</span></td>
+          <td>
+            <span class="src-badge src-gstack">GStack lenses</span>&nbsp;
+            <span class="src-badge src-super">Superpowers</span>
+          </td>
+          <td style="color:var(--muted)">Engineering + security review lenses (GStack) · anti-sycophancy rules (Superpowers)</td>
+        </tr>
+        <tr>
+          <td><span class="src-cmd">/cortex-status</span></td>
+          <td>
+            <span class="src-badge src-gstack">GStack</span>&nbsp;
+            <span class="src-badge src-super">Superpowers</span>&nbsp;
+            <span class="src-badge src-gsd">GSD</span>
+          </td>
+          <td style="color:var(--muted)">Reports upstream versions, API keys, tool health, and active GSD phase state</td>
+        </tr>
+      </tbody>
+    </table>
+
   </div>
 </section>
 
