@@ -24,14 +24,25 @@ No collisions because each layer answers a different question:
 ## Quick Start
 
 ```bash
-# Clone with submodules
-git clone --recurse-submodules <repo-url> ~/projects/cortex
+npx github:calenwalshe/cortex
+```
 
-# Add the behavioral rules to your CLAUDE.md
+That's it. The installer will:
+- Clone the repo to `~/projects/cortex`
+- Symlink cortex skills into `~/.claude/skills/`
+- Append the Cortex block to `~/.claude/CLAUDE.md`
+- Install and wire `cortex-sync.sh` into `~/.claude/hooks/`
+
+**Options:**
+```bash
+npx github:calenwalshe/cortex --dry-run    # Preview changes without applying
+npx github:calenwalshe/cortex --verbose    # Show each step
+```
+
+**Manual install (alternative):**
+```bash
+git clone --recurse-submodules https://github.com/calenwalshe/cortex.git ~/projects/cortex
 cat ~/projects/cortex/CLAUDE.md.snippet >> ~/.claude/CLAUDE.md
-
-# Sync upstreams when needed
-~/projects/cortex/bin/sync-upstream.sh
 ```
 
 ## Upstream Tracking
