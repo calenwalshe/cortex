@@ -101,7 +101,11 @@ fi
 # ── .cortex/dirty-files.json ──────────────────────────────────────────────────
 DIRTY_FILES="$TARGET/.cortex/dirty-files.json"
 if [[ ! -f "$DIRTY_FILES" ]]; then
-  echo "[]" > "$DIRTY_FILES"
+  cat > "$DIRTY_FILES" << 'EOF'
+{
+  "dirty": []
+}
+EOF
   echo "Created:  .cortex/dirty-files.json"
 else
   echo "Skipped:  .cortex/dirty-files.json (already exists)"

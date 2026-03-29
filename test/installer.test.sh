@@ -90,6 +90,28 @@ else
   assert_fail "all 11 hooks symlinked" "$HOOK_FAILS hooks missing"
 fi
 
+echo ""
+echo "2b. Project runtime bootstrap"
+TARGET_PROJECT="$TEST_HOME/target-project"
+HOME="$TEST_HOME" node "$REPO_DIR/bin/install.js" --project "$TARGET_PROJECT" > /dev/null 2>&1
+if [ -d "$TARGET_PROJECT/docs/cortex" ] && [ -f "$TARGET_PROJECT/.cortex/state.json" ]; then
+  assert_pass "project bootstrap creates docs/cortex and .cortex/state.json"
+else
+  assert_fail "project bootstrap runtime scaffold" "missing docs/cortex or .cortex/state.json"
+fi
+
+DIRTY_SCHEMA_OK=$(python3 -c "
+import json, sys
+with open('$TARGET_PROJECT/.cortex/dirty-files.json') as f:
+    data = json.load(f)
+print('ok' if isinstance(data, dict) and isinstance(data.get('dirty'), list) else 'bad')
+" 2>/dev/null || echo "bad")
+if [ "$DIRTY_SCHEMA_OK" = "ok" ]; then
+  assert_pass "dirty-files.json uses {\"dirty\": []} schema"
+else
+  assert_fail "dirty-files schema" "expected object with dirty array"
+fi
+
 # ── Test 3: idempotency ────────────────────────────────────
 echo ""
 echo "3. Idempotency (second run)"
