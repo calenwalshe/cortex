@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 02-04-PLAN.md — scaffold_runtime.sh idempotent script
-last_updated: "2026-03-29T02:53:29.225Z"
+stopped_at: Completed 03-01-PLAN.md — cortex-clarify SKILL.md and cortex-research SKILL.md vNext update
+last_updated: "2026-03-29T03:08:24.251Z"
 last_activity: 2026-03-29 — Plan 01-03 complete (EVALS.md, AGENTS.md, README vNext)
 progress:
   total_phases: 6
   completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
+  total_plans: 10
+  completed_plans: 9
   percent: 100
 ---
 
@@ -56,6 +56,7 @@ Progress: [██████████] 100%
 | Phase 02-artifact-scaffolding-and-templates P02 | 3 | 2 tasks | 7 files |
 | Phase 02-artifact-scaffolding-and-templates P01 | 16min | 2 tasks | 9 files |
 | Phase 02-artifact-scaffolding-and-templates P04 | 2 | 2 tasks | 1 files |
+| Phase 03-new-and-updated-skills P01 | 2min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,9 @@ Recent decisions affecting current work:
 - [Phase 02-artifact-scaffolding-and-templates]: spec.md has all 9 mandatory sections — omitting any section is an error by design
 - [Phase 02-artifact-scaffolding-and-templates]: eval-proposal.md APPROVAL_REQUIRED is document-level flag — simplifies human approval flow
 - [Phase 02-artifact-scaffolding-and-templates]: Idempotency guard uses [ -f dst ] pre-check, not cp -n — explicit and avoids portability warnings
+- [Phase 03-new-and-updated-skills]: cortex-clarify is the mandatory gate: no research or spec without a clarify brief
+- [Phase 03-new-and-updated-skills]: --phase evals branches to eval-proposal.md using a different template from research dossier
+- [Phase 03-new-and-updated-skills]: Legacy cortex-research ~/research/ output path and --quick/--deep flags removed in favor of docs/cortex/ routing and --depth interface
 
 ### Pending Todos
 
@@ -97,6 +101,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T02:48:29.732Z
-Stopped at: Completed 02-04-PLAN.md — scaffold_runtime.sh idempotent script
+Last session: 2026-03-29T03:08:14.209Z
+Stopped at: Completed 03-01-PLAN.md — cortex-clarify SKILL.md and cortex-research SKILL.md vNext update
 Resume file: None

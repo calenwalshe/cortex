@@ -7,8 +7,8 @@
 
 ### Commands
 
-- [ ] **CMD-01**: `/cortex-clarify` converts a fuzzy idea into a written problem frame (clarify brief) with goal, non-goals, constraints, assumptions, open questions, and next research steps
-- [ ] **CMD-02**: `/cortex-research` supports three phases — `concept`, `implementation`, `evals` — with `--depth quick|standard|deep` and optional `--team` flag
+- [x] **CMD-01**: `/cortex-clarify` converts a fuzzy idea into a written problem frame (clarify brief) with goal, non-goals, constraints, assumptions, open questions, and next research steps
+- [x] **CMD-02**: `/cortex-research` supports three phases — `concept`, `implementation`, `evals` — with `--depth quick|standard|deep` and optional `--team` flag
 - [ ] **CMD-03**: `/cortex-spec` compresses clarify + research into a GSD-ready handoff pack, spec.md, and first execution contract
 - [ ] **CMD-04**: `/cortex-investigate` writes investigation artifacts to `docs/cortex/investigations/` and can hand off into GSD repair contract
 - [ ] **CMD-05**: `/cortex-review` writes review artifacts to `docs/cortex/reviews/` including contract compliance lens
@@ -126,8 +126,8 @@
 | ART-07 | Phase 2: Artifact Scaffolding and Templates | Complete |
 | ART-08 | Phase 2: Artifact Scaffolding and Templates | Complete |
 | CONT-04 | Phase 2: Artifact Scaffolding and Templates | Complete |
-| CMD-01 | Phase 3: New and Updated Skills | Pending |
-| CMD-02 | Phase 3: New and Updated Skills | Pending |
+| CMD-01 | Phase 3: New and Updated Skills | Complete |
+| CMD-02 | Phase 3: New and Updated Skills | Complete |
 | CMD-03 | Phase 3: New and Updated Skills | Pending |
 | CMD-04 | Phase 3: New and Updated Skills | Pending |
 | CMD-05 | Phase 3: New and Updated Skills | Pending |
