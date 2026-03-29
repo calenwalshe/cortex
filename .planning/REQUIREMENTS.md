@@ -110,24 +110,67 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CMD-01, ART-01 | Phase 1: Core Docs + Architecture | Pending |
-| CMD-02 (extended), CMD-03 | Phase 3: New Skills | Pending |
-| CMD-04, CMD-05, CMD-06 | Phase 3: New Skills | Pending |
-| CMD-07 | Phase 3: New Skills | Pending |
-| ART-02–ART-08 | Phase 2: Artifact Scaffolding | Pending |
-| CONT-01–CONT-04 | Phase 4: Subagents + Hooks | Pending |
-| HOOK-01–HOOK-10 | Phase 4: Subagents + Hooks | Pending |
-| AGNT-01–AGNT-04 | Phase 4: Subagents + Hooks | Pending |
-| EVAL-01–EVAL-05 | Phase 5: Eval Subsystem | Pending |
-| LOOP-01–LOOP-04 | Phase 4: Subagents + Hooks | Pending |
-| INST-01–INST-06 | Phase 6: Installer + Cleanup | Pending |
-| DOCS-01–DOCS-07 | Phase 1: Core Docs + Architecture | Pending |
+| DOCS-01 | Phase 1: Core Docs and Architecture Alignment | Pending |
+| DOCS-02 | Phase 1: Core Docs and Architecture Alignment | Pending |
+| DOCS-03 | Phase 1: Core Docs and Architecture Alignment | Pending |
+| DOCS-04 | Phase 1: Core Docs and Architecture Alignment | Pending |
+| DOCS-05 | Phase 1: Core Docs and Architecture Alignment | Pending |
+| DOCS-06 | Phase 1: Core Docs and Architecture Alignment | Pending |
+| DOCS-07 | Phase 1: Core Docs and Architecture Alignment | Pending |
+| ART-01 | Phase 2: Artifact Scaffolding and Templates | Pending |
+| ART-02 | Phase 2: Artifact Scaffolding and Templates | Pending |
+| ART-03 | Phase 2: Artifact Scaffolding and Templates | Pending |
+| ART-04 | Phase 2: Artifact Scaffolding and Templates | Pending |
+| ART-05 | Phase 2: Artifact Scaffolding and Templates | Pending |
+| ART-06 | Phase 2: Artifact Scaffolding and Templates | Pending |
+| ART-07 | Phase 2: Artifact Scaffolding and Templates | Pending |
+| ART-08 | Phase 2: Artifact Scaffolding and Templates | Pending |
+| CONT-04 | Phase 2: Artifact Scaffolding and Templates | Pending |
+| CMD-01 | Phase 3: New and Updated Skills | Pending |
+| CMD-02 | Phase 3: New and Updated Skills | Pending |
+| CMD-03 | Phase 3: New and Updated Skills | Pending |
+| CMD-04 | Phase 3: New and Updated Skills | Pending |
+| CMD-05 | Phase 3: New and Updated Skills | Pending |
+| CMD-06 | Phase 3: New and Updated Skills | Pending |
+| CMD-07 | Phase 3: New and Updated Skills | Pending |
+| AGNT-01 | Phase 4: Subagents and Hooks | Pending |
+| AGNT-02 | Phase 4: Subagents and Hooks | Pending |
+| AGNT-03 | Phase 4: Subagents and Hooks | Pending |
+| AGNT-04 | Phase 4: Subagents and Hooks | Pending |
+| HOOK-01 | Phase 4: Subagents and Hooks | Pending |
+| HOOK-02 | Phase 4: Subagents and Hooks | Pending |
+| HOOK-03 | Phase 4: Subagents and Hooks | Pending |
+| HOOK-04 | Phase 4: Subagents and Hooks | Pending |
+| HOOK-05 | Phase 4: Subagents and Hooks | Pending |
+| HOOK-06 | Phase 4: Subagents and Hooks | Pending |
+| HOOK-07 | Phase 4: Subagents and Hooks | Pending |
+| HOOK-08 | Phase 4: Subagents and Hooks | Pending |
+| HOOK-09 | Phase 4: Subagents and Hooks | Pending |
+| HOOK-10 | Phase 4: Subagents and Hooks | Pending |
+| CONT-01 | Phase 4: Subagents and Hooks | Pending |
+| CONT-02 | Phase 4: Subagents and Hooks | Pending |
+| CONT-03 | Phase 4: Subagents and Hooks | Pending |
+| LOOP-01 | Phase 4: Subagents and Hooks | Pending |
+| LOOP-02 | Phase 4: Subagents and Hooks | Pending |
+| LOOP-03 | Phase 4: Subagents and Hooks | Pending |
+| LOOP-04 | Phase 4: Subagents and Hooks | Pending |
+| EVAL-01 | Phase 5: Eval Subsystem | Pending |
+| EVAL-02 | Phase 5: Eval Subsystem | Pending |
+| EVAL-03 | Phase 5: Eval Subsystem | Pending |
+| EVAL-04 | Phase 5: Eval Subsystem | Pending |
+| EVAL-05 | Phase 5: Eval Subsystem | Pending |
+| INST-01 | Phase 6: Installer and Operational Cleanup | Pending |
+| INST-02 | Phase 6: Installer and Operational Cleanup | Pending |
+| INST-03 | Phase 6: Installer and Operational Cleanup | Pending |
+| INST-04 | Phase 6: Installer and Operational Cleanup | Pending |
+| INST-05 | Phase 6: Installer and Operational Cleanup | Pending |
+| INST-06 | Phase 6: Installer and Operational Cleanup | Pending |
 
 **Coverage:**
-- v1 requirements: 46 total
-- Mapped to phases: 46
-- Unmapped: 0 ✓
+- v1 requirements: 55 total
+- Mapped to phases: 55
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-29*
-*Last updated: 2026-03-29 after initial definition*
+*Last updated: 2026-03-29 — traceability updated after roadmap creation*
