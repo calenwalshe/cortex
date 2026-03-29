@@ -63,7 +63,12 @@ Plans:
   5. `/cortex-status` reconstructs current state from repo-local artifacts and outputs an accurate continuity summary
 **Research**: Likely (command design, flag parsing, artifact writing patterns)
 **Research topics**: Existing skill file conventions, flag parsing approaches used in current cortex skills, handoff pack schema precedents
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Create cortex-clarify (new) + update cortex-research (new flags, new output paths)
+- [ ] 03-02-PLAN.md — Create cortex-spec (new) + replace cortex-status (continuity reconstruction)
+- [ ] 03-03-PLAN.md — Extend cortex-investigate + cortex-review + cortex-audit with artifact writing
 
 ### Phase 4: Subagents and Hooks
 **Goal**: The enforcement and automation layer is live — agents, the full 10-hook bundle, continuity plumbing, and the contract loop all operate correctly
@@ -109,7 +114,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Core Docs and Architecture Alignment | 3/3 | Complete    | 2026-03-29 |
 | 2. Artifact Scaffolding and Templates | 0/4 | Complete    | 2026-03-29 |
-| 3. New and Updated Skills | 0/TBD | Not started | - |
+| 3. New and Updated Skills | 0/3 | Not started | - |
 | 4. Subagents and Hooks | 0/TBD | Not started | - |
 | 5. Eval Subsystem | 0/TBD | Not started | - |
 | 6. Installer and Operational Cleanup | 0/TBD | Not started | - |
