@@ -54,6 +54,7 @@ Progress: [██████████] 100%
 | Phase 01-core-docs-and-architecture-alignment P01 | 2 | 2 tasks | 2 files |
 | Phase 02-artifact-scaffolding-and-templates P03 | 4 | 2 tasks | 15 files |
 | Phase 02-artifact-scaffolding-and-templates P02 | 3 | 2 tasks | 7 files |
+| Phase 02-artifact-scaffolding-and-templates P01 | 16min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,9 @@ Recent decisions affecting current work:
 - [Phase 01-core-docs-and-architecture-alignment]: Repair loop re-enters validate, never clarify — bounded convergence model
 - [Phase 01]: Human-readable continuity files placed under docs/cortex/handoffs/ (resolves ambiguity from research)
 - [Phase 01]: COMMANDS.md documents vNext interface explicitly noting SKILL.md legacy divergence — intentional until Phase 3
+- [Phase 02-01]: eval_plan field is mandatory on every contract — contracts without it are incomplete and must not be approved
+- [Phase 02-01]: Handoffs directory is flat (not slug-subdirectories) — 6 named files live directly in docs/cortex/handoffs/
+- [Phase 02-01]: audits/README.md encodes not-applicable protocol — silence on a lens is not acceptable
 - [Phase 02-artifact-scaffolding-and-templates]: Scratch .cortex/ files (runs/, tmp/, dirty-files.json, validator-results.json) excluded from git via .gitignore; durable state.json and compaction/ committed via negation rules
 - [Phase 02-artifact-scaffolding-and-templates]: Continuity template placeholders use {UPPERCASE_FIELD} with lowercase schema field labels to preserve both CONTINUITY.md key names and template fill-in convention
 - [Phase 02-artifact-scaffolding-and-templates]: contract.md eval_plan field marked Required with comment — contracts without it are incomplete per EVALS.md

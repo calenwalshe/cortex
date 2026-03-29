@@ -46,7 +46,7 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Create docs/cortex/ subdirectory READMEs (9 dirs: clarify, research, specs, contracts, evals, investigations, reviews, audits, handoffs)
+- [x] 02-01-PLAN.md — Create docs/cortex/ subdirectory READMEs (9 dirs: clarify, research, specs, contracts, evals, investigations, reviews, audits, handoffs)
 - [ ] 02-02-PLAN.md — Create templates/cortex/ artifact templates (7 files: clarify-brief, research-dossier, spec, gsd-handoff, contract, eval-proposal, eval-plan)
 - [ ] 02-03-PLAN.md — Create templates/cortex/ continuity templates + seed docs/cortex/handoffs/ + .cortex/ state files (ART-08, CONT-04)
 - [ ] 02-04-PLAN.md — Write scripts/cortex/scaffold_runtime.sh (idempotent bootstrap script)
