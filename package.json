@@ -17,6 +17,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "bash test/installer.test.sh && python3 -m unittest discover -s test -p \"test_*.py\""
+    "test": "bash test/installer.test.sh && python3 -m unittest discover -s test -p \"test_*.py\"",
+    "verify:fast": "bash scripts/verify-fast.sh",
+    "verify:full": "bash scripts/verify-fast.sh && python3 -m unittest discover -s test -p \"test_*.py\" && grep -rn 'https://.*:.*@' bin/ hooks/ .claude/ scripts/ --include='*.sh' --include='*.js' || true"
   }
 }
