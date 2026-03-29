@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: completed
 stopped_at: Completed 02-04-PLAN.md — scaffold_runtime.sh idempotent script
-last_updated: "2026-03-29T02:48:29.737Z"
+last_updated: "2026-03-29T02:53:29.225Z"
 last_activity: 2026-03-29 — Plan 01-03 complete (EVALS.md, AGENTS.md, README vNext)
 progress:
   total_phases: 6
