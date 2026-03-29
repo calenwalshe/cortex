@@ -95,6 +95,10 @@ Recent decisions affecting current work:
 - [Phase 03-new-and-updated-skills]: cortex-spec requires clarify brief AND research dossier — blocks with actionable error if either missing
 - [Phase 03-new-and-updated-skills]: cortex-spec does NOT auto-invoke GSD; human must explicitly import gsd-handoff.md into GSD as separate step
 - [Phase 03-new-and-updated-skills]: Old cortex-status system-health behavior (API keys, upstream versions, Python packages) fully retired in favor of continuity reconstruction from repo-local artifacts
+- [Phase 03-03]: cortex-investigate blocks on null-slug/no-argument; cortex-review and cortex-audit fall back to "unknown" slug
+- [Phase 03-03]: Contract Compliance section in cortex-review is mandatory and cannot be omitted
+- [Phase 03-03]: 7-lens verification in cortex-audit enforced at write time — silence on any lens requires explicit no-issues note
+- [Phase 03-03]: Repair contract in cortex-investigate is optional, gated on DONE_WITH_CONCERNS or BLOCKED status
 
 ### Pending Todos
 
@@ -106,6 +110,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T03:08:36.563Z
-Stopped at: Completed 03-02-PLAN.md — cortex-spec (net-new) and cortex-status (behavioral replacement)
+Last session: 2026-03-28T00:00:00.000Z
+Stopped at: Completed 03-03-PLAN.md — cortex-investigate, cortex-review, cortex-audit artifact writing
 Resume file: None

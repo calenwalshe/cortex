@@ -66,9 +66,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Create cortex-clarify (new) + update cortex-research (new flags, new output paths)
-- [ ] 03-02-PLAN.md — Create cortex-spec (new) + replace cortex-status (continuity reconstruction)
-- [ ] 03-03-PLAN.md — Extend cortex-investigate + cortex-review + cortex-audit with artifact writing
+- [x] 03-01-PLAN.md — Create cortex-clarify (new) + update cortex-research (new flags, new output paths)
+- [x] 03-02-PLAN.md — Create cortex-spec (new) + replace cortex-status (continuity reconstruction)
+- [x] 03-03-PLAN.md — Extend cortex-investigate + cortex-review + cortex-audit with artifact writing
 
 ### Phase 4: Subagents and Hooks
 **Goal**: The enforcement and automation layer is live — agents, the full 10-hook bundle, continuity plumbing, and the contract loop all operate correctly
