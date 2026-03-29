@@ -114,9 +114,9 @@
 | DOCS-02 | Phase 1: Core Docs and Architecture Alignment | Complete |
 | DOCS-03 | Phase 1: Core Docs and Architecture Alignment | Complete |
 | DOCS-04 | Phase 1: Core Docs and Architecture Alignment | Complete |
-| DOCS-05 | Phase 1: Core Docs and Architecture Alignment | Pending |
-| DOCS-06 | Phase 1: Core Docs and Architecture Alignment | Pending |
-| DOCS-07 | Phase 1: Core Docs and Architecture Alignment | Pending |
+| DOCS-05 | Phase 1: Core Docs and Architecture Alignment | Complete |
+| DOCS-06 | Phase 1: Core Docs and Architecture Alignment | Complete |
+| DOCS-07 | Phase 1: Core Docs and Architecture Alignment | Complete |
 | ART-01 | Phase 2: Artifact Scaffolding and Templates | Pending |
 | ART-02 | Phase 2: Artifact Scaffolding and Templates | Pending |
 | ART-03 | Phase 2: Artifact Scaffolding and Templates | Pending |
