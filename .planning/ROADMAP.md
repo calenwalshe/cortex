@@ -26,7 +26,12 @@ Cortex evolves from a layered wrapper with 5 utilities into a lifecycle intellig
   4. `docs/CONTINUITY.md`, `docs/EVALS.md`, and `docs/AGENTS.md` exist with correct schemas and lifecycle descriptions
   5. README and source tree agree with docs — no stale references to old command names or architecture
 **Research**: Unlikely (docs work only)
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Rewrite CORTEX.md (vNext architecture) + create docs/INTELLIGENCE_FLOW.md (sequential spine)
+- [ ] 01-02-PLAN.md — Create docs/COMMANDS.md (7-command reference) + docs/CONTINUITY.md (continuity schemas)
+- [ ] 01-03-PLAN.md — Create docs/EVALS.md + docs/AGENTS.md + update README.md
 
 ### Phase 2: Artifact Scaffolding and Templates
 **Goal**: The `docs/cortex/` and `.cortex/` directory structures exist with correct schemas, templates, and a working state file — commands have a substrate to write into
@@ -96,7 +101,7 @@ Cortex evolves from a layered wrapper with 5 utilities into a lifecycle intellig
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Core Docs and Architecture Alignment | 0/TBD | Not started | - |
+| 1. Core Docs and Architecture Alignment | 0/3 | Not started | - |
 | 2. Artifact Scaffolding and Templates | 0/TBD | Not started | - |
 | 3. New and Updated Skills | 0/TBD | Not started | - |
 | 4. Subagents and Hooks | 0/TBD | Not started | - |
