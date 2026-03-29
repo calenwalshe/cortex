@@ -119,7 +119,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Rewrite bin/install.js: MANIFEST constant, installAgents(), installHooks(), generalized wireSettings() (9 events), dry-run table output
+- [x] 06-01-PLAN.md — Rewrite bin/install.js: MANIFEST constant, installAgents(), installHooks(), generalized wireSettings() (9 events), dry-run table output
 - [ ] 06-02-PLAN.md — Create dotfiles-setup.sh wrapper + test/installer.test.sh (5 assertions: dry-run, symlinks, idempotency, settings dedup, credential audit)
 
 ## Progress
@@ -131,4 +131,4 @@ Plans:
 | 3. New and Updated Skills | 0/3 | Complete    | 2026-03-29 |
 | 4. Subagents and Hooks | 4/4 | Complete    | 2026-03-29 |
 | 5. Eval Subsystem | 2/2 | Complete    | 2026-03-29 |
-| 6. Installer and Operational Cleanup | 0/2 | Not started | - |
+| 6. Installer and Operational Cleanup | 1/2 | In progress | - |

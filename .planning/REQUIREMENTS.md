@@ -70,12 +70,12 @@
 
 ### Installer
 
-- [ ] **INST-01**: Installer uses one canonical local repo path
-- [ ] **INST-02**: Installer installs/symlinks all `cortex-*` skills into `~/.claude/skills/`
-- [ ] **INST-03**: Installer installs Cortex agents into `~/.claude/agents/`
+- [x] **INST-01**: Installer uses one canonical local repo path
+- [x] **INST-02**: Installer installs/symlinks all `cortex-*` skills into `~/.claude/skills/`
+- [x] **INST-03**: Installer installs Cortex agents into `~/.claude/agents/`
 - [ ] **INST-04**: Installer installs hook bundle into `~/.claude/hooks/` and wires events into Claude settings
-- [ ] **INST-05**: Installer supports dry run without requiring clone-dependent files
-- [ ] **INST-06**: No credential-bearing remote URLs stored in git config
+- [x] **INST-05**: Installer supports dry run without requiring clone-dependent files
+- [x] **INST-06**: No credential-bearing remote URLs stored in git config
 
 ### Docs
 
@@ -159,12 +159,12 @@
 | EVAL-03 | Phase 5: Eval Subsystem | Pending |
 | EVAL-04 | Phase 5: Eval Subsystem | Pending |
 | EVAL-05 | Phase 5: Eval Subsystem | Pending |
-| INST-01 | Phase 6: Installer and Operational Cleanup | Pending |
-| INST-02 | Phase 6: Installer and Operational Cleanup | Pending |
-| INST-03 | Phase 6: Installer and Operational Cleanup | Pending |
+| INST-01 | Phase 6: Installer and Operational Cleanup | Complete |
+| INST-02 | Phase 6: Installer and Operational Cleanup | Complete |
+| INST-03 | Phase 6: Installer and Operational Cleanup | Complete |
 | INST-04 | Phase 6: Installer and Operational Cleanup | Pending |
-| INST-05 | Phase 6: Installer and Operational Cleanup | Pending |
-| INST-06 | Phase 6: Installer and Operational Cleanup | Pending |
+| INST-05 | Phase 6: Installer and Operational Cleanup | Complete |
+| INST-06 | Phase 6: Installer and Operational Cleanup | Complete |
 
 **Coverage:**
 - v1 requirements: 55 total

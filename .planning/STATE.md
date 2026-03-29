@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: "Completed 05-01-PLAN.md — cortex-research 8-dimension enumeration and Phase 3b approval gate"
-last_updated: "2026-03-29T15:21:14Z"
-last_activity: "2026-03-29 — Phase 5 Plan 01 complete (eval dimension enumeration, approval gate)"
+status: in-progress
+stopped_at: Completed 06-01-PLAN.md — bin/install.js rewrite (MANIFEST, installAgents, installHooks, wireSettings 9 events)
+last_updated: "2026-03-29T15:39:45Z"
+last_activity: "2026-03-29 — Phase 6 Plan 01 complete (installer core rewrite)"
 progress:
   total_phases: 6
-  completed_phases: 4
-  total_plans: 15
-  completed_plans: 15
-  percent: 71
+  completed_phases: 5
+  total_plans: 17
+  completed_plans: 17
+  percent: 88
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-29)
 
 **Core value:** A stateless executor can read a Cortex handoff pack and start implementation without guessing architecture or definition of done.
-**Current focus:** Phase 5 — Eval Subsystem
+**Current focus:** Phase 6 — Installer and Operational Cleanup
 
 ## Current Position
 
-Phase: 5 of 6 (Eval Subsystem)
-Plan: 1 of 2 in current phase — 05-01 complete, ready for 05-02
+Phase: 6 of 6 (Installer and Operational Cleanup)
+Plan: 1 of 2 in current phase — 06-01 complete, ready for 06-02
 Status: In progress
-Last activity: 2026-03-29 — Plan 05-01 complete (cortex-research eval dimension enumeration + Phase 3b approval gate)
+Last activity: 2026-03-29 — Plan 06-01 complete (bin/install.js rewrite with MANIFEST, agents, hooks, 9-event wireSettings)
 
-Progress: [████████░░] 71%
+Progress: [████████░░] 88%
 
 ## Performance Metrics
 
@@ -116,6 +116,10 @@ Recent decisions affecting current work:
 - [Phase 05-eval-subsystem P01]: 8-dimension enumeration is mandatory and inline — agent must decide INCLUDE/EXCLUDE for each dimension in the proposal text, not defer to human
 - [Phase 05-eval-subsystem P01]: Phase 3b uses a separate --write-plan trigger, not auto-run after --phase evals — human controls when eval plan is written
 - [Phase 05-eval-subsystem P01]: UX/taste hardcodes approval_required: true; Functional correctness and Style hardcode approval_required: false — not configurable per-proposal
+- [Phase 06-01]: MANIFEST constant replaces readdirSync in dry-run path — installer can enumerate without repo present (fixes ENOENT crash on fresh machines)
+- [Phase 06-01]: cortex-write-guard.sh is symlinked but NOT wired in settings.json — it is agent-invoked only, not a global Claude event hook
+- [Phase 06-01]: All hooks use symlinkSync not copyFileSync — updates take effect immediately after git pull
+- [Phase 06-01]: PostToolUse cortex-sync.sh entry preserved; cortex-validator-trigger.sh appended as separate entry — dedup check prevents duplicates on re-run
 
 ### Pending Todos
 
@@ -127,6 +131,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T15:21:14Z
-Stopped at: Completed 05-01-PLAN.md — cortex-research 8-dimension enumeration and Phase 3b approval gate
+Last session: 2026-03-29T15:39:45Z
+Stopped at: Completed 06-01-PLAN.md — bin/install.js rewrite (MANIFEST, installAgents, installHooks, wireSettings 9 events)
 Resume file: None
