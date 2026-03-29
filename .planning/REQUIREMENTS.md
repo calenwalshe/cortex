@@ -28,22 +28,22 @@
 
 ### Continuity
 
-- [ ] **CONT-01**: After compaction or `/clear`, `/cortex-status` reconstructs current state from `current-state.md`, `next-prompt.md`, and active contract
-- [ ] **CONT-02**: `current-state.md` schema: current slug, mode, approval status, active contract path, recent artifacts, open questions, blockers, next action
-- [ ] **CONT-03**: `next-prompt.md` contains a short restart prompt a human can paste after `/clear`
+- [x] **CONT-01**: After compaction or `/clear`, `/cortex-status` reconstructs current state from `current-state.md`, `next-prompt.md`, and active contract
+- [x] **CONT-02**: `current-state.md` schema: current slug, mode, approval status, active contract path, recent artifacts, open questions, blockers, next action
+- [x] **CONT-03**: `next-prompt.md` contains a short restart prompt a human can paste after `/clear`
 - [x] **CONT-04**: `.cortex/state.json` tracks Cortex runtime mode, artifacts, approvals, and gates (not GSD roadmap state)
 
 ### Hooks
 
-- [ ] **HOOK-01**: `cortex-session-start` — hydrates Claude with `current-state.md` context on SessionStart
+- [x] **HOOK-01**: `cortex-session-start` — hydrates Claude with `current-state.md` context on SessionStart
 - [ ] **HOOK-02**: `cortex-phase-guard` — blocks Write/Edit outside `docs/cortex/**` and `.cortex/**` when phase is clarify/research/spec
 - [ ] **HOOK-03**: `cortex-validator-trigger` — after writes in execute/repair mode, appends to dirty-files.json and invokes validator runner
 - [ ] **HOOK-04**: `cortex-task-created` — rejects tasks missing objective, deliverable, validator(s), or contract link
 - [ ] **HOOK-05**: `cortex-task-completed` — blocks false completion if validators didn't pass, artifact is missing, evals are stale, or done criteria unmet
 - [ ] **HOOK-06**: `cortex-teammate-idle` — feeds actionable feedback to idle agent-team workers that still owe deliverables
-- [ ] **HOOK-07**: `cortex-precompact` — writes snapshot to `.cortex/compaction/precompact-<timestamp>.md` and refreshes `current-state.md`
-- [ ] **HOOK-08**: `cortex-postcompact` — writes compact summary to `last-compact-summary.md` and refreshes `next-prompt.md`
-- [ ] **HOOK-09**: `cortex-session-end` — writes final continuity state on `/clear`, exit, or resume transitions
+- [x] **HOOK-07**: `cortex-precompact` — writes snapshot to `.cortex/compaction/precompact-<timestamp>.md` and refreshes `current-state.md`
+- [x] **HOOK-08**: `cortex-postcompact` — writes compact summary to `last-compact-summary.md` and refreshes `next-prompt.md`
+- [x] **HOOK-09**: `cortex-session-end` — writes final continuity state on `/clear`, exit, or resume transitions
 - [ ] **HOOK-10**: `cortex-sync` — fixed: canonical repo path, no credential URLs, correct untracked detection, soft-fail on auth unavailable
 
 ### Agents
@@ -137,19 +137,19 @@
 | AGNT-02 | Phase 4: Subagents and Hooks | Pending |
 | AGNT-03 | Phase 4: Subagents and Hooks | Pending |
 | AGNT-04 | Phase 4: Subagents and Hooks | Pending |
-| HOOK-01 | Phase 4: Subagents and Hooks | Pending |
+| HOOK-01 | Phase 4: Subagents and Hooks | Complete |
 | HOOK-02 | Phase 4: Subagents and Hooks | Pending |
 | HOOK-03 | Phase 4: Subagents and Hooks | Pending |
 | HOOK-04 | Phase 4: Subagents and Hooks | Pending |
 | HOOK-05 | Phase 4: Subagents and Hooks | Pending |
 | HOOK-06 | Phase 4: Subagents and Hooks | Pending |
-| HOOK-07 | Phase 4: Subagents and Hooks | Pending |
-| HOOK-08 | Phase 4: Subagents and Hooks | Pending |
-| HOOK-09 | Phase 4: Subagents and Hooks | Pending |
+| HOOK-07 | Phase 4: Subagents and Hooks | Complete |
+| HOOK-08 | Phase 4: Subagents and Hooks | Complete |
+| HOOK-09 | Phase 4: Subagents and Hooks | Complete |
 | HOOK-10 | Phase 4: Subagents and Hooks | Pending |
-| CONT-01 | Phase 4: Subagents and Hooks | Pending |
-| CONT-02 | Phase 4: Subagents and Hooks | Pending |
-| CONT-03 | Phase 4: Subagents and Hooks | Pending |
+| CONT-01 | Phase 4: Subagents and Hooks | Complete |
+| CONT-02 | Phase 4: Subagents and Hooks | Complete |
+| CONT-03 | Phase 4: Subagents and Hooks | Complete |
 | LOOP-01 | Phase 4: Subagents and Hooks | Pending |
 | LOOP-02 | Phase 4: Subagents and Hooks | Pending |
 | LOOP-03 | Phase 4: Subagents and Hooks | Pending |

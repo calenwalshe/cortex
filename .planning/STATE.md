@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 03-03-PLAN.md — cortex-investigate, cortex-review, cortex-audit artifact writing
-last_updated: "2026-03-29T03:12:55.211Z"
+stopped_at: Completed 04-02-PLAN.md — cortex-session-start, cortex-session-end, cortex-precompact, cortex-postcompact hooks + .claude/settings.json
+last_updated: "2026-03-29T05:21:47.587Z"
 last_activity: 2026-03-29 — Plan 01-03 complete (EVALS.md, AGENTS.md, README vNext)
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 10
-  completed_plans: 10
+  total_plans: 14
+  completed_plans: 11
   percent: 100
 ---
 
@@ -59,6 +59,7 @@ Progress: [██████████] 100%
 | Phase 03-new-and-updated-skills P01 | 2min | 2 tasks | 2 files |
 | Phase 03-new-and-updated-skills P02 | 8min | 2 tasks | 2 files |
 | Phase 03-new-and-updated-skills P03 | 18min | 3 tasks | 3 files |
+| Phase 04-subagents-and-hooks P02 | 5min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -99,6 +100,9 @@ Recent decisions affecting current work:
 - [Phase 03-03]: Contract Compliance section in cortex-review is mandatory and cannot be omitted
 - [Phase 03-03]: 7-lens verification in cortex-audit enforced at write time — silence on any lens requires explicit no-issues note
 - [Phase 03-03]: Repair contract in cortex-investigate is optional, gated on DONE_WITH_CONCERNS or BLOCKED status
+- [Phase 04-subagents-and-hooks]: Stop hook registered async: true to avoid delaying agent responses
+- [Phase 04-subagents-and-hooks]: CLAUDE_PROJECT_DIR used for all hook paths — no hardcoded machine paths
+- [Phase 04-subagents-and-hooks]: python3 used for JSON construction in session-start hook to handle multiline strings without jq escaping issues
 
 ### Pending Todos
 
@@ -110,6 +114,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-28T00:00:00.000Z
-Stopped at: Completed 03-03-PLAN.md — cortex-investigate, cortex-review, cortex-audit artifact writing
+Last session: 2026-03-29T05:21:47.582Z
+Stopped at: Completed 04-02-PLAN.md — cortex-session-start, cortex-session-end, cortex-precompact, cortex-postcompact hooks + .claude/settings.json
 Resume file: None
