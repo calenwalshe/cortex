@@ -6,6 +6,9 @@ Combined protocol from Superpowers (4-phase TDD debugging) and GStack (/investig
 When the user types `/cortex-investigate`, run this skill.
 Also trigger when: "debug this", "fix this bug", "why is this broken", "investigate this error", "root cause analysis".
 
+## Arguments
+- `/cortex-investigate [<subject>]` — subject is what to investigate; defaults to current active contract context
+
 ## The Iron Law
 
 **NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST.**
@@ -13,6 +16,15 @@ Also trigger when: "debug this", "fix this bug", "why is this broken", "investig
 If you haven't completed Phase 1, you CANNOT propose fixes. Period.
 
 ## Instructions
+
+### Phase 0: Resolve Slug
+
+Before beginning any investigation:
+
+1. Read `.cortex/state.json` to get the active slug.
+2. If `slug` is set (non-null): use it as the output directory slug.
+3. If `slug` is null AND `<subject>` argument is provided: derive slug from `<subject>` using the standard slugification rule (lowercase, replace spaces and non-alphanumeric characters with hyphens, collapse consecutive hyphens, strip leading/trailing hyphens).
+4. If `slug` is null AND no argument was provided: **block with:** "No active slug found. Run /cortex-clarify first to establish project context."
 
 ### Phase 1: Root Cause Investigation
 
@@ -98,6 +110,35 @@ Regression test: [file:line of new test]
 Related:         [prior bugs in same area, architectural notes]
 Status:          DONE | DONE_WITH_CONCERNS | BLOCKED
 ════════════════════════════════════════
+```
+
+## Store Results
+
+After the DEBUG REPORT is produced, write it to a repo-local artifact:
+
+1. **Generate timestamp:** `YYYYMMDDTHHMMSSZ` (compact ISO UTC, e.g. `20260328T143012Z`)
+2. **Target path:** `docs/cortex/investigations/{slug}/{timestamp}.md`
+3. **Create directory:** `mkdir -p docs/cortex/investigations/{slug}/`
+4. **Write** the full DEBUG REPORT block to the file.
+
+**Optional repair contract** — only when investigation determines a repair loop is needed (Status: `DONE_WITH_CONCERNS` or `BLOCKED`):
+- Scan `docs/cortex/contracts/{slug}/` for existing contracts; take the highest NNN and increment by 1.
+- Contract path: `docs/cortex/contracts/{slug}/contract-NNN.md`
+- Create directory: `mkdir -p docs/cortex/contracts/{slug}/`
+- Populate from `templates/cortex/contract.md` with repair scope derived from investigation findings.
+- **Note:** The human must import the repair contract into GSD explicitly — do not call GSD commands.
+
+**Update `docs/cortex/handoffs/current-state.md`:**
+- `recent_artifacts`: append `docs/cortex/investigations/{slug}/{timestamp}.md` (and contract path if written)
+- `blockers`: set if Status is `BLOCKED`; clear if Status is `DONE`
+- `next_action`: reflect repair recommendation or "Investigation complete — no repair needed"
+
+**Update `.cortex/state.json`:**
+- Append investigation artifact path (and contract path if written) to the `artifacts` array.
+
+**Output confirmation line:**
+```
+Investigation artifact written: docs/cortex/investigations/{slug}/{timestamp}.md
 ```
 
 ## Red Flags — STOP and Return to Phase 1
