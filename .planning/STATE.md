@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in-progress
-stopped_at: Completed 06-01-PLAN.md — bin/install.js rewrite (MANIFEST, installAgents, installHooks, wireSettings 9 events)
-last_updated: "2026-03-29T15:39:45Z"
-last_activity: "2026-03-29 — Phase 6 Plan 01 complete (installer core rewrite)"
+status: complete
+stopped_at: Completed 06-02-PLAN.md — dotfiles-setup.sh + test/installer.test.sh (7 assertions, all pass)
+last_updated: "2026-03-29T15:50:00Z"
+last_activity: "2026-03-29 — Phase 6 Plan 02 complete (shell wrapper + test suite)"
 progress:
   total_phases: 6
-  completed_phases: 5
-  total_plans: 17
-  completed_plans: 17
-  percent: 88
+  completed_phases: 6
+  total_plans: 18
+  completed_plans: 18
+  percent: 100
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-29)
 
 **Core value:** A stateless executor can read a Cortex handoff pack and start implementation without guessing architecture or definition of done.
-**Current focus:** Phase 6 — Installer and Operational Cleanup
+**Current focus:** Complete — all 6 phases done
 
 ## Current Position
 
-Phase: 6 of 6 (Installer and Operational Cleanup)
-Plan: 1 of 2 in current phase — 06-01 complete, ready for 06-02
-Status: In progress
-Last activity: 2026-03-29 — Plan 06-01 complete (bin/install.js rewrite with MANIFEST, agents, hooks, 9-event wireSettings)
+Phase: 6 of 6 (Installer and Operational Cleanup) — COMPLETE
+Plan: 2 of 2 in phase 6 — 06-02 complete
+Status: Complete
+Last activity: 2026-03-29 — Plan 06-02 complete (dotfiles-setup.sh + test/installer.test.sh, 7 assertions passing)
 
-Progress: [████████░░] 88%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -64,6 +64,8 @@ Progress: [████████░░] 88%
 | Phase 04-subagents-and-hooks P03 | 5min | 3 tasks | 6 files |
 | Phase 04-subagents-and-hooks P04 | 4min | 2 tasks | 3 files |
 | Phase 05-eval-subsystem P01 | 2min | 2 tasks | 1 files |
+| Phase 06-installer-and-operational-cleanup P01 | 12min | 2 tasks | 1 files |
+| Phase 06-installer-and-operational-cleanup P02 | 8min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -120,17 +122,20 @@ Recent decisions affecting current work:
 - [Phase 06-01]: cortex-write-guard.sh is symlinked but NOT wired in settings.json — it is agent-invoked only, not a global Claude event hook
 - [Phase 06-01]: All hooks use symlinkSync not copyFileSync — updates take effect immediately after git pull
 - [Phase 06-01]: PostToolUse cortex-sync.sh entry preserved; cortex-validator-trigger.sh appended as separate entry — dedup check prevents duplicates on re-run
+- [Phase 06-02]: dotfiles-setup.sh is intentionally minimal — 4 lines, zero logic, all delegation to bin/install.js
+- [Phase 06-02]: Test HOME isolation via exported HOME=$TEST_HOME before node — works because install.js reads HOME via os.homedir()
+- [Phase 06-02]: { grep ... || true; } | wc -l grouping pattern prevents set -euo pipefail abort on grep no-match
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-None yet.
+None.
 
 ## Session Continuity
 
-Last session: 2026-03-29T15:39:45Z
-Stopped at: Completed 06-01-PLAN.md — bin/install.js rewrite (MANIFEST, installAgents, installHooks, wireSettings 9 events)
+Last session: 2026-03-29T15:50:00Z
+Stopped at: Completed 06-02-PLAN.md — dotfiles-setup.sh + test/installer.test.sh (7 assertions, all pass)
 Resume file: None
