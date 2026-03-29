@@ -1,105 +1,118 @@
-# Cortex Status
+# Cortex Status — Continuity Reconstruction
 
-Show the current state of the Cortex system — active layers, upstream versions, API connectivity, and installed tools.
+Reconstruct the current working context from repo-local artifacts and update the continuity handoff files. The primary recovery command after `/clear`, `/compact`, or context exhaustion.
 
 ## User-invocable
+
 When the user types `/cortex-status`, run this skill.
+
+Also trigger when the user says:
+- "what's the current state"
+- "reconstruct context"
+- "where were we"
+- "resume from cortex"
+- "status check"
+
+## Arguments
+
+`/cortex-status` — no flags or arguments.
 
 ## Instructions
 
-Run the following checks and present a formatted status report:
+### Phase 1: Read Machine-Readable State
 
-### 1. Layer Status
-```bash
-# Check each layer file exists
-for f in tdd.md debugging.md code-review.md; do
-  test -f ~/projects/cortex/layers/discipline/$f && echo "  Layer 2 (Discipline): $f ✓" || echo "  Layer 2 (Discipline): $f ✗"
-done
-for f in anti-sycophancy.md forcing-questions.md investigate.md security-audit.md; do
-  test -f ~/projects/cortex/layers/thinking/$f && echo "  Layer 3 (Thinking): $f ✓" || echo "  Layer 3 (Thinking): $f ✗"
-done
+1. Read `.cortex/state.json`.
+2. Extract: `slug`, `mode`, `approval_status`, `active_contract` path, `artifacts` array, `approvals` object, `gates` object.
+3. If `state.json` does not exist or is empty: note "No runtime state found — fresh project or state.json not initialized. Run /cortex-clarify to begin." Continue to Phase 2 with all state fields blank.
+
+### Phase 2: Read Human-Readable Continuity State
+
+1. Read `docs/cortex/handoffs/current-state.md`.
+2. Extract all fields: `slug`, `mode`, `approval_status`, `active_contract_path`, `recent_artifacts`, `open_questions`, `blockers`, `next_action`.
+3. If `current-state.md` does not exist: note "No current-state.md found. Will reconstruct from artifact scan." Continue to Phase 3.
+
+### Phase 3: Scan docs/cortex/ for Artifact History
+
+1. Scan the following subdirectories and list all files found:
+   - `docs/cortex/clarify/` — clarify briefs
+   - `docs/cortex/research/` — research dossiers
+   - `docs/cortex/specs/` — specs and handoffs
+   - `docs/cortex/contracts/` — contracts
+   - `docs/cortex/evals/` — eval proposals and plans
+   - `docs/cortex/investigations/` — investigation artifacts
+   - `docs/cortex/reviews/` — review artifacts
+   - `docs/cortex/audits/` — audit artifacts
+
+2. Cross-reference the artifact list with what `state.json` reports. Note any artifacts on disk not reflected in state (stale state), and any artifacts in state not on disk (missing files).
+
+3. If `active_contract_path` is set in state, read the active contract and note its approval status and done criteria.
+
+4. Reconcile the slug, mode, and gate states from Phases 1, 2, and 3. The artifact scan takes precedence over `current-state.md` for factual artifact existence; `state.json` takes precedence for gate values.
+
+### Phase 4: Refresh Continuity Files
+
+**Update `docs/cortex/handoffs/current-state.md`** with reconciled state from Phases 1–3:
+- Correct any stale or missing fields
+- Ensure `recent_artifacts` reflects the full artifact scan (all files found in Phase 3)
+- Set `next_action` based on current `mode` and gate state:
+  - mode `clarify`, `clarify_complete: false` → "Run /cortex-clarify to begin"
+  - mode `research`, `research_complete: false` → "Run /cortex-research --phase concept"
+  - mode `spec`, `spec_complete: false` → "Run /cortex-spec"
+  - mode `spec`, approval pending → "Human must review and approve spec.md and contract-001.md"
+  - mode `execute` → "Human must import gsd-handoff.md into GSD explicitly"
+  - mode `validate` → "Run /cortex-review or /cortex-audit as appropriate"
+  - Otherwise → derive from contract state
+
+**Write `docs/cortex/handoffs/next-prompt.md`** using `templates/cortex/next-prompt.md`:
+- Fill all template fields from the reconciled state
+- This prompt must be paste-ready for a human to use after `/clear`
+- The paste-ready prompt must include: current slug, mode, active contract path, and the next action
+
+### Phase 5: Output Terminal Summary
+
+Output the continuity summary to the terminal (stdout only — this phase produces no additional files):
+
+```
+CORTEX STATUS
+════════════════════════════════════════
+Slug:     {slug | (none)}
+Mode:     {mode | (not started)}
+Approval: {approval_status}
+Contract: {active_contract_path | (none)}
+
+Gates:
+  clarify_complete:  {true|false}
+  research_complete: {true|false}
+  spec_complete:     {true|false}
+  contract_approved: {true|false}
+
+Artifacts ({N} total):
+  {artifact 1}
+  {artifact 2}
+  ...
+
+Open questions ({N}):
+  - {question}
+  ...
+
+Blockers:
+  {blocker | (none)}
+
+Next action:
+  {next_action}
+
+Continuity files refreshed:
+  docs/cortex/handoffs/current-state.md
+  docs/cortex/handoffs/next-prompt.md
+════════════════════════════════════════
 ```
 
-### 2. Upstream Versions
-```bash
-cd ~/projects/cortex
-echo "Superpowers: $(cd upstream/superpowers && git describe --tags 2>/dev/null || git rev-parse --short HEAD)"
-echo "GStack:      $(cd upstream/gstack && git describe --tags 2>/dev/null || git rev-parse --short HEAD)"
-echo "GSD:         local copy"
-```
+## Rules
 
-### 3. API Connectivity
-Test each API key is set and functional:
-
-```bash
-# Tavily
-[ -n "$TAVILY_API_KEY" ] && echo "Tavily: configured" || echo "Tavily: NOT SET"
-
-# Firecrawl
-[ -n "$FIRECRAWL_API_KEY" ] && echo "Firecrawl: configured" || echo "Firecrawl: NOT SET"
-
-# Perplexity
-[ -n "$PPLX_API_KEY" ] && echo "Perplexity: configured" || echo "Perplexity: NOT SET"
-
-# Gemini
-[ -n "$GEMINI_API_KEY" ] && echo "Gemini: configured" || echo "Gemini: NOT SET"
-
-# OpenAI
-[ -n "$OPENAI_API_KEY" ] && echo "OpenAI: configured" || echo "OpenAI: NOT SET"
-```
-
-### 4. Research Tools
-```bash
-source ~/claude-stack-env/bin/activate 2>/dev/null
-which yt-dlp && echo "yt-dlp: $(yt-dlp --version)"
-which ffmpeg && echo "ffmpeg: installed"
-python3 -c "import tavily" 2>/dev/null && echo "tavily-python: installed" || echo "tavily-python: MISSING"
-python3 -c "import firecrawl" 2>/dev/null && echo "firecrawl-py: installed" || echo "firecrawl-py: MISSING"
-python3 -c "from gpt_researcher import GPTResearcher" 2>/dev/null && echo "gpt-researcher: installed" || echo "gpt-researcher: MISSING"
-python3 -c "import crawl4ai" 2>/dev/null && echo "crawl4ai: installed" || echo "crawl4ai: MISSING"
-python3 -c "import google.generativeai" 2>/dev/null && echo "google-genai: installed" || echo "google-genai: MISSING"
-python3 -c "import openai" 2>/dev/null && echo "openai-sdk: installed" || echo "openai-sdk: MISSING"
-```
-
-### 5. GSD Status
-```bash
-# Check if GSD is active
-test -d .planning && echo "GSD: active (.planning/ found)" || echo "GSD: no project in current dir"
-test -f .planning/STATE.md && cat .planning/STATE.md | head -5
-```
-
-### 6. Output Format
-
-Present as:
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- CORTEX STATUS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Layer 1 (Workflow):   GSD [active/inactive]
-Layer 2 (Discipline): [N/4] rules loaded
-Layer 3 (Thinking):   [N/4] rules loaded
-
-Upstreams:
-  Superpowers: [version/hash]
-  GStack:      [version/hash]
-  GSD:         local copy
-
-APIs:
-  Tavily:      [configured/NOT SET]
-  Firecrawl:   [configured/NOT SET]
-  Perplexity:  [configured/NOT SET]
-  Gemini:      [configured/NOT SET]
-  OpenAI:      [configured/NOT SET]
-
-Tools: [N] installed, [N] missing
-
-Available skills:
-  /cortex-status      — This report
-  /cortex-investigate — Systematic debugging (Iron Law)
-  /cortex-audit       — Security audit (OWASP + STRIDE)
-  /cortex-review      — Multi-lens code review
-  /cortex-research    — Deep multi-LLM research
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
+- **Safe to run at any time**, including mid-session. It is non-destructive.
+- **Does not require chat history.** Reads only from repo-local artifacts: `docs/cortex/handoffs/current-state.md` and `.cortex/state.json`.
+- **Reads from exactly two state sources:** `docs/cortex/handoffs/current-state.md` and `.cortex/state.json`. No other state sources are consulted.
+- **Does NOT read `.planning/STATE.md` or any GSD planning state.** Cortex state and GSD state are independent.
+- **Does not modify product code or GSD state.** The only writes are to `docs/cortex/handoffs/current-state.md` and `docs/cortex/handoffs/next-prompt.md`.
+- **Designed specifically for use after `/clear` or compaction** when chat context is lost. Running it after context loss is the correct and expected usage pattern.
+- If no state files exist at all, output a clean "not started" summary and instruct the user to run `/cortex-clarify` to begin.
