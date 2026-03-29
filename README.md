@@ -43,14 +43,15 @@ Commands run in spine order for new work: clarify → research → spec → [GSD
 
 ## Quick Start
 
-> **Installer update in progress (Phase 6).** The installer is being revised as part of vNext. Use the manual install for now.
-
 ```bash
 # Clone the repo
 git clone https://github.com/calenwalshe/cortex.git ~/projects/cortex
 
-# Run the installer
+# Run the installer (symlinks skills, agents, hooks into ~/.claude/)
 node ~/projects/cortex/bin/install.js
+
+# Or via the shell wrapper
+bash ~/projects/cortex/dotfiles-setup.sh
 ```
 
 Once installed, start with `/cortex-clarify <your idea>` to begin the intelligence cycle. The clarify command produces a written problem frame you can review before committing to research and spec work.
@@ -63,25 +64,28 @@ cortex/                          # Framework repo
 ├── docs/
 │   ├── INTELLIGENCE_FLOW.md    # Sequential spine diagram
 │   ├── COMMANDS.md             # 7-command reference
-│   ├── CONTINUITY.md           # Continuity strategy + schemas
-│   ├── EVALS.md                # Eval lifecycle + matrix
+│   ├── CONTINUITY.md           # Continuity strategy + schemas + contract loop
+│   ├── EVALS.md                # Eval lifecycle + 8-dimension matrix
 │   └── AGENTS.md               # Agent roster + permissions
 ├── skills/
-│   ├── cortex-clarify/         # Fuzzy idea → clarify brief  [Phase 3]
-│   ├── cortex-research/        # Research dossier (concept/impl/evals)
-│   ├── cortex-spec/            # Spec + GSD handoff + contract  [Phase 3]
+│   ├── cortex-clarify/         # Fuzzy idea → clarify brief
+│   ├── cortex-research/        # Research dossier (concept/impl/evals + approval gate)
+│   ├── cortex-spec/            # Spec + GSD handoff + contract
 │   ├── cortex-investigate/     # Investigation artifacts
-│   ├── cortex-review/          # Review + contract compliance
-│   ├── cortex-audit/           # Security + quality audit
-│   └── cortex-status/          # State reconstruction
-├── agents/                      # Phase 4: 4 subagents
-├── hooks/                       # Phase 4: 10 hooks
-├── bin/                         # Installer + utilities
-├── layers/                      # Discipline + Thinking rule extracts
-└── upstream/                    # Tracked upstream sources
+│   ├── cortex-review/          # Review + contract compliance + repair-on-failure
+│   ├── cortex-audit/           # Security + quality audit (7 lenses)
+│   └── cortex-status/          # State reconstruction after /clear or compaction
+├── .claude/
+│   ├── agents/                 # 4 subagents: specifier, critic, scribe, eval-designer
+│   ├── hooks/                  # 10 hooks: session lifecycle, phase guard, task gating
+│   └── settings.json           # Hook event registrations (9 events)
+├── templates/cortex/           # Artifact templates (clarify, research, spec, contract, evals)
+├── scripts/cortex/             # scaffold_runtime.sh — bootstrap docs/cortex/ in target repos
+├── bin/                        # install.js — idempotent installer with --dry-run support
+├── dotfiles-setup.sh           # Shell wrapper for bin/install.js
+├── layers/                     # Discipline + Thinking rule extracts
+└── upstream/                   # Tracked upstream sources (Superpowers, GStack)
 ```
-
-`cortex-clarify` and `cortex-spec` skills are Phase 3 deliverables — not yet implemented. `agents/` and `hooks/` are Phase 4 deliverables.
 
 ## Upstream Tracking
 
