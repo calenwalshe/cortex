@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 02-02-PLAN.md — 7 artifact templates in templates/cortex/
-last_updated: "2026-03-29T02:43:26.620Z"
+stopped_at: Completed 02-04-PLAN.md — scaffold_runtime.sh idempotent script
+last_updated: "2026-03-29T02:48:29.737Z"
 last_activity: 2026-03-29 — Plan 01-03 complete (EVALS.md, AGENTS.md, README vNext)
 progress:
   total_phases: 6
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 7
-  completed_plans: 5
+  completed_plans: 7
   percent: 100
 ---
 
@@ -55,6 +55,7 @@ Progress: [██████████] 100%
 | Phase 02-artifact-scaffolding-and-templates P03 | 4 | 2 tasks | 15 files |
 | Phase 02-artifact-scaffolding-and-templates P02 | 3 | 2 tasks | 7 files |
 | Phase 02-artifact-scaffolding-and-templates P01 | 16min | 2 tasks | 9 files |
+| Phase 02-artifact-scaffolding-and-templates P04 | 2 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,7 @@ Recent decisions affecting current work:
 - [Phase 02-artifact-scaffolding-and-templates]: contract.md eval_plan field marked Required with comment — contracts without it are incomplete per EVALS.md
 - [Phase 02-artifact-scaffolding-and-templates]: spec.md has all 9 mandatory sections — omitting any section is an error by design
 - [Phase 02-artifact-scaffolding-and-templates]: eval-proposal.md APPROVAL_REQUIRED is document-level flag — simplifies human approval flow
+- [Phase 02-artifact-scaffolding-and-templates]: Idempotency guard uses [ -f dst ] pre-check, not cp -n — explicit and avoids portability warnings
 
 ### Pending Todos
 
@@ -95,6 +97,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T02:43:26.615Z
-Stopped at: Completed 02-02-PLAN.md — 7 artifact templates in templates/cortex/
+Last session: 2026-03-29T02:48:29.732Z
+Stopped at: Completed 02-04-PLAN.md — scaffold_runtime.sh idempotent script
 Resume file: None
