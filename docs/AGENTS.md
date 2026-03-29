@@ -1,6 +1,6 @@
 # Agents
 
-> **Status:** The agents described here are Phase 4 deliverables. They are not yet installed. This document defines the intended agent specifications so Phase 4 has a documented target.
+These agents are active in the current Cortex install layout under `.claude/agents/`.
 
 ---
 
@@ -14,6 +14,7 @@
 | `cortex-eval-designer` | Proposes eval suites, rubrics, fixtures, and thresholds | `docs/cortex/evals/` | All | Sub-agent |
 
 All paths above refer to the **target project repo** where Cortex is installed, not the Cortex framework repo.
+The framework repo may still include `.cortex/` and `.planning/` for dogfooding and development, but runtime artifacts belong in the target project repo.
 
 ---
 
@@ -122,6 +123,6 @@ No agent writes outside `docs/cortex/` or `.cortex/` unless explicitly listed in
 
 ## Installation
 
-Agent YAML files are installed at `~/.claude/agents/`. The Phase 6 installer symlinks agent definitions from the Cortex repo into this path. Until Phase 6, agents must be manually installed.
+Agent markdown definitions are installed at `~/.claude/agents/`. The installer symlinks definitions from the Cortex repo into this path.
 
 Installation path: `~/.claude/agents/cortex-specifier.md`, `~/.claude/agents/cortex-critic.md`, etc.

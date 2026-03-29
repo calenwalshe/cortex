@@ -1,6 +1,7 @@
 # Cortex Command Reference
 
 All commands write artifacts to the target project repo (the repo where Cortex is installed and used). The Cortex framework repo itself is not modified by command invocations.
+The framework repo may still contain `.cortex/` and `.planning/` for dogfooding and development, but runtime command artifacts belong in the target project repo.
 
 Commands follow the intelligence spine: `/cortex-clarify` → `/cortex-research` → `/cortex-spec` → (GSD execution) → `/cortex-investigate` / `/cortex-review` / `/cortex-audit` → `/cortex-status`.
 
@@ -47,7 +48,7 @@ Paths are relative to the target project repo. The slug is derived from the idea
 
 **Syntax**
 ```bash
-/cortex-research [<topic>] [--phase concept|implementation|evals] [--depth quick|standard|deep] [--team]
+/cortex-research [<topic>] [--phase concept|implementation|evals] [--depth quick|standard|deep] [--team] [--write-plan]
 ```
 
 **Purpose**
@@ -61,20 +62,23 @@ Produces a research dossier for the current slug at a specified phase and depth.
 | `--phase` | Optional | Research phase: `concept`, `implementation`, or `evals` | `concept` |
 | `--depth` | Optional | Research depth: `quick`, `standard`, or `deep` | `standard` |
 | `--team` | Optional flag | Invokes an agent team for research (opt-in, adds cost) | Off |
+| `--write-plan` | Optional flag | Writes `eval-plan.md` from `eval-proposal.md` when approvals allow | Off |
 
 **Outputs**
 
 | Artifact | Path | Contents |
 |----------|------|----------|
-| Research dossier | `docs/cortex/research/<slug>/<phase>-<timestamp>.md` | Findings, trade-offs, recommendations, open questions for the requested phase |
+| Research dossier (`concept`/`implementation`) | `docs/cortex/research/<slug>/<phase>-<timestamp>.md` | Findings, trade-offs, recommendations, open questions for the requested phase |
+| Eval proposal (`evals`) | `docs/cortex/evals/<slug>/eval-proposal.md` | Proposed eval dimensions, fixtures, thresholds, failure taxonomy, and approval gate |
+| Eval plan (`--write-plan`) | `docs/cortex/evals/<slug>/eval-plan.md` | Approved eval dimensions with execution plan and thresholds |
 
 **Rules**
 - Reads the clarify brief as primary input context. Clarify brief must exist.
 - Each `--phase` produces a separate dossier — phases are not combined in a single output.
-- `--phase evals` produces an eval proposal (see `/cortex-audit` and `docs/EVALS.md`).
+- `--phase evals` produces `eval-proposal.md` in `docs/cortex/evals/<slug>/`.
+- `--write-plan` reads `eval-proposal.md` and writes `eval-plan.md` only when approval requirements are satisfied.
 - Each phase must be explicitly requested by the human — the system does not auto-advance to the next phase.
 - `--team` is opt-in only. Agent team mode is never default behavior.
-- Current SKILL.md uses legacy `--quick` / `--deep` flags and writes to `~/research/`. This document describes the vNext interface. SKILL.md will be updated in Phase 3.
 
 **Example**
 ```
@@ -283,6 +287,7 @@ No flags or arguments.
 | `--phase` | `/cortex-research` | `concept` \| `implementation` \| `evals` | Research phase; each produces a separate dossier |
 | `--depth` | `/cortex-research` | `quick` \| `standard` \| `deep` | Controls research thoroughness and output length |
 | `--team` | `/cortex-research` | (flag — no value) | Opt-in: invokes agent team for research; adds cost |
+| `--write-plan` | `/cortex-research` | (flag — no value) | Writes `eval-plan.md` from `eval-proposal.md` after approval checks |
 
 ---
 

@@ -3,6 +3,7 @@
 The sequential spine describes how a feature moves from a fuzzy idea to a shipped,
 verified outcome. Cortex owns the intelligence phases. GSD owns execution. The repair
 loop re-enters validate — it never restarts from clarify.
+Runtime artifacts in this flow are written to the target project repo; this framework repo may still contain `.cortex/` and `.planning/` for dogfooding and development.
 
 ---
 
@@ -61,7 +62,7 @@ steps. Ambiguity is surfaced here, not silently carried forward.
 unanswered). The brief does not need every question resolved — it needs them visible.
 
 **Continuity artifacts written:** `docs/cortex/clarify/<slug>/<timestamp>-clarify-brief.md`,
-`docs/cortex/continuity/current-state.md`, `docs/cortex/continuity/open-questions.md`
+`docs/cortex/handoffs/current-state.md`, `docs/cortex/handoffs/open-questions.md`
 
 ---
 
@@ -78,7 +79,7 @@ fixtures, rubrics). Each phase produces a dossier. Research depth is configurabl
 clarify are either answered or explicitly deferred with rationale.
 
 **Continuity artifacts written:** `docs/cortex/research/<slug>/<phase>-<timestamp>.md`,
-`docs/cortex/continuity/current-state.md`, `docs/cortex/continuity/open-questions.md`
+`docs/cortex/handoffs/current-state.md`, `docs/cortex/handoffs/open-questions.md`
 
 ---
 
@@ -99,8 +100,8 @@ explicit.
 **Continuity artifacts written:** `docs/cortex/specs/<slug>/spec.md`,
 `docs/cortex/specs/<slug>/gsd-handoff.md`,
 `docs/cortex/contracts/<slug>/contract-001.md`,
-`docs/cortex/continuity/current-state.md`,
-`docs/cortex/continuity/next-prompt.md`
+`docs/cortex/handoffs/current-state.md`,
+`docs/cortex/handoffs/next-prompt.md`
 
 ---
 
@@ -132,8 +133,8 @@ If any fail, the spine branches to repair.
 **Gate to branch (to repair):** One or more validators failed.
 
 **Continuity artifacts written:** `.cortex/dirty-files.json`,
-`docs/cortex/continuity/eval-status.md`,
-`docs/cortex/continuity/current-state.md`
+`docs/cortex/handoffs/eval-status.md`,
+`docs/cortex/handoffs/current-state.md`
 
 ---
 
@@ -149,8 +150,8 @@ restart from clarify or spec. Each repair iteration updates continuity artifacts
 **Gate to advance (back to validate):** Repair changes are complete and committed.
 
 **Continuity artifacts written:** `docs/cortex/contracts/<slug>/repair-contract-<n>.md`,
-`docs/cortex/continuity/current-state.md`,
-`docs/cortex/continuity/next-prompt.md`
+`docs/cortex/handoffs/current-state.md`,
+`docs/cortex/handoffs/next-prompt.md`
 
 ---
 
@@ -167,8 +168,8 @@ before assure can close. If any eval fails at this stage, control returns to val
 **Gate to advance:** All evals passed; human approval obtained where required.
 
 **Continuity artifacts written:** `docs/cortex/evals/<slug>/eval-status.md`,
-`docs/cortex/continuity/eval-status.md`,
-`docs/cortex/continuity/current-state.md`
+`docs/cortex/handoffs/eval-status.md`,
+`docs/cortex/handoffs/current-state.md`
 
 ---
 
@@ -178,11 +179,11 @@ before assure can close. If any eval fails at this stage, control returns to val
 
 The contract is closed. Continuity state is finalized. The slug moves to completed
 status in `.cortex/state.json`. Future references to this feature's decisions are
-preserved in `docs/cortex/continuity/decisions.md`.
+preserved in `docs/cortex/handoffs/decisions.md`.
 
 **Continuity artifacts written:** `.cortex/state.json` (slug closed),
-`docs/cortex/continuity/decisions.md`,
-`docs/cortex/continuity/current-state.md`
+`docs/cortex/handoffs/decisions.md`,
+`docs/cortex/handoffs/current-state.md`
 
 ---
 

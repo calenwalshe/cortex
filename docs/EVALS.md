@@ -1,12 +1,13 @@
 # Evals
 
-> **Status:** Architectural specification for the eval subsystem — a Phase 5 deliverable. This document defines what first-class evals look like so Phase 5 has a documented target.
+This document describes the shipped eval lifecycle used by Cortex commands and artifacts.
 
 ---
 
 ## Why Evals Are First-Class
 
 Every active contract must reference an eval plan. Evals are not a post-delivery nicety — they are the gate between `assure` and `done`. The contract lifecycle does not advance to `done` without a passing eval record. A spec without an eval plan is incomplete; it makes the definition of done ambiguous and unmeasurable.
+Runtime eval artifacts belong in the target project repo; this framework repo may still contain `.cortex/` and `.planning/` for dogfooding and development.
 
 Silent failures are not allowed. A failed eval must produce a repair recommendation or open a repair contract. The system never advances past a failing eval by ignoring it. If an eval fails and no repair path is defined, the contract stalls at `validate` until one is written.
 
@@ -28,7 +29,7 @@ After human approval (or immediately if no approval gate applies), `eval-plan.md
 
 ### 4. Execution
 
-Evals run against the contract's deliverables. Execution is triggered by the `cortex-validator-trigger` hook (Phase 4 deliverable) or manually. Each eval dimension listed in the eval plan is checked independently.
+Evals run against the contract's deliverables. Execution is triggered by the `cortex-validator-trigger` hook or manually. Each eval dimension listed in the eval plan is checked independently.
 
 ### 5. Results
 
@@ -81,7 +82,7 @@ When an eval fails: a repair recommendation is written to `docs/cortex/` in the 
 |-----------|--------------|
 | Eval proposal | `/cortex-research --phase evals` |
 | Eval plan | Written by eval-designer after human approves the proposal |
-| Eval execution | Triggered by `cortex-validator-trigger` hook (Phase 4) or run manually |
+| Eval execution | Triggered by `cortex-validator-trigger` hook or run manually |
 
 ---
 

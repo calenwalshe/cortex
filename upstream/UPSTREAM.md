@@ -2,6 +2,7 @@
 
 Cortex extracts and harmonizes components from three upstream frameworks.
 This file tracks what version each upstream is at and what we extracted.
+Runtime artifacts belong in the target project repo where Cortex is installed; this framework repo may still include `.cortex/` and `.planning/` for dogfooding and development.
 
 ## Tracking
 
@@ -34,7 +35,14 @@ bin/sync-upstream.sh
 | Systematic debugging | skills/systematic-debugging/ | layers/discipline/debugging.md |
 | Code review standards | skills/receiving-code-review/ | layers/discipline/code-review.md |
 | Design-first gate | skills/brainstorming/ | layers/discipline/design-first.md |
-| Code reviewer agent | agents/code-reviewer.md | agents/code-reviewer.md |
+| Reviewer patterns (adapted) | agents/code-reviewer.md | `.claude/agents/cortex-critic.md` |
+
+### Cortex Agent Layout (current)
+Installed agent definitions live at:
+- `.claude/agents/cortex-specifier.md`
+- `.claude/agents/cortex-critic.md`
+- `.claude/agents/cortex-scribe.md`
+- `.claude/agents/cortex-eval-designer.md`
 
 ### From GStack (Layer 3: Thinking)
 | Extract | Source File | Cortex Location |

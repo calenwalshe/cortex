@@ -23,10 +23,11 @@ Cortex continuity operates on three layers:
 All commands write artifacts to two roots in the target project repo:
 - `docs/cortex/` — human-readable artifacts (clarify briefs, research dossiers, specs, contracts, reviews, audits, investigations, evals, handoffs)
 - `.cortex/` — machine state (state.json, compaction snapshots)
+The framework repo may still include `.cortex/` and `.planning/` for dogfooding and development, but runtime artifacts belong to the target project repo.
 
 These are written on every command invocation. No configuration needed. Always-on.
 
-### Layer 2: Session Hooks (Phase 4)
+### Layer 2: Session Hooks
 
 Four hooks provide automated continuity lifecycle management:
 
@@ -37,7 +38,7 @@ Four hooks provide automated continuity lifecycle management:
 | `cortex-postcompact` | After `/compact` | Writes compact summary to `last-compact-summary.md`, refreshes `next-prompt.md` |
 | `cortex-session-end` | `/clear`, exit, or resume transition | Writes final continuity state |
 
-**Session hooks are Phase 4 deliverables — they are not yet active.** In the current state, `/cortex-status` must be run manually after resuming a session to restore context.
+Hook scripts are installed and wired via `.claude/settings.json`; Cortex currently ships **11 hook scripts** and wires them across **9 global Claude Code events**.
 
 ### Layer 3: Machine State
 
@@ -98,7 +99,7 @@ The next step is [next action]. The active contract is at [active_contract_path]
 Run /cortex-status to see the full current state.
 ```
 
-`next-prompt.md` is refreshed by `/cortex-status` and by the `cortex-postcompact` hook (Phase 4).
+`next-prompt.md` is refreshed by `/cortex-status` and by the `cortex-postcompact` hook.
 
 ---
 
@@ -131,7 +132,7 @@ Run /cortex-status to see the full current state.
 ```
 
 **Key fields:**
-- `mode` — matches the `mode` field in `current-state.md`; drives phase-guard behavior (Phase 4)
+- `mode` — matches the `mode` field in `current-state.md`; drives phase-guard behavior
 - `approvals` — tracks whether the contract and eval plan have received human approval
 - `gates` — boolean flags for phase transition prerequisites; a gate must be `true` before the system advances
 
@@ -153,8 +154,6 @@ No other steps are required. Chat history is not needed.
 ---
 
 ## Compaction Flow
-
-The following describes Phase 4 behavior. These hooks are not yet active.
 
 When `/compact` runs:
 
@@ -186,7 +185,7 @@ After each iteration of the repair loop, continuity artifacts are updated (requi
 
 ---
 
-## Contract Loop Enforcement (Phase 4)
+## Contract Loop Enforcement
 
 The contract loop requirements (LOOP-01 through LOOP-04) are now enforced
 by a combination of hooks and skill-layer protocols. This section documents

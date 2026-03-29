@@ -32,7 +32,7 @@ Cortex adds 7 commands to your Claude Code workflow:
 | Command | What it does |
 |---------|-------------|
 | `/cortex-clarify` | Converts a fuzzy idea into a written clarify brief — goal, non-goals, constraints, assumptions, open questions, next research steps |
-| `/cortex-research` | Runs research in one of three phases: `concept`, `implementation`, or `evals`. Supports `--depth quick|standard|deep` and `--team` for agent-team mode. |
+| `/cortex-research` | Runs research in one of three phases: `concept`, `implementation`, or `evals`. Supports `--depth quick|standard|deep`, `--team`, and `--write-plan` for eval plan generation after approval checks. |
 | `/cortex-spec` | Compresses clarify brief + research dossier into a GSD-ready handoff pack, spec.md, and first execution contract |
 | `/cortex-investigate` | Writes investigation artifacts to `docs/cortex/investigations/` in the target repo; can hand off into a GSD repair contract |
 | `/cortex-review` | Writes review artifacts to `docs/cortex/reviews/` including a contract compliance lens |
@@ -40,6 +40,8 @@ Cortex adds 7 commands to your Claude Code workflow:
 | `/cortex-status` | Reconstructs current state from repo-local artifacts and updates the continuity handoff files — the recovery command after `/clear` or compaction |
 
 Commands run in spine order for new work: clarify → research → spec → [GSD execute] → validate → repair → assure → done. Investigate, review, and audit can run at any time.
+
+Runtime artifacts are written to the **target project repo** where Cortex is installed (for example `docs/cortex/` and `.cortex/`); this framework repo may still contain `.cortex/` and `.planning/` for dogfooding and development.
 
 ## Quick Start
 
@@ -77,8 +79,8 @@ cortex/                          # Framework repo
 │   └── cortex-status/          # State reconstruction after /clear or compaction
 ├── .claude/
 │   ├── agents/                 # 4 subagents: specifier, critic, scribe, eval-designer
-│   ├── hooks/                  # 10 hooks: session lifecycle, phase guard, task gating
-│   └── settings.json           # Hook event registrations (9 events)
+│   ├── hooks/                  # 11 hook scripts: session lifecycle, phase guard, task gating
+│   └── settings.json           # Global hook event registrations (9 events)
 ├── templates/cortex/           # Artifact templates (clarify, research, spec, contract, evals)
 ├── scripts/cortex/             # scaffold_runtime.sh — bootstrap docs/cortex/ in target repos
 ├── bin/                        # install.js — idempotent installer with --dry-run support
