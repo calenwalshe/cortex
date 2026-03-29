@@ -9,7 +9,7 @@ When the user types `/cortex-audit`, run this skill.
 Also trigger when: "security audit", "threat model", "OWASP check", "security review".
 
 ## Arguments
-- `/cortex-audit` — full daily audit (8/10 confidence gate)
+- `/cortex-audit [<target>]` — scope to audit; defaults to current active contract write roots
 - `/cortex-audit --comprehensive` — monthly deep scan (2/10 bar, more findings)
 - `/cortex-audit --diff` — only check branch changes vs base
 - `/cortex-audit --quick` — infrastructure + secrets only (fastest)
@@ -24,6 +24,15 @@ You are a Chief Security Officer who has led incident response on real breaches.
 Produce a Security Posture Report with findings, severity, and remediation plans. Fixing is a separate task.
 
 ## Instructions
+
+### Phase -1: Resolve Slug
+
+Before beginning the audit:
+
+1. Read `.cortex/state.json` to get the active slug.
+2. If `slug` is set (non-null): use it as the output directory slug.
+3. If `slug` is null AND `<target>` argument is provided: derive slug from `<target>` using the standard slugification rule (lowercase, replace spaces and non-alphanumeric characters with hyphens, collapse consecutive hyphens, strip leading/trailing hyphens).
+4. If `slug` is null AND no argument was provided: proceed with slug as `"unknown"` (audit can still run; artifact path will use `"unknown"` as slug).
 
 ### Phase 0: Stack Detection + Architecture Model
 
@@ -148,6 +157,44 @@ RECOMMENDED ACTIONS (priority order)
 2. [action]
 3. [action]
 ════════════════════════════════════════════════
+```
+
+## Store Results
+
+Output is always a repo-local artifact. Chat-only audit responses do not count.
+
+After the SECURITY POSTURE REPORT is produced:
+
+**Verify all 7 required lenses are covered.** For any lens with no findings, add an explicit note in the report: "No issues found under [lens name]" — silence on a lens is not acceptable.
+
+The 7 required lenses to verify:
+1. **Authentication** — findings from Phase 4 OWASP: Broken Access Control + Auth Failures
+2. **Data handling** — findings from Phase 4 OWASP: Cryptographic Failures + Data Integrity
+3. **Secrets exposure** — findings from Phase 2: Secrets Archaeology
+4. **Unsafe tool usage** — findings from Phase 4 OWASP: Insecure Design (e.g. shell exec, eval, unsafe deserialization)
+5. **Input validation** — findings from Phase 4 OWASP: Injection
+6. **Dependency risks** — findings from Phase 3: Supply Chain
+7. **Misuse vectors** — findings from Phase 5: STRIDE threat model
+
+Once all 7 lenses are documented:
+
+1. **Generate timestamp:** `YYYYMMDDTHHMMSSZ` (compact ISO UTC, e.g. `20260328T143012Z`)
+2. **Slug:** use the resolved slug from Phase -1
+3. **Target path:** `docs/cortex/audits/{slug}/{timestamp}.md`
+4. **Create directory:** `mkdir -p docs/cortex/audits/{slug}/`
+5. **Write** the full SECURITY POSTURE REPORT block (with all 7 lenses documented) to the file.
+
+**Update `docs/cortex/handoffs/current-state.md`:**
+- `recent_artifacts`: append `docs/cortex/audits/{slug}/{timestamp}.md`
+- `blockers`: set if any CRITICAL findings were discovered
+- `next_action`: reflect highest-severity findings or "Audit complete — no critical findings"
+
+**Update `.cortex/state.json`:**
+- Append audit artifact path to the `artifacts` array.
+
+**Output confirmation line:**
+```
+Audit artifact written: docs/cortex/audits/{slug}/{timestamp}.md
 ```
 
 ## Confidence Gate
