@@ -1,39 +1,50 @@
 # Cortex Research — Deep Multi-Source, Multi-LLM Research
 
-Systematic research pipeline using Tavily (search), Jina Reader (extraction), Firecrawl (crawling), Crawl4AI (site crawling), Perplexity (deep research), Gemini (cross-reference), and OpenAI (gpt-researcher backend). Produces structured intelligence briefs stored in ~/research/.
+Systematic research pipeline using Tavily (search), Jina Reader (extraction), Firecrawl (crawling), Crawl4AI (site crawling), Perplexity (deep research), Gemini (cross-reference), and OpenAI (gpt-researcher backend). Produces structured dossiers written to the target project repo under `docs/cortex/`.
 
 ## User-invocable
 When the user types `/cortex-research`, run this skill.
 Also trigger when: "research this", "deep dive on", "investigate topic", "what do we know about", "intelligence brief on".
 
 ## Arguments
-- `/cortex-research <topic>` — full multi-source research
-- `/cortex-research <topic> --quick` — Perplexity single-shot only
-- `/cortex-research <topic> --deep` — autonomous gpt-researcher run
-- `/cortex-research <URL>` — extract and analyze a specific source
-- `/cortex-research <youtube-url>` — extract transcript via Gemini
+- `/cortex-research [<topic>] [--phase concept|implementation|evals] [--depth quick|standard|deep] [--team]`
+
+| Argument / Flag | Required | Description | Default |
+|-----------------|----------|-------------|---------|
+| `<topic>` | Optional | Focus topic for this research pass | Current slug's clarify brief |
+| `--phase` | Optional | Research phase: `concept`, `implementation`, or `evals` | `concept` |
+| `--depth` | Optional | Research depth: `quick`, `standard`, or `deep` | `standard` |
+| `--team` | Optional flag | Invokes agent team for research (opt-in, adds cost) | Off |
 
 ## Instructions
 
-### 1. Determine Research Depth
+### Phase 0: Resolve slug and input context
+
+1. Read `.cortex/state.json` to get the active slug.
+2. Read `docs/cortex/clarify/{slug}/` to find the clarify brief.
+   - **If no clarify brief exists for the active slug:** block with:
+     > No clarify brief found for active slug. Run `/cortex-clarify` first.
+3. If `<topic>` argument is provided, use it as the research focus for this pass.
+   If no `<topic>` is provided, use the clarify brief's Open Questions and Next Research Steps as the research agenda.
+
+### Phase 1: Determine Research Depth
 
 | Depth | When | Tools | Time |
 |-------|------|-------|------|
 | Quick | Simple factual question | Perplexity sonar | ~30s |
-| Standard | Most research tasks | Tavily + Jina + Claude synthesis | ~2-5 min |
+| Standard | Most research tasks | Tavily + Jina + Gemini synthesis | ~2-5 min |
 | Deep | Complex investigation | gpt-researcher + all sources | ~5-15 min |
 | YouTube | Video content needed | Gemini multimodal | ~1 min |
 
-### 2. Execute Research
+### Phase 2: Execute Research
 
-#### Quick Path (--quick or simple question)
+#### Quick Path (`--depth quick` or simple question)
 ```bash
 curl -s https://api.perplexity.ai/chat/completions \
   -H "Authorization: Bearer $PPLX_API_KEY" \
   -H "Content-Type: application/json" \
   -d "{\"model\":\"sonar-pro\",\"messages\":[{\"role\":\"user\",\"content\":\"$QUERY\"}],\"max_tokens\":2000}"
 ```
-Save response to `~/research/processed/briefs/<topic-slug>.md`
 
 #### Standard Path (default)
 
@@ -65,9 +76,9 @@ curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flas
   -d "{\"contents\":[{\"parts\":[{\"text\":\"Cross-reference and fact-check these research findings: $FINDINGS\"}]}]}"
 ```
 
-**Step 5: Synthesize into brief**
+**Step 5: Synthesize into dossier**
 
-#### Deep Path (--deep)
+#### Deep Path (`--depth deep`)
 ```python
 from gpt_researcher import GPTResearcher
 import asyncio
@@ -79,7 +90,7 @@ async def research():
 
 report = asyncio.run(research())
 ```
-Uses OpenAI API + Tavily automatically. Save to `~/research/processed/briefs/`.
+Uses OpenAI API + Tavily automatically.
 
 #### YouTube Path (YouTube URL detected)
 ```python
@@ -93,12 +104,11 @@ response = model.generate_content([
     f"Provide a detailed transcript and summary of this video: {url}"
 ])
 ```
-Save to `~/research/intake/youtube/<date>_<title>.md`
 
 #### URL Path (non-YouTube URL detected)
 ```bash
 # Extract with Jina Reader
-curl -s "https://r.jina.ai/$URL" -H "Accept: text/markdown" > ~/research/intake/web/<slug>.md
+curl -s "https://r.jina.ai/$URL" -H "Accept: text/markdown"
 ```
 
 For full site crawling:
@@ -114,60 +124,69 @@ async def crawl():
 content = asyncio.run(crawl())
 ```
 
-### 3. Store Results
+### Phase 3: Store Results
 
-All research outputs go to `~/research/`:
+Output routing depends on `--phase`:
 
-| Type | Location |
-|------|----------|
-| YouTube transcripts | `~/research/intake/youtube/` |
-| Web page extracts | `~/research/intake/web/` |
-| Search results (raw) | `~/research/intake/web/` |
-| Intelligence briefs | `~/research/processed/briefs/` |
-| Cross-source comparisons | `~/research/processed/comparisons/` |
-| Key extracts | `~/research/processed/extracts/` |
+#### If `--phase concept` or `--phase implementation` (default)
 
-### 4. Output Format — Intelligence Brief
-
-```markdown
-# Intelligence Brief: [Topic]
-
-**Generated:** [date]
-**Sources:** [N] ([tool breakdown])
-**Depth:** [quick/standard/deep]
-**Confidence:** [High/Medium/Low]
-
----
-
-## Executive Summary
-[2-3 sentence overview]
-
-## Key Findings
-1. [Finding with source attribution]
-2. [Finding with source attribution]
-3. [Finding with source attribution]
-
-## Cross-Reference Notes
-[Where sources agree/disagree. Gemini's second-opinion if used.]
-
-## Sources
-1. [Title — URL]
-2. [Title — URL]
-
----
-*Generated by Cortex Research — [tools used]*
-*Stored at: ~/research/processed/briefs/[filename]*
+Write dossier to:
+```
+docs/cortex/research/{slug}/{phase}-{timestamp}.md
 ```
 
-### 5. Query Existing Research
+Steps:
+1. Derive timestamp: current UTC time as `YYYYMMDDTHHMMSSZ` (compact, filesystem-safe)
+2. Create directory if it does not exist:
+   ```bash
+   mkdir -p docs/cortex/research/{slug}/
+   ```
+3. Read `templates/cortex/research-dossier.md`
+4. Populate all fields (SLUG, PHASE, TIMESTAMP, DEPTH, SUMMARY, FINDINGS, TRADE_OFFS, RECOMMENDATIONS, OPEN_QUESTIONS, SOURCES)
+5. Write to target path
 
-When asked "what do we know about X":
-```bash
-# Search existing research
-grep -rl "keyword" ~/research/ 2>/dev/null
+#### If `--phase evals`
+
+Write eval proposal to:
 ```
-Read and synthesize from existing files before doing new research.
-Only run new searches if existing research doesn't cover the question.
+docs/cortex/evals/{slug}/eval-proposal.md
+```
+
+Steps:
+1. Create directory if it does not exist:
+   ```bash
+   mkdir -p docs/cortex/evals/{slug}/
+   ```
+2. Read `templates/cortex/eval-proposal.md` (NOT the research dossier template)
+3. Populate all fields
+4. Write to target path
+
+### Phase 4: Update continuity state
+
+**Update `docs/cortex/handoffs/current-state.md`:**
+
+| Field | Value |
+|-------|-------|
+| `mode` | `research` |
+| `recent_artifacts` | Append the artifact path just written |
+| `next_action` | If `--phase concept`: `Run /cortex-research --phase implementation for implementation research, or /cortex-spec when all needed research is complete`. If `--phase evals`: `Human must approve eval proposal before /cortex-spec writes eval-plan.md` |
+
+**Update `.cortex/state.json`:**
+
+| Field | Value |
+|-------|-------|
+| `mode` | `research` |
+| `artifacts` | Append artifact path just written |
+| `gates.research_complete` | `true` (flip when at least one dossier exists) |
+
+## Rules
+
+- Reads the clarify brief as primary input context. Clarify brief must exist.
+- Each `--phase` produces a separate artifact — phases are not combined in a single output.
+- `--phase evals` produces an eval proposal (`eval-proposal.md`), not a research dossier.
+- Each phase must be explicitly requested by the human — the system does not auto-advance to the next phase.
+- `--team` is opt-in only. Agent team mode is never default behavior.
+- Output is always a repo-local artifact. Chat-only responses do not count.
 
 ## Available APIs
 
