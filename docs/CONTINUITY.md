@@ -184,6 +184,86 @@ After each iteration of the repair loop, continuity artifacts are updated (requi
 
 ---
 
+---
+
+## Contract Loop Enforcement (Phase 4)
+
+The contract loop requirements (LOOP-01 through LOOP-04) are now enforced
+by a combination of hooks and skill-layer protocols. This section documents
+how each requirement is implemented.
+
+### LOOP-01: No task closes without validators passing
+
+**Mechanism:** `cortex-task-completed.sh` (TaskCompleted hook)
+
+When a task is marked complete, the TaskCompleted hook fires and:
+1. Reads the active contract path from `.cortex/state.json`
+2. Checks `docs/cortex/handoffs/eval-status.md` for any `FAIL` entries
+3. If failing validators exist, blocks completion with `continue: false`
+   and lists which validators are failing
+
+The hook is intentionally lightweight — it reads files, it does not re-run
+validators. The validator runner is invoked separately during the validate phase.
+
+### LOOP-02: Validation failure produces repair recommendation or repair contract
+
+**Mechanism:** Skill-layer behavior (not a hook)
+
+When `/cortex-review` or `/cortex-investigate` detects a failing validator:
+- The skill protocol includes a repair recommendation step
+- If the repair is complex, the skill writes a repair contract to
+  `docs/cortex/contracts/<slug>/contract-NNN.md`
+- The skill updates `.cortex/state.json` to `mode: repair`
+- `current-state.md` is updated with the repair action as `next_action`
+
+Hooks enforce the loop entry condition (LOOP-01). Skills handle the loop body
+(LOOP-02). This split is intentional — hooks are fast file-readers, not
+intelligent decision-makers.
+
+### LOOP-03: Continuity artifacts updated after each iteration
+
+**Mechanism:** `cortex-validator-trigger.sh` (PostToolUse hook) + skills
+
+The `cortex-validator-trigger.sh` hook fires after every Write|Edit during
+execute/repair mode and appends the written file path to `.cortex/dirty-files.json`.
+Separately, every skill that changes phase state (cortex-status, cortex-review,
+cortex-investigate) writes updated state to `current-state.md`.
+
+Together these ensure that after each repair loop iteration:
+- `dirty-files.json` reflects what changed
+- `current-state.md` reflects the current mode and next action
+- `eval-status.md` is updated by the skill after running validators
+
+### LOOP-04: State machine transitions
+
+**Mechanism:** `.cortex/state.json` mode field + `cortex-phase-guard.sh`
+
+The state machine is the `mode` field in `.cortex/state.json`. The full
+transition sequence is:
+
+```
+clarify
+  → (clarify_complete: true)
+research
+  → (research_complete: true)
+spec
+  → (contract_approved: true)
+execute
+  → validate
+    → [pass] assure → done
+    → [fail] repair → validate (repeat)
+```
+
+Phase transitions are performed by skills writing to `state.json`. The
+`cortex-phase-guard.sh` hook enforces write restrictions associated with
+pre-execution states (clarify/research/spec), ensuring product code cannot
+be written before a contract is approved.
+
+No dedicated "state transition" hook is needed — transitions are natural
+consequences of skill protocol steps that update `state.json`.
+
+---
+
 ## Summary: Which File Answers Which Question
 
 | Question | File |
