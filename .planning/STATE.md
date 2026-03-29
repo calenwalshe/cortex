@@ -21,7 +21,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-29)
 
 **Core value:** A stateless executor can read a Cortex handoff pack and start implementation without guessing architecture or definition of done.
-**Current focus:** Phase 1 — Core Docs and Architecture Alignment
+**Current focus:** Phase 5 — Eval Subsystem
 
 ## Current Position
 
@@ -30,7 +30,7 @@ Plan: 1 of 2 in current phase — 05-01 complete, ready for 05-02
 Status: In progress
 Last activity: 2026-03-29 — Plan 05-01 complete (cortex-research eval dimension enumeration + Phase 3b approval gate)
 
-Progress: [██████████] 100%
+Progress: [████████░░] 71%
 
 ## Performance Metrics
 
@@ -63,7 +63,7 @@ Progress: [██████████] 100%
 | Phase 04-subagents-and-hooks P04-01 | 26min | 3 tasks | 5 files |
 | Phase 04-subagents-and-hooks P03 | 5min | 3 tasks | 6 files |
 | Phase 04-subagents-and-hooks P04 | 4min | 2 tasks | 3 files |
-| Phase 05-eval-subsystem P02 | 1min | 2 tasks | 2 files |
+| Phase 05-eval-subsystem P01 | 2min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -113,9 +113,9 @@ Recent decisions affecting current work:
 - [Phase 04-subagents-and-hooks P03]: phase-guard uses JSON permissionDecision deny (exit 0) not exit 2 — gives Claude an actionable reason rather than a terse failure
 - [Phase 04-subagents-and-hooks P03]: validator-trigger is async PostToolUse — records dirty files only, never runs validators inline (timeout risk)
 - [Phase 04-subagents-and-hooks P03]: teammate-idle uses exit 2 to signal continuation — keeps worker agents from silently completing
-- [Phase 05-eval-subsystem]: cortex-review Contract Compliance validates eval_plan inline (P1 BLOCK for pending/missing) — enforcement at review time, not spec time
-- [Phase 05-eval-subsystem]: Eval Failure Check placed before Store Results so repair artifacts write before final review artifact is committed
-- [Phase 05-eval-subsystem]: cortex-status Phase 3a covers all unresolved eval_plan states (pending, TBD, empty, missing file) — existing blocker placeholder surfaces it without template change
+- [Phase 05-eval-subsystem P01]: 8-dimension enumeration is mandatory and inline — agent must decide INCLUDE/EXCLUDE for each dimension in the proposal text, not defer to human
+- [Phase 05-eval-subsystem P01]: Phase 3b uses a separate --write-plan trigger, not auto-run after --phase evals — human controls when eval plan is written
+- [Phase 05-eval-subsystem P01]: UX/taste hardcodes approval_required: true; Functional correctness and Style hardcode approval_required: false — not configurable per-proposal
 
 ### Pending Todos
 
@@ -127,6 +127,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T18:00:00Z
-Stopped at: Completed 05-02-PLAN.md — eval_plan validation and repair-on-failure in cortex-review + cortex-status (Phase 5 complete)
+Last session: 2026-03-29T15:21:14Z
+Stopped at: Completed 05-01-PLAN.md — cortex-research 8-dimension enumeration and Phase 3b approval gate
 Resume file: None
