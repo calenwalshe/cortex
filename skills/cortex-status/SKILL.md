@@ -47,6 +47,11 @@ Also trigger when the user says:
 
 3. If `active_contract_path` is set in state, read the active contract and note its approval status and done criteria.
 
+3a. **Eval plan check:** If `active_contract_path` is set, read the active contract's `eval_plan:` field.
+    - If `eval_plan` value is `pending`, `TBD`, empty, or a file path that does not exist on disk:
+      Record as a blocker: `eval_plan is pending — run /cortex-research --phase evals and /cortex-research --write-plan to produce the eval plan`
+    - If `eval_plan` points to a file that exists: no blocker for this check.
+
 4. Reconcile the slug, mode, and gate states from Phases 1, 2, and 3. The artifact scan takes precedence over `current-state.md` for factual artifact existence; `state.json` takes precedence for gate values.
 
 ### Phase 4: Refresh Continuity Files
