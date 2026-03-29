@@ -79,10 +79,10 @@
 
 ### Docs
 
-- [ ] **DOCS-01**: `CORTEX.md` updated to reflect vNext architecture
-- [ ] **DOCS-02**: `docs/INTELLIGENCE_FLOW.md` — sequential spine diagram with loops
-- [ ] **DOCS-03**: `docs/COMMANDS.md` — 7-command surface with inputs, outputs, rules
-- [ ] **DOCS-04**: `docs/CONTINUITY.md` — continuity strategy and artifact schemas
+- [x] **DOCS-01**: `CORTEX.md` updated to reflect vNext architecture
+- [x] **DOCS-02**: `docs/INTELLIGENCE_FLOW.md` — sequential spine diagram with loops
+- [x] **DOCS-03**: `docs/COMMANDS.md` — 7-command surface with inputs, outputs, rules
+- [x] **DOCS-04**: `docs/CONTINUITY.md` — continuity strategy and artifact schemas
 - [ ] **DOCS-05**: `docs/EVALS.md` — eval lifecycle, matrix, and harness guide
 - [ ] **DOCS-06**: `docs/AGENTS.md` — agent roster, tools, permission modes
 - [ ] **DOCS-07**: README updated; source tree, docs, installer all agree
@@ -110,10 +110,10 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DOCS-01 | Phase 1: Core Docs and Architecture Alignment | Pending |
-| DOCS-02 | Phase 1: Core Docs and Architecture Alignment | Pending |
-| DOCS-03 | Phase 1: Core Docs and Architecture Alignment | Pending |
-| DOCS-04 | Phase 1: Core Docs and Architecture Alignment | Pending |
+| DOCS-01 | Phase 1: Core Docs and Architecture Alignment | Complete |
+| DOCS-02 | Phase 1: Core Docs and Architecture Alignment | Complete |
+| DOCS-03 | Phase 1: Core Docs and Architecture Alignment | Complete |
+| DOCS-04 | Phase 1: Core Docs and Architecture Alignment | Complete |
 | DOCS-05 | Phase 1: Core Docs and Architecture Alignment | Pending |
 | DOCS-06 | Phase 1: Core Docs and Architecture Alignment | Pending |
 | DOCS-07 | Phase 1: Core Docs and Architecture Alignment | Pending |

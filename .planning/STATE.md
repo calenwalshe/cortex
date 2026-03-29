@@ -1,3 +1,19 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: completed
+stopped_at: Completed 01-01-PLAN.md — CORTEX.md rewrite + INTELLIGENCE_FLOW.md
+last_updated: "2026-03-29T02:24:17.349Z"
+last_activity: 2026-03-29 — Plan 01-03 complete (EVALS.md, AGENTS.md, README vNext)
+progress:
+  total_phases: 6
+  completed_phases: 1
+  total_plans: 3
+  completed_plans: 3
+  percent: 100
+---
+
 # Project State
 
 ## Project Reference
@@ -10,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-29)
 ## Current Position
 
 Phase: 1 of 6 (Core Docs and Architecture Alignment)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-03-29 — Roadmap created, requirements defined
+Plan: 3 of 3 in current phase
+Status: Phase complete — ready for Phase 2
+Last activity: 2026-03-29 — Plan 01-03 complete (EVALS.md, AGENTS.md, README vNext)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -34,6 +50,8 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: n/a
 
 *Updated after each plan completion*
+| Phase 01 P02 | 2 | 2 tasks | 2 files |
+| Phase 01-core-docs-and-architecture-alignment P01 | 2 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -47,6 +65,14 @@ Recent decisions affecting current work:
 - /cortex-spec does not auto-invoke GSD import (explicit human step)
 - Agent teams opt-in via --team only
 - High-risk eval approval always requires human gate
+- cortex-critic is strictly read-only — produces critique inline only, never writes files
+- UX/taste eval dimension always requires human approval gate (hardcoded, not conditional)
+- README Quick Start defers installer details to Phase 6 (npx promise removed)
+- All eval artifacts live in target project repo, not cortex framework repo
+- [Phase 01-core-docs-and-architecture-alignment]: 4-layer architecture: Workflow (GSD), Intelligence (Cortex), Discipline (Superpowers), Thinking (GStack)
+- [Phase 01-core-docs-and-architecture-alignment]: Repair loop re-enters validate, never clarify — bounded convergence model
+- [Phase 01]: Human-readable continuity files placed under docs/cortex/handoffs/ (resolves ambiguity from research)
+- [Phase 01]: COMMANDS.md documents vNext interface explicitly noting SKILL.md legacy divergence — intentional until Phase 3
 
 ### Pending Todos
 
@@ -58,6 +84,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29
-Stopped at: Roadmap created — ready to plan Phase 1
+Last session: 2026-03-29T02:24:12.167Z
+Stopped at: Completed 01-01-PLAN.md — CORTEX.md rewrite + INTELLIGENCE_FLOW.md
 Resume file: None
