@@ -61,10 +61,11 @@ for seed_file in "${SEED_FILES[@]}"; do
   src="$TEMPLATES_DIR/$seed_file"
   dst="$HANDOFFS_DIR/$seed_file"
   if [[ -f "$src" ]]; then
-    if cp -n "$src" "$dst" 2>/dev/null; then
-      echo "  created:  docs/cortex/handoffs/$seed_file"
-    else
+    if [[ -f "$dst" ]]; then
       echo "  skipped:  docs/cortex/handoffs/$seed_file (already exists)"
+    else
+      cp "$src" "$dst"
+      echo "  created:  docs/cortex/handoffs/$seed_file"
     fi
   else
     echo "  warning:  template not found: $src" >&2
