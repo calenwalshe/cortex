@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 04-01-PLAN.md — cortex-specifier, cortex-critic, cortex-scribe, cortex-eval-designer agents and write-guard hook
-last_updated: "2026-03-29T05:33:37.517Z"
+stopped_at: Completed 04-03-PLAN.md — five enforcement hooks and settings.json hook registrations
+last_updated: "2026-03-29T15:00:24Z"
 last_activity: 2026-03-29 — Plan 01-03 complete (EVALS.md, AGENTS.md, README vNext)
 progress:
   total_phases: 6
@@ -61,6 +61,7 @@ Progress: [██████████] 100%
 | Phase 03-new-and-updated-skills P03 | 18min | 3 tasks | 3 files |
 | Phase 04-subagents-and-hooks P02 | 5min | 3 tasks | 5 files |
 | Phase 04-subagents-and-hooks P04-01 | 26min | 3 tasks | 5 files |
+| Phase 04-subagents-and-hooks P03 | 5min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -107,6 +108,9 @@ Recent decisions affecting current work:
 - [Phase 04-subagents-and-hooks]: Agent files live at .claude/agents/ (project-scope, checked into repo); Phase 6 installer symlinks to ~/.claude/agents/ for global use
 - [Phase 04-subagents-and-hooks]: Write restriction requires both tools allowlist (tool type) AND PreToolUse hook (path enforcement) — allowlist alone is insufficient
 - [Phase 04-subagents-and-hooks]: Single shared cortex-write-guard.sh dispatches by agent_name — avoids duplicating enforcement logic per agent
+- [Phase 04-subagents-and-hooks P03]: phase-guard uses JSON permissionDecision deny (exit 0) not exit 2 — gives Claude an actionable reason rather than a terse failure
+- [Phase 04-subagents-and-hooks P03]: validator-trigger is async PostToolUse — records dirty files only, never runs validators inline (timeout risk)
+- [Phase 04-subagents-and-hooks P03]: teammate-idle uses exit 2 to signal continuation — keeps worker agents from silently completing
 
 ### Pending Todos
 
@@ -118,6 +122,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T05:33:37.512Z
-Stopped at: Completed 04-01-PLAN.md — cortex-specifier, cortex-critic, cortex-scribe, cortex-eval-designer agents and write-guard hook
+Last session: 2026-03-29T15:00:24Z
+Stopped at: Completed 04-03-PLAN.md — five enforcement hooks and settings.json hook registrations
 Resume file: None
