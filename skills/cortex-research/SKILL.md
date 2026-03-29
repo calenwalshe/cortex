@@ -158,6 +158,22 @@ Steps:
    mkdir -p docs/cortex/evals/{slug}/
    ```
 2. Read `templates/cortex/eval-proposal.md` (NOT the research dossier template)
+
+**Step 2.5: Enumerate all 8 eval dimensions for `{PROPOSED_DIMENSIONS}`**
+
+For each dimension below, decide INCLUDE or EXCLUDE. Write the decision inline in the proposal — do not skip any dimension.
+
+1. **Functional correctness** — Always include. `approval_required: false` (outcome is mechanically verifiable).
+2. **Regression** — Include if any existing code, data schema, or documented behavior is modified.
+3. **Integration** — Include if multiple components, services, or external APIs interact.
+4. **Safety/security** — Include for auth, data handling, input validation, secrets management, or privilege escalation paths.
+5. **Performance** — Include if the contract specifies latency, throughput, or resource usage thresholds.
+6. **Resilience** — Include for networked systems, external dependencies, retries, or failure recovery paths.
+7. **Style** — Include for all code and documentation deliverables. `approval_required: false`.
+8. **UX/taste** — Include for any user-facing output or generated content. ALWAYS sets `approval_required: true`.
+
+After evaluating all 8: set document-level `approval_required: true` if ANY dimension has `approval_required: true`. Set `Approval Status: pending`.
+
 3. Populate all fields
 4. Write to target path
 
