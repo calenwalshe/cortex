@@ -43,7 +43,13 @@ Plans:
   3. All 8 continuity files (`current-state.md`, `open-questions.md`, `next-prompt.md`, `decisions.md`, `eval-status.md`, `last-compact-summary.md`, and supporting files) have documented schemas with field definitions
   4. Template files exist for each artifact type (clarify brief, research dossier, spec, GSD handoff, contract, eval proposal, eval plan)
 **Research**: Unlikely (schema design only)
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Create docs/cortex/ subdirectory READMEs (9 dirs: clarify, research, specs, contracts, evals, investigations, reviews, audits, handoffs)
+- [ ] 02-02-PLAN.md — Create templates/cortex/ artifact templates (7 files: clarify-brief, research-dossier, spec, gsd-handoff, contract, eval-proposal, eval-plan)
+- [ ] 02-03-PLAN.md — Create templates/cortex/ continuity templates + seed docs/cortex/handoffs/ + .cortex/ state files (ART-08, CONT-04)
+- [ ] 02-04-PLAN.md — Write scripts/cortex/scaffold_runtime.sh (idempotent bootstrap script)
 
 ### Phase 3: New and Updated Skills
 **Goal**: All 7 `/cortex-*` commands are installed, callable, and produce the correct artifacts when invoked
@@ -102,7 +108,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Core Docs and Architecture Alignment | 3/3 | Complete    | 2026-03-29 |
-| 2. Artifact Scaffolding and Templates | 0/TBD | Not started | - |
+| 2. Artifact Scaffolding and Templates | 0/4 | Not started | - |
 | 3. New and Updated Skills | 0/TBD | Not started | - |
 | 4. Subagents and Hooks | 0/TBD | Not started | - |
 | 5. Eval Subsystem | 0/TBD | Not started | - |
