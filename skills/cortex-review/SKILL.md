@@ -146,6 +146,22 @@ For each validator in the contract, note whether it would pass based on review f
 [PASS|FAIL] <validator> — <finding note>
 ```
 
+**Eval Plan Validation:**
+
+Read `eval_plan:` field from the active contract.
+- If value is `pending`, `TBD`, or empty → add to review issues:
+  ```
+  [BLOCK] contract eval_plan — eval_plan field is "pending". The eval proposal must be produced
+  and approved (run /cortex-research --phase evals, then /cortex-research --write-plan) before
+  this contract can advance to assure. This is a P1 gap.
+  ```
+- If value is a file path: check whether that file exists on disk.
+  If file does not exist → add:
+  ```
+  [BLOCK] contract eval_plan — eval_plan path {path} does not exist on disk. P1 gap.
+  ```
+- If file exists → no issue; note `[PASS] eval_plan — {path} exists`.
+
 State an overall compliance verdict:
 ```
 CONTRACT COMPLIANCE: COMPLIANT | NON-COMPLIANT | PARTIALLY COMPLIANT
@@ -163,6 +179,75 @@ If the author disagrees with a finding:
 - If you were wrong: "Checked [X], you're correct. Withdrawing."
 - If you're right: restate with technical evidence, reference tests/code
 - Don't double down without evidence. Don't cave without evidence.
+
+### Eval Failure Check
+
+Run this check when an active contract is loaded and its `eval_plan` field points to an existing file.
+
+1. Read `docs/cortex/evals/{slug}/eval-plan.md`
+2. Scan the `## Results` section for failed checkboxes: lines matching `- [ ]` (unchecked) that appear after the results header indicate incomplete or failed items.
+3. Also look for explicit failure markers: lines containing `FAIL`, `failed`, or `❌`.
+
+**If failures found:**
+
+  a. Generate timestamp: `YYYYMMDDTHHMMSSZ`
+  b. Write repair recommendation to `docs/cortex/evals/{slug}/repair-rec-{timestamp}.md` with this structure:
+
+     ```markdown
+     # Eval Repair Recommendation: {slug}
+
+     **Timestamp:** {timestamp}
+     **Contract:** {active_contract_path}
+     **Failing Dimensions:** {comma-separated list of failing dimensions}
+
+     ## Failure Summary
+
+     | Dimension | Failure Description | Severity |
+     |-----------|---------------------|----------|
+     | {dim}     | {what failed}       | P0/P1/P2 |
+
+     ## Repair Recommendation
+
+     {For each failing dimension: specific repair action and whether it can be resolved in-contract or requires a new contract}
+
+     ## Repair Contract
+
+     {If any P0 failure: path to repair contract written below, or "See contract-NNN.md"}
+     {If all P1/P2: "In-contract repair — no new contract needed"}
+     ```
+
+  c. Update `docs/cortex/handoffs/current-state.md`:
+     - `blockers`: append the repair recommendation path
+     - `next_action`: `Eval failures found. Review repair recommendation at docs/cortex/evals/{slug}/repair-rec-{timestamp}.md`
+
+  d. **P0 failures only:** If any failing dimension has severity P0 (safety/security or functional correctness with complete failure):
+     - Scan `docs/cortex/contracts/{slug}/` for the highest existing contract number (pattern: `contract-NNN.md`)
+     - Write a new repair contract to `docs/cortex/contracts/{slug}/contract-{NNN+1}.md` using the contract template
+     - Set contract title to `Repair: {slug} — {failing dimension(s)}`
+     - Set contract `type: repair`
+     - Update `.cortex/state.json`: `mode` → `repair`
+
+  e. Append to the review artifact (the CODE REVIEW block):
+     ```
+     EVAL FAILURE REPAIR
+     ────────────────────────────────────────────────
+     Failing dimensions: {list}
+     Repair recommendation: docs/cortex/evals/{slug}/repair-rec-{timestamp}.md
+     {If P0: Repair contract: docs/cortex/contracts/{slug}/contract-{NNN+1}.md}
+     ```
+
+**If no failures found (all checkboxes checked or Results section is empty):**
+
+  Update `docs/cortex/handoffs/eval-status.md` (create if it does not exist):
+  - Record passing dimensions and timestamp
+  - No repair recommendation written
+
+  Append to the review artifact:
+  ```
+  EVAL STATUS
+  ────────────────────────────────────────────────
+  All checked dimensions: PASS
+  ```
 
 ## Store Results
 
