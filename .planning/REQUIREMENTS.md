@@ -17,13 +17,13 @@
 
 ### Artifacts
 
-- [ ] **ART-01**: Clarify brief written to `docs/cortex/clarify/<slug>/<timestamp>-clarify-brief.md`
-- [ ] **ART-02**: Research dossier written to `docs/cortex/research/<slug>/<phase>-<timestamp>.md`
-- [ ] **ART-03**: Spec written to `docs/cortex/specs/<slug>/spec.md` with required schema (problem, scope, arch decision, interfaces, deps, risks, sequencing, tasks, acceptance criteria)
-- [ ] **ART-04**: GSD handoff written to `docs/cortex/specs/<slug>/gsd-handoff.md`
-- [ ] **ART-05**: Contract written to `docs/cortex/contracts/<slug>/contract-001.md` with required schema (id, slug, phase, objective, deliverables, scope, write roots, done criteria, validators, approvals, rollback hints)
-- [ ] **ART-06**: Eval proposal written to `docs/cortex/evals/<slug>/eval-proposal.md`
-- [ ] **ART-07**: Eval plan written to `docs/cortex/evals/<slug>/eval-plan.md` after human approval
+- [x] **ART-01**: Clarify brief written to `docs/cortex/clarify/<slug>/<timestamp>-clarify-brief.md`
+- [x] **ART-02**: Research dossier written to `docs/cortex/research/<slug>/<phase>-<timestamp>.md`
+- [x] **ART-03**: Spec written to `docs/cortex/specs/<slug>/spec.md` with required schema (problem, scope, arch decision, interfaces, deps, risks, sequencing, tasks, acceptance criteria)
+- [x] **ART-04**: GSD handoff written to `docs/cortex/specs/<slug>/gsd-handoff.md`
+- [x] **ART-05**: Contract written to `docs/cortex/contracts/<slug>/contract-001.md` with required schema (id, slug, phase, objective, deliverables, scope, write roots, done criteria, validators, approvals, rollback hints)
+- [x] **ART-06**: Eval proposal written to `docs/cortex/evals/<slug>/eval-proposal.md`
+- [x] **ART-07**: Eval plan written to `docs/cortex/evals/<slug>/eval-plan.md` after human approval
 - [x] **ART-08**: Continuity files maintained: `current-state.md`, `open-questions.md`, `next-prompt.md`, `decisions.md`, `eval-status.md`, `last-compact-summary.md`
 
 ### Continuity
@@ -117,13 +117,13 @@
 | DOCS-05 | Phase 1: Core Docs and Architecture Alignment | Complete |
 | DOCS-06 | Phase 1: Core Docs and Architecture Alignment | Complete |
 | DOCS-07 | Phase 1: Core Docs and Architecture Alignment | Complete |
-| ART-01 | Phase 2: Artifact Scaffolding and Templates | Pending |
-| ART-02 | Phase 2: Artifact Scaffolding and Templates | Pending |
-| ART-03 | Phase 2: Artifact Scaffolding and Templates | Pending |
-| ART-04 | Phase 2: Artifact Scaffolding and Templates | Pending |
-| ART-05 | Phase 2: Artifact Scaffolding and Templates | Pending |
-| ART-06 | Phase 2: Artifact Scaffolding and Templates | Pending |
-| ART-07 | Phase 2: Artifact Scaffolding and Templates | Pending |
+| ART-01 | Phase 2: Artifact Scaffolding and Templates | Complete |
+| ART-02 | Phase 2: Artifact Scaffolding and Templates | Complete |
+| ART-03 | Phase 2: Artifact Scaffolding and Templates | Complete |
+| ART-04 | Phase 2: Artifact Scaffolding and Templates | Complete |
+| ART-05 | Phase 2: Artifact Scaffolding and Templates | Complete |
+| ART-06 | Phase 2: Artifact Scaffolding and Templates | Complete |
+| ART-07 | Phase 2: Artifact Scaffolding and Templates | Complete |
 | ART-08 | Phase 2: Artifact Scaffolding and Templates | Complete |
 | CONT-04 | Phase 2: Artifact Scaffolding and Templates | Complete |
 | CMD-01 | Phase 3: New and Updated Skills | Pending |
