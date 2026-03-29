@@ -177,6 +177,68 @@ After evaluating all 8: set document-level `approval_required: true` if ANY dime
 3. Populate all fields
 4. Write to target path
 
+### Phase 3b: Write Eval Plan
+
+**Trigger:** Only run this phase when explicitly asked to write the eval plan (e.g., `/cortex-research --write-plan` or "write the eval plan").
+
+**Prerequisites:**
+
+1. Read `docs/cortex/evals/{slug}/eval-proposal.md`
+2. Extract `approval_required:` field value
+3. Extract `Approval Status:` field value
+
+**Decision logic:**
+
+If `approval_required: true` AND `Approval Status:` is NOT `approved`:
+
+  Output the following and STOP — do not write eval-plan.md:
+
+  ```
+  BLOCKED: Eval Plan Cannot Be Written
+  ════════════════════════════════════════
+  The eval proposal at docs/cortex/evals/{slug}/eval-proposal.md
+  has approval_required: true but Approval Status: {current_status}.
+
+  Required action:
+    1. Review the proposal at docs/cortex/evals/{slug}/eval-proposal.md
+    2. Edit the file: change "Approval Status: pending" → "Approval Status: approved"
+       (or "Approval Status: rejected" if you want to revise the proposal)
+    3. Re-run: /cortex-research --write-plan
+
+  The contract will remain in spec state until this approval is recorded.
+  ════════════════════════════════════════
+  ```
+
+If `Approval Status:` is `rejected`:
+
+  Output and STOP:
+  ```
+  BLOCKED: Eval proposal was rejected.
+  Revise the proposal (re-run /cortex-research --phase evals), then re-run /cortex-research --write-plan.
+  ```
+
+If `approval_required: false` OR `Approval Status: approved`:
+
+  Idempotency check: if `docs/cortex/evals/{slug}/eval-plan.md` already exists, output:
+  ```
+  Eval plan already exists at docs/cortex/evals/{slug}/eval-plan.md — skipping creation.
+  ```
+  and stop.
+
+  Otherwise:
+  1. Read `templates/cortex/eval-plan.md`
+  2. Populate all fields from the approved proposal content (slug, approved dimensions, fixtures, thresholds, run instructions)
+  3. Write to `docs/cortex/evals/{slug}/eval-plan.md`
+  4. Update `.cortex/state.json`: set `approvals.evals = true`
+  5. Update `docs/cortex/handoffs/current-state.md`:
+     - `approval_status`: `approved`
+     - `next_action`: `Eval plan written to docs/cortex/evals/{slug}/eval-plan.md. Update the contract's eval_plan field to point to this path.`
+  6. Output confirmation:
+     ```
+     Eval plan written: docs/cortex/evals/{slug}/eval-plan.md
+     Update the contract's eval_plan field to: docs/cortex/evals/{slug}/eval-plan.md
+     ```
+
 ### Phase 4: Update continuity state
 
 **Update `docs/cortex/handoffs/current-state.md`:**
