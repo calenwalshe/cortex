@@ -8,7 +8,7 @@ Cortex evolves from a layered wrapper with 5 utilities into a lifecycle intellig
 
 - [x] **Phase 1: Core Docs and Architecture Alignment** - Bring all documentation into agreement with vNext architecture before any code is written
 - [x] **Phase 2: Artifact Scaffolding and Templates** - Establish the directory structure, schemas, and state file substrate that all commands write into (completed 2026-03-29)
-- [ ] **Phase 3: New and Updated Skills** - Implement or extend all 7 user-facing commands
+- [x] **Phase 3: New and Updated Skills** - Implement or extend all 7 user-facing commands (completed 2026-03-29)
 - [ ] **Phase 4: Subagents and Hooks** - Install the enforcement and automation layer: agents, full hook bundle, continuity flow, and contract loop
 - [ ] **Phase 5: Eval Subsystem** - Wire the eval lifecycle from research proposal through human approval to gated execution and repair
 - [ ] **Phase 6: Installer and Operational Cleanup** - Deliver a clean, canonical installer that deploys skills, agents, and hooks with no credential debt
@@ -114,7 +114,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Core Docs and Architecture Alignment | 3/3 | Complete    | 2026-03-29 |
 | 2. Artifact Scaffolding and Templates | 0/4 | Complete    | 2026-03-29 |
-| 3. New and Updated Skills | 0/3 | Not started | - |
+| 3. New and Updated Skills | 0/3 | Complete    | 2026-03-29 |
 | 4. Subagents and Hooks | 0/TBD | Not started | - |
 | 5. Eval Subsystem | 0/TBD | Not started | - |
 | 6. Installer and Operational Cleanup | 0/TBD | Not started | - |

@@ -10,9 +10,9 @@
 - [x] **CMD-01**: `/cortex-clarify` converts a fuzzy idea into a written problem frame (clarify brief) with goal, non-goals, constraints, assumptions, open questions, and next research steps
 - [x] **CMD-02**: `/cortex-research` supports three phases — `concept`, `implementation`, `evals` — with `--depth quick|standard|deep` and optional `--team` flag
 - [x] **CMD-03**: `/cortex-spec` compresses clarify + research into a GSD-ready handoff pack, spec.md, and first execution contract
-- [ ] **CMD-04**: `/cortex-investigate` writes investigation artifacts to `docs/cortex/investigations/` and can hand off into GSD repair contract
-- [ ] **CMD-05**: `/cortex-review` writes review artifacts to `docs/cortex/reviews/` including contract compliance lens
-- [ ] **CMD-06**: `/cortex-audit` writes audit artifacts to `docs/cortex/audits/` with required lenses (auth, data, secrets, unsafe tools, input validation, deps, misuse)
+- [x] **CMD-04**: `/cortex-investigate` writes investigation artifacts to `docs/cortex/investigations/` and can hand off into GSD repair contract
+- [x] **CMD-05**: `/cortex-review` writes review artifacts to `docs/cortex/reviews/` including contract compliance lens
+- [x] **CMD-06**: `/cortex-audit` writes audit artifacts to `docs/cortex/audits/` with required lenses (auth, data, secrets, unsafe tools, input validation, deps, misuse)
 - [x] **CMD-07**: `/cortex-status` reconstructs current state from repo-local artifacts and updates continuity handoff files
 
 ### Artifacts
@@ -129,9 +129,9 @@
 | CMD-01 | Phase 3: New and Updated Skills | Complete |
 | CMD-02 | Phase 3: New and Updated Skills | Complete |
 | CMD-03 | Phase 3: New and Updated Skills | Complete |
-| CMD-04 | Phase 3: New and Updated Skills | Pending |
-| CMD-05 | Phase 3: New and Updated Skills | Pending |
-| CMD-06 | Phase 3: New and Updated Skills | Pending |
+| CMD-04 | Phase 3: New and Updated Skills | Complete |
+| CMD-05 | Phase 3: New and Updated Skills | Complete |
+| CMD-06 | Phase 3: New and Updated Skills | Complete |
 | CMD-07 | Phase 3: New and Updated Skills | Complete |
 | AGNT-01 | Phase 4: Subagents and Hooks | Pending |
 | AGNT-02 | Phase 4: Subagents and Hooks | Pending |

@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: completed
 stopped_at: Completed 03-03-PLAN.md — cortex-investigate, cortex-review, cortex-audit artifact writing
-last_updated: "2026-03-28T00:00:00.000Z"
-last_activity: 2026-03-28 — Plan 03-03 complete (artifact writing for investigate/review/audit)
+last_updated: "2026-03-29T03:12:55.211Z"
+last_activity: 2026-03-29 — Plan 01-03 complete (EVALS.md, AGENTS.md, README vNext)
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 13
-  completed_plans: 13
+  total_plans: 10
+  completed_plans: 10
   percent: 100
 ---
 
