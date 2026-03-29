@@ -9,7 +9,7 @@ Cortex evolves from a layered wrapper with 5 utilities into a lifecycle intellig
 - [x] **Phase 1: Core Docs and Architecture Alignment** - Bring all documentation into agreement with vNext architecture before any code is written
 - [x] **Phase 2: Artifact Scaffolding and Templates** - Establish the directory structure, schemas, and state file substrate that all commands write into (completed 2026-03-29)
 - [x] **Phase 3: New and Updated Skills** - Implement or extend all 7 user-facing commands (completed 2026-03-29)
-- [ ] **Phase 4: Subagents and Hooks** - Install the enforcement and automation layer: agents, full hook bundle, continuity flow, and contract loop
+- [x] **Phase 4: Subagents and Hooks** - Install the enforcement and automation layer: agents, full hook bundle, continuity flow, and contract loop (completed 2026-03-29)
 - [ ] **Phase 5: Eval Subsystem** - Wire the eval lifecycle from research proposal through human approval to gated execution and repair
 - [ ] **Phase 6: Installer and Operational Cleanup** - Deliver a clean, canonical installer that deploys skills, agents, and hooks with no credential debt
 
@@ -82,7 +82,13 @@ Plans:
   5. All four agents (specifier, critic, scribe, eval-designer) are installed with correct permission modes and can be invoked
 **Research**: Likely (hook event model, agent permission schema, validator runner integration)
 **Research topics**: Claude hook event types and trigger conditions, agent YAML permission field options, dirty-files.json validator runner patterns
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [x] 04-01-PLAN.md — Create cortex subagents (specifier, critic, scribe, eval-designer) with permission modes
+- [x] 04-02-PLAN.md — Create cortex-write-guard.sh + settings.json TeammateIdle hook registration
+- [x] 04-03-PLAN.md — Create cortex-phase-guard.sh, cortex-validator-trigger.sh, cortex-task-completed.sh, cortex-task-created.sh, cortex-teammate-idle.sh
+- [x] 04-04-PLAN.md — Fix cortex-sync.sh (credential URL, stdin parsing, hard-fail) + document LOOP-01 through LOOP-04 in CONTINUITY.md
 
 ### Phase 5: Eval Subsystem
 **Goal**: Evals are first-class artifacts — every active contract references an eval plan, failures produce repair recommendations, and human approval gates subjective/high-stakes decisions
@@ -115,6 +121,6 @@ Plans:
 | 1. Core Docs and Architecture Alignment | 3/3 | Complete    | 2026-03-29 |
 | 2. Artifact Scaffolding and Templates | 0/4 | Complete    | 2026-03-29 |
 | 3. New and Updated Skills | 0/3 | Complete    | 2026-03-29 |
-| 4. Subagents and Hooks | 3/4 | In Progress|  |
+| 4. Subagents and Hooks | 4/4 | Complete    | 2026-03-29 |
 | 5. Eval Subsystem | 0/TBD | Not started | - |
 | 6. Installer and Operational Cleanup | 0/TBD | Not started | - |
