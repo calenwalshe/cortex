@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 04-04-PLAN.md — cortex-sync fix and CONTINUITY.md loop enforcement documentation
-last_updated: "2026-03-29T15:04:32Z"
-last_activity: 2026-03-29 — Plan 01-03 complete (EVALS.md, AGENTS.md, README vNext)
+stopped_at: "Completed 05-01-PLAN.md — cortex-research 8-dimension enumeration and Phase 3b approval gate"
+last_updated: "2026-03-29T15:21:14Z"
+last_activity: "2026-03-29 — Phase 5 Plan 01 complete (eval dimension enumeration, approval gate)"
 progress:
   total_phases: 6
-  completed_phases: 3
-  total_plans: 14
-  completed_plans: 12
-  percent: 100
+  completed_phases: 4
+  total_plans: 15
+  completed_plans: 15
+  percent: 71
 ---
 
 # Project State
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-03-29)
 
 ## Current Position
 
-Phase: 1 of 6 (Core Docs and Architecture Alignment)
-Plan: 3 of 3 in current phase
-Status: Phase complete — ready for Phase 2
-Last activity: 2026-03-29 — Plan 01-03 complete (EVALS.md, AGENTS.md, README vNext)
+Phase: 5 of 6 (Eval Subsystem)
+Plan: 1 of 2 in current phase — 05-01 complete, ready for 05-02
+Status: In progress
+Last activity: 2026-03-29 — Plan 05-01 complete (cortex-research eval dimension enumeration + Phase 3b approval gate)
 
 Progress: [██████████] 100%
 
@@ -63,6 +63,7 @@ Progress: [██████████] 100%
 | Phase 04-subagents-and-hooks P04-01 | 26min | 3 tasks | 5 files |
 | Phase 04-subagents-and-hooks P03 | 5min | 3 tasks | 6 files |
 | Phase 04-subagents-and-hooks P04 | 4min | 2 tasks | 3 files |
+| Phase 05-eval-subsystem P02 | 1min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -112,6 +113,9 @@ Recent decisions affecting current work:
 - [Phase 04-subagents-and-hooks P03]: phase-guard uses JSON permissionDecision deny (exit 0) not exit 2 — gives Claude an actionable reason rather than a terse failure
 - [Phase 04-subagents-and-hooks P03]: validator-trigger is async PostToolUse — records dirty files only, never runs validators inline (timeout risk)
 - [Phase 04-subagents-and-hooks P03]: teammate-idle uses exit 2 to signal continuation — keeps worker agents from silently completing
+- [Phase 05-eval-subsystem]: cortex-review Contract Compliance validates eval_plan inline (P1 BLOCK for pending/missing) — enforcement at review time, not spec time
+- [Phase 05-eval-subsystem]: Eval Failure Check placed before Store Results so repair artifacts write before final review artifact is committed
+- [Phase 05-eval-subsystem]: cortex-status Phase 3a covers all unresolved eval_plan states (pending, TBD, empty, missing file) — existing blocker placeholder surfaces it without template change
 
 ### Pending Todos
 
@@ -123,6 +127,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T15:04:32Z
-Stopped at: Completed 04-04-PLAN.md — cortex-sync fix and CONTINUITY.md loop enforcement documentation (Phase 4 complete)
+Last session: 2026-03-29T18:00:00Z
+Stopped at: Completed 05-02-PLAN.md — eval_plan validation and repair-on-failure in cortex-review + cortex-status (Phase 5 complete)
 Resume file: None

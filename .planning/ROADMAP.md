@@ -10,7 +10,7 @@ Cortex evolves from a layered wrapper with 5 utilities into a lifecycle intellig
 - [x] **Phase 2: Artifact Scaffolding and Templates** - Establish the directory structure, schemas, and state file substrate that all commands write into (completed 2026-03-29)
 - [x] **Phase 3: New and Updated Skills** - Implement or extend all 7 user-facing commands (completed 2026-03-29)
 - [x] **Phase 4: Subagents and Hooks** - Install the enforcement and automation layer: agents, full hook bundle, continuity flow, and contract loop (completed 2026-03-29)
-- [ ] **Phase 5: Eval Subsystem** - Wire the eval lifecycle from research proposal through human approval to gated execution and repair
+- [x] **Phase 5: Eval Subsystem** - Wire the eval lifecycle from research proposal through human approval to gated execution and repair (completed 2026-03-29)
 - [ ] **Phase 6: Installer and Operational Cleanup** - Deliver a clean, canonical installer that deploys skills, agents, and hooks with no credential debt
 
 ## Phase Details
@@ -103,7 +103,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Add 8-dimension enumeration and Phase 3b approval gate to cortex-research (EVAL-01, EVAL-02, EVAL-05)
+- [x] 05-01-PLAN.md — Add 8-dimension enumeration and Phase 3b approval gate to cortex-research (EVAL-01, EVAL-02, EVAL-05)
 - [ ] 05-02-PLAN.md — Add eval_plan contract validation and repair-on-failure to cortex-review + cortex-status (EVAL-03, EVAL-04)
 
 ### Phase 6: Installer and Operational Cleanup
@@ -126,5 +126,5 @@ Plans:
 | 2. Artifact Scaffolding and Templates | 0/4 | Complete    | 2026-03-29 |
 | 3. New and Updated Skills | 0/3 | Complete    | 2026-03-29 |
 | 4. Subagents and Hooks | 4/4 | Complete    | 2026-03-29 |
-| 5. Eval Subsystem | 0/2 | Not started | - |
+| 5. Eval Subsystem | 2/2 | Complete    | 2026-03-29 |
 | 6. Installer and Operational Cleanup | 0/TBD | Not started | - |
