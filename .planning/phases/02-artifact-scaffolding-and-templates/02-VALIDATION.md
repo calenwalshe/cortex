@@ -65,6 +65,6 @@ All of the following must be true before phase is considered complete:
 - [ ] `grep eval_plan templates/cortex/contract.md` — match found
 - [ ] `grep approval_required templates/cortex/eval-proposal.md` — match found
 - [ ] `ls docs/cortex/handoffs/current-state.md docs/cortex/handoffs/next-prompt.md docs/cortex/handoffs/decisions.md docs/cortex/handoffs/eval-status.md docs/cortex/handoffs/last-compact-summary.md` — all exist
-- [ ] `python3 -c "import json; d=json.load(open('.cortex/state.json')); assert 'mode' in d and 'slug' in d and 'approved' in d"` — passes
+- [ ] `python3 -c "import json; d=json.load(open('.cortex/state.json')); assert 'mode' in d and 'slug' in d and 'approval_status' in d"` — passes
 - [ ] `bash -n scripts/cortex/scaffold_runtime.sh` — syntax OK
 - [ ] `bash scripts/cortex/scaffold_runtime.sh /tmp/cortex-test && ls /tmp/cortex-test/docs/cortex/ && ls /tmp/cortex-test/.cortex/` — scaffold runs clean
