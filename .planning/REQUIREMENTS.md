@@ -83,9 +83,9 @@
 - [x] **DOCS-02**: `docs/INTELLIGENCE_FLOW.md` — sequential spine diagram with loops
 - [x] **DOCS-03**: `docs/COMMANDS.md` — 7-command surface with inputs, outputs, rules
 - [x] **DOCS-04**: `docs/CONTINUITY.md` — continuity strategy and artifact schemas
-- [ ] **DOCS-05**: `docs/EVALS.md` — eval lifecycle, matrix, and harness guide
-- [ ] **DOCS-06**: `docs/AGENTS.md` — agent roster, tools, permission modes
-- [ ] **DOCS-07**: README updated; source tree, docs, installer all agree
+- [x] **DOCS-05**: `docs/EVALS.md` — eval lifecycle, matrix, and harness guide
+- [x] **DOCS-06**: `docs/AGENTS.md` — agent roster, tools, permission modes
+- [x] **DOCS-07**: README updated; source tree, docs, installer all agree
 
 ## v2 Requirements
 

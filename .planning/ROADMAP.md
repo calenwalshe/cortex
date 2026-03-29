@@ -29,9 +29,9 @@ Cortex evolves from a layered wrapper with 5 utilities into a lifecycle intellig
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Rewrite CORTEX.md (vNext architecture) + create docs/INTELLIGENCE_FLOW.md (sequential spine)
-- [ ] 01-02-PLAN.md — Create docs/COMMANDS.md (7-command reference) + docs/CONTINUITY.md (continuity schemas)
-- [ ] 01-03-PLAN.md — Create docs/EVALS.md + docs/AGENTS.md + update README.md
+- [x] 01-01-PLAN.md — Rewrite CORTEX.md (vNext architecture) + create docs/INTELLIGENCE_FLOW.md (sequential spine)
+- [x] 01-02-PLAN.md — Create docs/COMMANDS.md (7-command reference) + docs/CONTINUITY.md (continuity schemas)
+- [x] 01-03-PLAN.md — Create docs/EVALS.md + docs/AGENTS.md + update README.md
 
 ### Phase 2: Artifact Scaffolding and Templates
 **Goal**: The `docs/cortex/` and `.cortex/` directory structures exist with correct schemas, templates, and a working state file — commands have a substrate to write into
