@@ -60,6 +60,7 @@ bash ~/projects/cortex/dotfiles-setup.sh
 ```
 
 The `--project` step scaffolds `docs/cortex/` and `.cortex/` in your target repo, including `.cortex/state.json` and `.cortex/dirty-files.json`, so hooks and runtime state work immediately.
+Runtime inventory and hook wiring are defined in `runtime-manifest.json`; installer behavior and installer tests read from that manifest as the single source of truth.
 
 Once installed and bootstrapped, start with `/cortex-clarify <your idea>` to begin the intelligence cycle. The clarify command produces a written problem frame you can review before committing to research and spec work.
 
@@ -70,7 +71,7 @@ cortex/                          # Framework repo
 ├── CORTEX.md                    # Architecture reference
 ├── docs/
 │   ├── INTELLIGENCE_FLOW.md    # Sequential spine diagram
-│   ├── COMMANDS.md             # 7-command reference
+│   ├── COMMANDS.md             # Command reference
 │   ├── CONTINUITY.md           # Continuity strategy + schemas + contract loop
 │   ├── EVALS.md                # Eval lifecycle + 8-dimension matrix
 │   └── AGENTS.md               # Agent roster + permissions
@@ -83,9 +84,10 @@ cortex/                          # Framework repo
 │   ├── cortex-audit/           # Security + quality audit (7 lenses)
 │   └── cortex-status/          # State reconstruction after /clear or compaction
 ├── .claude/
-│   ├── agents/                 # 4 subagents: specifier, critic, scribe, eval-designer
-│   ├── hooks/                  # 11 hook scripts: session lifecycle, phase guard, task gating
-│   └── settings.json           # Global hook event registrations (9 events)
+│   ├── agents/                 # Subagent definitions
+│   ├── hooks/                  # Hook scripts (session lifecycle, phase guard, task gating)
+│   └── settings.json           # Project-local hook event wiring (uses $CLAUDE_PROJECT_DIR)
+├── runtime-manifest.json       # Single source of truth for runtime inventory + hook event wiring
 ├── templates/cortex/           # Artifact templates (clarify, research, spec, contract, evals)
 ├── scripts/cortex/             # scaffold_runtime.sh — bootstrap docs/cortex/ in target repos
 ├── bin/                        # install.js — idempotent installer with --dry-run support

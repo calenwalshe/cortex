@@ -8,8 +8,10 @@ const os = require('os');
 
 const HOME = os.homedir();
 const CORTEX_LOCAL = path.join(HOME, 'projects', 'cortex');
+const SCRIPT_REPO_ROOT = path.resolve(__dirname, '..');
 const CLAUDE_DIR = path.join(HOME, '.claude');
 const CORTEX_REPO = 'https://github.com/calenwalshe/cortex.git';
+const MANIFEST_PATH = path.join(SCRIPT_REPO_ROOT, 'runtime-manifest.json');
 
 const args = process.argv.slice(2);
 const VERBOSE = args.includes('--verbose') || args.includes('-v');
@@ -38,23 +40,26 @@ function parseProjectRoot(argv) {
 
 const PROJECT_ROOT = parseProjectRoot(args);
 
-const MANIFEST = {
-  skills: [
-    'cortex-audit', 'cortex-clarify', 'cortex-investigate',
-    'cortex-research', 'cortex-review', 'cortex-spec', 'cortex-status'
-  ],
-  agents: [
-    'cortex-critic.md', 'cortex-eval-designer.md',
-    'cortex-scribe.md', 'cortex-specifier.md'
-  ],
-  hooks: [
-    'cortex-phase-guard.sh', 'cortex-postcompact.sh', 'cortex-precompact.sh',
-    'cortex-session-end.sh', 'cortex-session-start.sh', 'cortex-sync.sh',
-    'cortex-task-completed.sh', 'cortex-task-created.sh',
-    'cortex-teammate-idle.sh', 'cortex-validator-trigger.sh',
-    'cortex-write-guard.sh'
-  ]
-};
+function loadRuntimeManifest() {
+  if (!fs.existsSync(MANIFEST_PATH)) {
+    throw new Error(`Runtime manifest not found: ${MANIFEST_PATH}`);
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+  } catch (err) {
+    throw new Error(`Failed to parse runtime manifest: ${MANIFEST_PATH}\n${err.message}`);
+  }
+
+  if (!Array.isArray(parsed.skills) || !Array.isArray(parsed.agents) || !Array.isArray(parsed.hooks) || !Array.isArray(parsed.hook_events)) {
+    throw new Error(`Invalid runtime manifest schema in ${MANIFEST_PATH}`);
+  }
+
+  return parsed;
+}
+
+const MANIFEST = loadRuntimeManifest();
 
 const results = [];
 
@@ -214,7 +219,7 @@ function installHooks() {
   if (!DRY_RUN) fs.mkdirSync(hooksDir, { recursive: true });
 
   if (DRY_RUN) {
-    for (const hook of MANIFEST.hooks) {
+    for (const { file: hook } of MANIFEST.hooks) {
       const target = path.join(hooksDir, hook);
       const src = path.join(srcDir, hook);
       let status = 'would-create';
@@ -231,7 +236,7 @@ function installHooks() {
   }
 
   let installed = 0, skipped = 0;
-  for (const hook of MANIFEST.hooks) {
+  for (const { file: hook } of MANIFEST.hooks) {
     const target = path.join(hooksDir, hook);
     const src = path.join(srcDir, hook);
     const result = ensureSymlink(src, target);
@@ -258,18 +263,18 @@ function wireSettings() {
   const settingsPath = path.join(CLAUDE_DIR, 'settings.json');
   const hooksDir = path.join(CLAUDE_DIR, 'hooks');
 
-  // 9 events — cortex-write-guard.sh is NOT wired globally (agent-invoked only)
-  const HOOK_EVENTS = [
-    { event: 'SessionStart',  file: 'cortex-session-start.sh',     entry: () => ({ hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-session-start.sh') }] }) },
-    { event: 'PreCompact',    file: 'cortex-precompact.sh',         entry: () => ({ hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-precompact.sh') }] }) },
-    { event: 'PostCompact',   file: 'cortex-postcompact.sh',        entry: () => ({ hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-postcompact.sh') }] }) },
-    { event: 'Stop',          file: 'cortex-session-end.sh',        entry: () => ({ hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-session-end.sh'), async: true }] }) },
-    { event: 'PreToolUse',    file: 'cortex-phase-guard.sh',        entry: () => ({ matcher: 'Write|Edit', hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-phase-guard.sh'), timeout: 10 }] }) },
-    { event: 'PostToolUse',   file: 'cortex-validator-trigger.sh',  entry: () => ({ matcher: 'Write|Edit', hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-validator-trigger.sh'), async: true }] }) },
-    { event: 'TaskCreated',   file: 'cortex-task-created.sh',       entry: () => ({ hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-task-created.sh'), timeout: 5 }] }) },
-    { event: 'TaskCompleted', file: 'cortex-task-completed.sh',     entry: () => ({ hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-task-completed.sh'), timeout: 10 }] }) },
-    { event: 'TeammateIdle',  file: 'cortex-teammate-idle.sh',      entry: () => ({ hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-teammate-idle.sh'), timeout: 5 }] }) },
-  ];
+  const HOOK_EVENTS = MANIFEST.hook_events.map(({ event, hook_file, matcher, timeout, async }) => ({
+    event,
+    file: hook_file,
+    entry: () => {
+      const hookEntry = { type: 'command', command: path.join(hooksDir, hook_file) };
+      if (typeof timeout === 'number') hookEntry.timeout = timeout;
+      if (typeof async === 'boolean') hookEntry.async = async;
+      const eventEntry = { hooks: [hookEntry] };
+      if (matcher) eventEntry.matcher = matcher;
+      return eventEntry;
+    }
+  }));
 
   let settings = {};
   if (fs.existsSync(settingsPath)) {
