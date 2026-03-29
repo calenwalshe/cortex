@@ -100,7 +100,11 @@ Plans:
   3. Every active contract in `docs/cortex/contracts/` references a corresponding eval plan path
   4. A failed eval produces a repair recommendation or opens a new repair contract rather than silently failing
 **Research**: Unlikely (internal artifact wiring)
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Add 8-dimension enumeration and Phase 3b approval gate to cortex-research (EVAL-01, EVAL-02, EVAL-05)
+- [ ] 05-02-PLAN.md — Add eval_plan contract validation and repair-on-failure to cortex-review + cortex-status (EVAL-03, EVAL-04)
 
 ### Phase 6: Installer and Operational Cleanup
 **Goal**: A single installer run deploys the full Cortex stack (skills, agents, hooks) from the canonical local repo path with no credential debt or dry-run failures
@@ -122,5 +126,5 @@ Plans:
 | 2. Artifact Scaffolding and Templates | 0/4 | Complete    | 2026-03-29 |
 | 3. New and Updated Skills | 0/3 | Complete    | 2026-03-29 |
 | 4. Subagents and Hooks | 4/4 | Complete    | 2026-03-29 |
-| 5. Eval Subsystem | 0/TBD | Not started | - |
+| 5. Eval Subsystem | 0/2 | Not started | - |
 | 6. Installer and Operational Cleanup | 0/TBD | Not started | - |
