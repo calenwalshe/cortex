@@ -15,9 +15,11 @@ Use these commands in this order unless the user asks otherwise.
 
 ### Fast checks (run during implementation)
 
-1. Installer dry-run smoke test:
+1. Unified fast verifier (recommended after each edit):
+   - `bash scripts/verify-fast.sh`
+2. Installer dry-run smoke test:
    - `node bin/install.js --dry-run`
-2. Installer shell test suite:
+3. Installer shell test suite:
    - `bash test/installer.test.sh`
 
 ### Full checks (run before commit/PR)
@@ -31,10 +33,11 @@ Use these commands in this order unless the user asks otherwise.
 
 Always follow this sequence:
 
-1. **Fail fast first**: run the dry-run installer smoke check before making broad changes.
-2. **Targeted validation**: run the installer test suite when touching install logic, hooks, agents, skills, or settings wiring.
-3. **Broader validation before handoff**: re-run the test suite after edits are complete.
-4. **Actionable failures**: if tests fail, include likely root cause and a concrete next fix step.
+1. **Post-edit auto-verify**: after each meaningful edit, run `bash scripts/verify-fast.sh`.
+2. **Fail fast first**: run the dry-run installer smoke check before making broad changes.
+3. **Targeted validation**: run the installer test suite when touching install logic, hooks, agents, skills, or settings wiring.
+4. **Broader validation before handoff**: re-run the test suite after edits are complete.
+5. **Actionable failures**: if tests fail, include likely root cause and a concrete next fix step.
 
 ## 4) Definition of done
 
