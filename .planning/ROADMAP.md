@@ -115,6 +115,6 @@ Plans:
 | 1. Core Docs and Architecture Alignment | 3/3 | Complete    | 2026-03-29 |
 | 2. Artifact Scaffolding and Templates | 0/4 | Complete    | 2026-03-29 |
 | 3. New and Updated Skills | 0/3 | Complete    | 2026-03-29 |
-| 4. Subagents and Hooks | 1/4 | In Progress|  |
+| 4. Subagents and Hooks | 2/4 | In Progress|  |
 | 5. Eval Subsystem | 0/TBD | Not started | - |
 | 6. Installer and Operational Cleanup | 0/TBD | Not started | - |

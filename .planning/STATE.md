@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 04-02-PLAN.md — cortex-session-start, cortex-session-end, cortex-precompact, cortex-postcompact hooks + .claude/settings.json
-last_updated: "2026-03-29T05:21:47.587Z"
+stopped_at: Completed 04-01-PLAN.md — cortex-specifier, cortex-critic, cortex-scribe, cortex-eval-designer agents and write-guard hook
+last_updated: "2026-03-29T05:33:37.517Z"
 last_activity: 2026-03-29 — Plan 01-03 complete (EVALS.md, AGENTS.md, README vNext)
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 14
-  completed_plans: 11
+  completed_plans: 12
   percent: 100
 ---
 
@@ -60,6 +60,7 @@ Progress: [██████████] 100%
 | Phase 03-new-and-updated-skills P02 | 8min | 2 tasks | 2 files |
 | Phase 03-new-and-updated-skills P03 | 18min | 3 tasks | 3 files |
 | Phase 04-subagents-and-hooks P02 | 5min | 3 tasks | 5 files |
+| Phase 04-subagents-and-hooks P04-01 | 26min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -103,6 +104,9 @@ Recent decisions affecting current work:
 - [Phase 04-subagents-and-hooks]: Stop hook registered async: true to avoid delaying agent responses
 - [Phase 04-subagents-and-hooks]: CLAUDE_PROJECT_DIR used for all hook paths — no hardcoded machine paths
 - [Phase 04-subagents-and-hooks]: python3 used for JSON construction in session-start hook to handle multiline strings without jq escaping issues
+- [Phase 04-subagents-and-hooks]: Agent files live at .claude/agents/ (project-scope, checked into repo); Phase 6 installer symlinks to ~/.claude/agents/ for global use
+- [Phase 04-subagents-and-hooks]: Write restriction requires both tools allowlist (tool type) AND PreToolUse hook (path enforcement) — allowlist alone is insufficient
+- [Phase 04-subagents-and-hooks]: Single shared cortex-write-guard.sh dispatches by agent_name — avoids duplicating enforcement logic per agent
 
 ### Pending Todos
 
@@ -114,6 +118,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T05:21:47.582Z
-Stopped at: Completed 04-02-PLAN.md — cortex-session-start, cortex-session-end, cortex-precompact, cortex-postcompact hooks + .claude/settings.json
+Last session: 2026-03-29T05:33:37.512Z
+Stopped at: Completed 04-01-PLAN.md — cortex-specifier, cortex-critic, cortex-scribe, cortex-eval-designer agents and write-guard hook
 Resume file: None

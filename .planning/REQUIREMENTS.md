@@ -48,10 +48,10 @@
 
 ### Agents
 
-- [ ] **AGNT-01**: `cortex-specifier` — drafts specs/contracts from research; write-restricted to docs/cortex
-- [ ] **AGNT-02**: `cortex-critic` — adversarial reviewer of specs, contracts, decisions; read-only
-- [ ] **AGNT-03**: `cortex-scribe` — maintains continuity artifacts; write-restricted to docs/cortex + .cortex
-- [ ] **AGNT-04**: `cortex-eval-designer` — proposes eval suites, rubrics, fixtures, thresholds
+- [x] **AGNT-01**: `cortex-specifier` — drafts specs/contracts from research; write-restricted to docs/cortex
+- [x] **AGNT-02**: `cortex-critic` — adversarial reviewer of specs, contracts, decisions; read-only
+- [x] **AGNT-03**: `cortex-scribe` — maintains continuity artifacts; write-restricted to docs/cortex + .cortex
+- [x] **AGNT-04**: `cortex-eval-designer` — proposes eval suites, rubrics, fixtures, thresholds
 
 ### Eval Subsystem
 
@@ -133,10 +133,10 @@
 | CMD-05 | Phase 3: New and Updated Skills | Complete |
 | CMD-06 | Phase 3: New and Updated Skills | Complete |
 | CMD-07 | Phase 3: New and Updated Skills | Complete |
-| AGNT-01 | Phase 4: Subagents and Hooks | Pending |
-| AGNT-02 | Phase 4: Subagents and Hooks | Pending |
-| AGNT-03 | Phase 4: Subagents and Hooks | Pending |
-| AGNT-04 | Phase 4: Subagents and Hooks | Pending |
+| AGNT-01 | Phase 4: Subagents and Hooks | Complete |
+| AGNT-02 | Phase 4: Subagents and Hooks | Complete |
+| AGNT-03 | Phase 4: Subagents and Hooks | Complete |
+| AGNT-04 | Phase 4: Subagents and Hooks | Complete |
 | HOOK-01 | Phase 4: Subagents and Hooks | Complete |
 | HOOK-02 | Phase 4: Subagents and Hooks | Pending |
 | HOOK-03 | Phase 4: Subagents and Hooks | Pending |
