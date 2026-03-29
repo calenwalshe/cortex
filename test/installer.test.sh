@@ -2,6 +2,7 @@
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+MANIFEST_PATH="$REPO_DIR/runtime-manifest.json"
 PASS=0
 FAIL=0
 
@@ -54,40 +55,43 @@ echo ""
 echo "2. Live install symlinks"
 HOME="$TEST_HOME" node "$REPO_DIR/bin/install.js" > /dev/null 2>&1
 
+readarray -t SKILLS < <(python3 -c "import json; d=json.load(open('$MANIFEST_PATH')); [print(x) for x in d['skills']]")
 SKILL_FAILS=0
-for skill in cortex-audit cortex-clarify cortex-investigate cortex-research cortex-review cortex-spec cortex-status; do
+for skill in "${SKILLS[@]}"; do
   if [ ! -L "$TEST_HOME/.claude/skills/$skill" ]; then
     SKILL_FAILS=$((SKILL_FAILS + 1))
   fi
 done
 if [ "$SKILL_FAILS" -eq 0 ]; then
-  assert_pass "all 7 skills symlinked to ~/.claude/skills/"
+  assert_pass "all ${#SKILLS[@]} skills symlinked to ~/.claude/skills/"
 else
-  assert_fail "all 7 skills symlinked" "$SKILL_FAILS skills missing"
+  assert_fail "all ${#SKILLS[@]} skills symlinked" "$SKILL_FAILS skills missing"
 fi
 
+readarray -t AGENTS < <(python3 -c "import json; d=json.load(open('$MANIFEST_PATH')); [print(x) for x in d['agents']]")
 AGENT_FAILS=0
-for agent in cortex-critic.md cortex-eval-designer.md cortex-scribe.md cortex-specifier.md; do
+for agent in "${AGENTS[@]}"; do
   if [ ! -L "$TEST_HOME/.claude/agents/$agent" ]; then
     AGENT_FAILS=$((AGENT_FAILS + 1))
   fi
 done
 if [ "$AGENT_FAILS" -eq 0 ]; then
-  assert_pass "all 4 agents symlinked to ~/.claude/agents/"
+  assert_pass "all ${#AGENTS[@]} agents symlinked to ~/.claude/agents/"
 else
-  assert_fail "all 4 agents symlinked" "$AGENT_FAILS agents missing"
+  assert_fail "all ${#AGENTS[@]} agents symlinked" "$AGENT_FAILS agents missing"
 fi
 
+readarray -t HOOKS < <(python3 -c "import json; d=json.load(open('$MANIFEST_PATH')); [print(x['file']) for x in d['hooks']]")
 HOOK_FAILS=0
-for hook in cortex-phase-guard.sh cortex-postcompact.sh cortex-precompact.sh cortex-session-end.sh cortex-session-start.sh cortex-sync.sh cortex-task-completed.sh cortex-task-created.sh cortex-teammate-idle.sh cortex-validator-trigger.sh cortex-write-guard.sh; do
+for hook in "${HOOKS[@]}"; do
   if [ ! -L "$TEST_HOME/.claude/hooks/$hook" ]; then
     HOOK_FAILS=$((HOOK_FAILS + 1))
   fi
 done
 if [ "$HOOK_FAILS" -eq 0 ]; then
-  assert_pass "all 11 hooks symlinked to ~/.claude/hooks/"
+  assert_pass "all ${#HOOKS[@]} hooks symlinked to ~/.claude/hooks/"
 else
-  assert_fail "all 11 hooks symlinked" "$HOOK_FAILS hooks missing"
+  assert_fail "all ${#HOOKS[@]} hooks symlinked" "$HOOK_FAILS hooks missing"
 fi
 
 echo ""
@@ -126,6 +130,8 @@ echo ""
 echo "4. Settings.json dedup"
 CORTEX_ENTRIES=$(python3 -c "
 import json, sys
+manifest = json.load(open('$MANIFEST_PATH'))
+expected = len(manifest['hook_events'])
 with open('$TEST_HOME/.claude/settings.json') as f:
     s = json.load(f)
 hooks = s.get('hooks', {})
@@ -135,13 +141,15 @@ for event, entries in hooks.items():
         for h in entry.get('hooks', []):
             if 'cortex-' in h.get('command', ''):
                 count += 1
-print(count)
+print(f'{count}:{expected}')
 " 2>/dev/null || echo "0")
 
 # Run a third time to check no duplicates were added
 HOME="$TEST_HOME" node "$REPO_DIR/bin/install.js" > /dev/null 2>&1
 CORTEX_ENTRIES_AFTER=$(python3 -c "
 import json, sys
+manifest = json.load(open('$MANIFEST_PATH'))
+expected = len(manifest['hook_events'])
 with open('$TEST_HOME/.claude/settings.json') as f:
     s = json.load(f)
 hooks = s.get('hooks', {})
@@ -151,14 +159,25 @@ for event, entries in hooks.items():
         for h in entry.get('hooks', []):
             if 'cortex-' in h.get('command', ''):
                 count += 1
-print(count)
+print(f'{count}:{expected}')
 " 2>/dev/null || echo "0")
 
-if [ "$CORTEX_ENTRIES" -eq "$CORTEX_ENTRIES_AFTER" ] && [ "$CORTEX_ENTRIES" -gt 0 ]; then
-  assert_pass "settings.json has $CORTEX_ENTRIES cortex entries, no duplicates after third run"
+if [ "$CORTEX_ENTRIES" = "$CORTEX_ENTRIES_AFTER" ] && [ "${CORTEX_ENTRIES%%:*}" -eq "${CORTEX_ENTRIES##*:}" ] && [ "${CORTEX_ENTRIES%%:*}" -gt 0 ]; then
+  assert_pass "settings.json has ${CORTEX_ENTRIES%%:*} cortex entries (manifest-aligned), no duplicates after third run"
 else
   assert_fail "settings.json dedup" "entries before=$CORTEX_ENTRIES after=$CORTEX_ENTRIES_AFTER (expected equal and > 0)"
 fi
+
+echo ""
+echo "4b. Repo settings manifest sync"
+RENDERED_SETTINGS="$(mktemp)"
+node "$REPO_DIR/bin/render-project-settings.js" "$RENDERED_SETTINGS"
+if cmp -s "$RENDERED_SETTINGS" "$REPO_DIR/.claude/settings.json"; then
+  assert_pass ".claude/settings.json is generated from runtime-manifest.json"
+else
+  assert_fail "repo settings sync" "run: node bin/render-project-settings.js .claude/settings.json"
+fi
+rm -f "$RENDERED_SETTINGS"
 
 # ── Test 5: credential audit ───────────────────────────────
 echo ""

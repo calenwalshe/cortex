@@ -1,0 +1,113 @@
+{
+  "runtime_roots": {
+    "global": "~/.claude",
+    "project": "$CLAUDE_PROJECT_DIR/.claude"
+  },
+  "skills": [
+    "cortex-audit",
+    "cortex-clarify",
+    "cortex-investigate",
+    "cortex-research",
+    "cortex-review",
+    "cortex-spec",
+    "cortex-status"
+  ],
+  "agents": [
+    "cortex-critic.md",
+    "cortex-eval-designer.md",
+    "cortex-scribe.md",
+    "cortex-specifier.md"
+  ],
+  "hooks": [
+    {
+      "file": "cortex-phase-guard.sh",
+      "wiring": "global"
+    },
+    {
+      "file": "cortex-postcompact.sh",
+      "wiring": "global"
+    },
+    {
+      "file": "cortex-precompact.sh",
+      "wiring": "global"
+    },
+    {
+      "file": "cortex-session-end.sh",
+      "wiring": "global"
+    },
+    {
+      "file": "cortex-session-start.sh",
+      "wiring": "global"
+    },
+    {
+      "file": "cortex-sync.sh",
+      "wiring": "manual"
+    },
+    {
+      "file": "cortex-task-completed.sh",
+      "wiring": "global"
+    },
+    {
+      "file": "cortex-task-created.sh",
+      "wiring": "global"
+    },
+    {
+      "file": "cortex-teammate-idle.sh",
+      "wiring": "global"
+    },
+    {
+      "file": "cortex-validator-trigger.sh",
+      "wiring": "global"
+    },
+    {
+      "file": "cortex-write-guard.sh",
+      "wiring": "manual"
+    }
+  ],
+  "hook_events": [
+    {
+      "event": "SessionStart",
+      "hook_file": "cortex-session-start.sh"
+    },
+    {
+      "event": "PreCompact",
+      "hook_file": "cortex-precompact.sh"
+    },
+    {
+      "event": "PostCompact",
+      "hook_file": "cortex-postcompact.sh"
+    },
+    {
+      "event": "Stop",
+      "hook_file": "cortex-session-end.sh",
+      "async": true
+    },
+    {
+      "event": "PreToolUse",
+      "hook_file": "cortex-phase-guard.sh",
+      "matcher": "Write|Edit",
+      "timeout": 10
+    },
+    {
+      "event": "PostToolUse",
+      "hook_file": "cortex-validator-trigger.sh",
+      "matcher": "Write|Edit",
+      "async": true
+    },
+    {
+      "event": "TaskCreated",
+      "hook_file": "cortex-task-created.sh",
+      "timeout": 5
+    },
+    {
+      "event": "TaskCompleted",
+      "hook_file": "cortex-task-completed.sh",
+      "timeout": 10
+    },
+    {
+      "event": "TeammateIdle",
+      "hook_file": "cortex-teammate-idle.sh",
+      "timeout": 5
+    }
+  ]
+}
