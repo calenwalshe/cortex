@@ -15,6 +15,24 @@ const args = process.argv.slice(2);
 const VERBOSE = args.includes('--verbose') || args.includes('-v');
 const DRY_RUN = args.includes('--dry-run');
 
+const MANIFEST = {
+  skills: [
+    'cortex-audit', 'cortex-clarify', 'cortex-investigate',
+    'cortex-research', 'cortex-review', 'cortex-spec', 'cortex-status'
+  ],
+  agents: [
+    'cortex-critic.md', 'cortex-eval-designer.md',
+    'cortex-scribe.md', 'cortex-specifier.md'
+  ],
+  hooks: [
+    'cortex-phase-guard.sh', 'cortex-postcompact.sh', 'cortex-precompact.sh',
+    'cortex-session-end.sh', 'cortex-session-start.sh', 'cortex-sync.sh',
+    'cortex-task-completed.sh', 'cortex-task-created.sh',
+    'cortex-teammate-idle.sh', 'cortex-validator-trigger.sh',
+    'cortex-write-guard.sh'
+  ]
+};
+
 const results = [];
 
 function log(msg) {
@@ -32,6 +50,25 @@ function run(cmd, opts = {}) {
   } catch (err) {
     throw new Error(`Command failed: ${cmd}\n${err.message}`);
   }
+}
+
+// Returns 'already-linked', 'linked', or throws.
+// Handles: absent (ENOENT), stale symlink (wrong target), regular file (EINVAL).
+function ensureSymlink(src, target) {
+  try {
+    const existing = fs.readlinkSync(target);
+    if (existing === src) return 'already-linked';
+    fs.unlinkSync(target);
+  } catch (e) {
+    if (e.code === 'EINVAL') {
+      // target is a regular file (e.g. old copy) — replace with symlink
+      fs.unlinkSync(target);
+    } else if (e.code !== 'ENOENT') {
+      throw e;
+    }
+  }
+  fs.symlinkSync(src, target);
+  return 'linked';
 }
 
 // 1. Clone repo with submodules
@@ -54,78 +91,160 @@ function installSkills() {
 
   if (!DRY_RUN) fs.mkdirSync(skillsDir, { recursive: true });
 
-  const skills = fs.readdirSync(srcDir).filter(d => d.startsWith('cortex-'));
-  let installed = 0, skipped = 0;
+  if (DRY_RUN) {
+    for (const skill of MANIFEST.skills) {
+      const target = path.join(skillsDir, skill);
+      const src = path.join(srcDir, skill);
+      let status = 'would-create';
+      try {
+        const existing = fs.readlinkSync(target);
+        status = existing === src ? 'already-linked' : 'would-create';
+      } catch { /* absent or not a symlink — would-create */ }
+      record(`Skill: ${skill}`, status);
+    }
+    return;
+  }
 
-  for (const skill of skills) {
+  let installed = 0, skipped = 0;
+  for (const skill of MANIFEST.skills) {
     const target = path.join(skillsDir, skill);
     const src = path.join(srcDir, skill);
-    if (fs.existsSync(target) || fs.lstatSync(src).isSymbolicLink() && fs.existsSync(target)) {
-      skipped++;
-      log(`  skill ${skill} — already exists`);
-      continue;
-    }
-    if (!DRY_RUN) fs.symlinkSync(src, target);
-    log(`  skill ${skill} — linked`);
-    installed++;
+    const result = ensureSymlink(src, target);
+    if (result === 'already-linked') { skipped++; } else { installed++; }
+    log(`  skill ${skill} — ${result}`);
   }
 
   record(
     'Symlink skills',
     installed > 0 ? 'installed' : 'skipped',
-    `${skills.length} skills (${installed} new, ${skipped} existing)`
+    `${MANIFEST.skills.length} skills (${installed} new, ${skipped} existing)`
   );
 }
 
-// 3. Append CLAUDE.md.snippet to ~/.claude/CLAUDE.md (idempotent)
+// 3. Symlink cortex agents into ~/.claude/agents/
+function installAgents() {
+  const agentsDir = path.join(CLAUDE_DIR, 'agents');
+  const srcDir = path.join(CORTEX_LOCAL, '.claude', 'agents');
+
+  if (!DRY_RUN) fs.mkdirSync(agentsDir, { recursive: true });
+
+  if (DRY_RUN) {
+    for (const agent of MANIFEST.agents) {
+      const target = path.join(agentsDir, agent);
+      const src = path.join(srcDir, agent);
+      let status = 'would-create';
+      try {
+        const existing = fs.readlinkSync(target);
+        status = existing === src ? 'already-linked' : 'would-create';
+      } catch { /* absent — would-create */ }
+      record(`Agent: ${agent}`, status);
+    }
+    return;
+  }
+
+  let installed = 0, skipped = 0;
+  for (const agent of MANIFEST.agents) {
+    const target = path.join(agentsDir, agent);
+    const src = path.join(srcDir, agent);
+    const result = ensureSymlink(src, target);
+    if (result === 'already-linked') { skipped++; } else { installed++; }
+    log(`  agent ${agent} — ${result}`);
+  }
+
+  record('Symlink agents', installed > 0 ? 'installed' : 'skipped',
+    `${MANIFEST.agents.length} agents (${installed} new, ${skipped} existing)`);
+}
+
+// 4. Append CLAUDE.md.snippet to ~/.claude/CLAUDE.md (idempotent)
 function installClaudeMd() {
   const snippetPath = path.join(CORTEX_LOCAL, 'CLAUDE.md.snippet');
   const claudeMd = path.join(CLAUDE_DIR, 'CLAUDE.md');
   const marker = '# Cortex Integration';
 
-  const snippet = fs.readFileSync(snippetPath, 'utf8');
   const existing = fs.existsSync(claudeMd) ? fs.readFileSync(claudeMd, 'utf8') : '';
 
   if (existing.includes(marker)) {
     log('CLAUDE.md already has Cortex block — skipping');
-    record('Append CLAUDE.md', 'skipped', 'already present');
+    record('CLAUDE.md', 'already-set', 'Cortex Integration block already present');
     return;
   }
 
-  if (!DRY_RUN) {
-    fs.mkdirSync(CLAUDE_DIR, { recursive: true });
-    fs.appendFileSync(claudeMd, '\n' + snippet);
+  if (DRY_RUN) {
+    record('CLAUDE.md', 'would-append', 'Cortex Integration block');
+    return;
   }
+
+  const snippet = fs.readFileSync(snippetPath, 'utf8');
+  fs.mkdirSync(CLAUDE_DIR, { recursive: true });
+  fs.appendFileSync(claudeMd, '\n' + snippet);
   log('Appended Cortex block to ~/.claude/CLAUDE.md');
-  record('Append CLAUDE.md', 'installed');
+  record('CLAUDE.md', 'installed', 'Cortex Integration block appended');
 }
 
-// 4. Install cortex-sync.sh into ~/.claude/hooks/
-function installHook() {
+// 5. Symlink all 11 hooks into ~/.claude/hooks/
+function installHooks() {
   const hooksDir = path.join(CLAUDE_DIR, 'hooks');
-  const src = path.join(CORTEX_LOCAL, 'hooks', 'cortex-sync.sh');
-  const dest = path.join(hooksDir, 'cortex-sync.sh');
+  const srcDir = path.join(CORTEX_LOCAL, '.claude', 'hooks');
 
   if (!DRY_RUN) fs.mkdirSync(hooksDir, { recursive: true });
 
-  if (fs.existsSync(dest)) {
-    log('cortex-sync.sh already installed — skipping');
-    record('Install cortex-sync.sh', 'skipped', 'already exists');
+  if (DRY_RUN) {
+    for (const hook of MANIFEST.hooks) {
+      const target = path.join(hooksDir, hook);
+      const src = path.join(srcDir, hook);
+      let status = 'would-create';
+      try {
+        const existing = fs.readlinkSync(target);
+        status = existing === src ? 'already-linked' : 'would-create';
+      } catch (e) {
+        if (e.code === 'EINVAL') status = 'replace-copy';
+        // ENOENT → would-create (default)
+      }
+      record(`Hook: ${hook}`, status);
+    }
     return;
   }
 
-  if (!DRY_RUN) {
-    fs.copyFileSync(src, dest);
-    fs.chmodSync(dest, 0o755);
+  let installed = 0, skipped = 0;
+  for (const hook of MANIFEST.hooks) {
+    const target = path.join(hooksDir, hook);
+    const src = path.join(srcDir, hook);
+    const result = ensureSymlink(src, target);
+    fs.chmodSync(target, 0o755);
+    if (result === 'already-linked') { skipped++; } else { installed++; }
+    log(`  hook ${hook} — ${result}`);
   }
-  log('Installed ~/.claude/hooks/cortex-sync.sh');
-  record('Install cortex-sync.sh', 'installed', '~/.claude/hooks/cortex-sync.sh');
+
+  record('Symlink hooks', installed > 0 ? 'installed' : 'skipped',
+    `${MANIFEST.hooks.length} hooks (${installed} new, ${skipped} existing)`);
 }
 
-// 5. Wire PostToolUse hook in ~/.claude/settings.json
+// Dedup helper: returns true if any entry in the array already references commandFragment
+function isHookAlreadyWired(entries, commandFragment) {
+  return (entries || []).some(entry =>
+    (entry.hooks || []).some(h =>
+      typeof h.command === 'string' && h.command.includes(commandFragment)
+    )
+  );
+}
+
+// 6. Wire all 9 hook events in ~/.claude/settings.json
 function wireSettings() {
   const settingsPath = path.join(CLAUDE_DIR, 'settings.json');
-  const hookCommand = path.join(CLAUDE_DIR, 'hooks', 'cortex-sync.sh');
+  const hooksDir = path.join(CLAUDE_DIR, 'hooks');
+
+  // 9 events — cortex-write-guard.sh is NOT wired globally (agent-invoked only)
+  const HOOK_EVENTS = [
+    { event: 'SessionStart',  file: 'cortex-session-start.sh',     entry: () => ({ hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-session-start.sh') }] }) },
+    { event: 'PreCompact',    file: 'cortex-precompact.sh',         entry: () => ({ hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-precompact.sh') }] }) },
+    { event: 'PostCompact',   file: 'cortex-postcompact.sh',        entry: () => ({ hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-postcompact.sh') }] }) },
+    { event: 'Stop',          file: 'cortex-session-end.sh',        entry: () => ({ hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-session-end.sh'), async: true }] }) },
+    { event: 'PreToolUse',    file: 'cortex-phase-guard.sh',        entry: () => ({ matcher: 'Write|Edit', hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-phase-guard.sh'), timeout: 10 }] }) },
+    { event: 'PostToolUse',   file: 'cortex-validator-trigger.sh',  entry: () => ({ matcher: 'Write|Edit', hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-validator-trigger.sh'), async: true }] }) },
+    { event: 'TaskCreated',   file: 'cortex-task-created.sh',       entry: () => ({ hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-task-created.sh'), timeout: 5 }] }) },
+    { event: 'TaskCompleted', file: 'cortex-task-completed.sh',     entry: () => ({ hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-task-completed.sh'), timeout: 10 }] }) },
+    { event: 'TeammateIdle',  file: 'cortex-teammate-idle.sh',      entry: () => ({ hooks: [{ type: 'command', command: path.join(hooksDir, 'cortex-teammate-idle.sh'), timeout: 5 }] }) },
+  ];
 
   let settings = {};
   if (fs.existsSync(settingsPath)) {
@@ -136,40 +255,86 @@ function wireSettings() {
       return;
     }
   }
+  if (!settings.hooks) settings.hooks = {};
 
-  // Check if already wired
-  const postHooks = (settings?.hooks?.PostToolUse) || [];
-  const alreadyWired = postHooks.some(entry =>
-    entry?.hooks?.some(h => typeof h.command === 'string' && h.command.includes('cortex-sync.sh'))
-  );
+  let added = 0, alreadySet = 0;
 
-  if (alreadyWired) {
-    log('cortex-sync.sh already wired in settings.json — skipping');
-    record('Wire settings.json', 'skipped', 'hook already present');
-    return;
+  for (const { event, file, entry } of HOOK_EVENTS) {
+    const existing = settings.hooks[event] || [];
+    if (isHookAlreadyWired(existing, file)) {
+      alreadySet++;
+      if (DRY_RUN) record(`Settings: ${event}`, 'already-set', file);
+      log(`  ${event} → ${file} — already wired`);
+      continue;
+    }
+
+    if (DRY_RUN) {
+      record(`Settings: ${event}`, 'would-add', file);
+      added++;
+      continue;
+    }
+
+    if (!settings.hooks[event]) settings.hooks[event] = [];
+    settings.hooks[event].push(entry());
+    added++;
+    log(`  ${event} → ${file} — wired`);
   }
 
-  if (!settings.hooks) settings.hooks = {};
-  if (!settings.hooks.PostToolUse) settings.hooks.PostToolUse = [];
-  settings.hooks.PostToolUse.push({
-    matcher: 'Write|Edit',
-    hooks: [{
-      type: 'command',
-      command: hookCommand,
-      async: true,
-      statusMessage: 'Syncing Cortex skill to GitHub...'
-    }]
-  });
-
-  if (!DRY_RUN) fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n');
-  log('Wired cortex-sync.sh in ~/.claude/settings.json PostToolUse');
-  record('Wire settings.json', 'installed', 'PostToolUse Write|Edit → cortex-sync.sh');
+  if (!DRY_RUN) {
+    fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n');
+    record('Wire settings.json', added > 0 ? 'installed' : 'skipped',
+      `${HOOK_EVENTS.length} events (${added} new, ${alreadySet} existing)`);
+  }
 }
 
 function printSummary() {
   const LINE = '─'.repeat(54);
-  const icons = { installed: '✓', skipped: '○', error: '✗' };
 
+  if (DRY_RUN) {
+    console.log(LINE);
+    console.log(' Cortex Install Preview');
+    console.log(LINE);
+
+    const groups = [
+      { label: 'Skills  (~/.claude/skills/)',           prefix: 'Skill:' },
+      { label: 'Agents  (~/.claude/agents/)',           prefix: 'Agent:' },
+      { label: 'Hooks   (~/.claude/hooks/)',            prefix: 'Hook:' },
+      { label: 'Settings (~/.claude/settings.json)',   prefix: 'Settings:' },
+      { label: 'CLAUDE.md',                             prefix: 'CLAUDE.md' },
+    ];
+
+    for (const { label, prefix } of groups) {
+      const items = results.filter(r => r.label.startsWith(prefix));
+      if (!items.length) continue;
+      console.log(`\n ${label}`);
+      for (const { label: l, status, note } of items) {
+        const name = l.replace(prefix, '').trim();
+        const tag = status === 'already-linked' || status === 'already-set'
+          ? '[already set]  '
+          : status === 'replace-copy'
+          ? '[replace copy] '
+          : '[would create] ';
+        const noteStr = note ? ` → ${note}` : '';
+        console.log(`   ${tag} ${name}${noteStr}`);
+      }
+    }
+
+    const wouldCreate = results.filter(r =>
+      r.status === 'would-create' || r.status === 'would-add' || r.status === 'would-append'
+    ).length;
+    const alreadySet  = results.filter(r =>
+      r.status === 'already-linked' || r.status === 'already-set'
+    ).length;
+    const replaceCopy = results.filter(r => r.status === 'replace-copy').length;
+
+    console.log(`\n${LINE}`);
+    console.log(` Summary: ${wouldCreate} would-create, ${alreadySet} already-set, ${replaceCopy} replace-copy`);
+    console.log(`${LINE}\n`);
+    return;
+  }
+
+  // Live run summary
+  const icons = { installed: '✓', skipped: '○', error: '✗' };
   console.log(`\n${LINE}`);
   console.log(' Cortex Installation');
   console.log(LINE);
@@ -181,7 +346,6 @@ function printSummary() {
   }
 
   const hasErrors = results.some(r => r.status === 'error');
-
   console.log(LINE);
 
   if (hasErrors) {
@@ -209,11 +373,11 @@ ${LINE}
 
 function main() {
   if (DRY_RUN) console.log('Dry run — no changes will be made\n');
-
   installRepo();
   installSkills();
+  installAgents();
   installClaudeMd();
-  installHook();
+  installHooks();
   wireSettings();
   printSummary();
 }
