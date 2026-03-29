@@ -116,7 +116,11 @@ Plans:
   3. `--dry-run` flag completes without requiring any clone-dependent files and outputs a clear diff of what would be installed
   4. No credential-bearing remote URLs appear anywhere in the installed git configuration
 **Research**: Unlikely (extend existing install.js patterns)
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Rewrite bin/install.js: MANIFEST constant, installAgents(), installHooks(), generalized wireSettings() (9 events), dry-run table output
+- [ ] 06-02-PLAN.md — Create dotfiles-setup.sh wrapper + test/installer.test.sh (5 assertions: dry-run, symlinks, idempotency, settings dedup, credential audit)
 
 ## Progress
 
@@ -127,4 +131,4 @@ Plans:
 | 3. New and Updated Skills | 0/3 | Complete    | 2026-03-29 |
 | 4. Subagents and Hooks | 4/4 | Complete    | 2026-03-29 |
 | 5. Eval Subsystem | 2/2 | Complete    | 2026-03-29 |
-| 6. Installer and Operational Cleanup | 0/TBD | Not started | - |
+| 6. Installer and Operational Cleanup | 0/2 | Not started | - |
