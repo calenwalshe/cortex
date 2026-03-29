@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 03-01-PLAN.md — cortex-clarify SKILL.md and cortex-research SKILL.md vNext update
-last_updated: "2026-03-29T03:08:24.251Z"
-last_activity: 2026-03-29 — Plan 01-03 complete (EVALS.md, AGENTS.md, README vNext)
+stopped_at: Completed 03-03-PLAN.md — cortex-investigate, cortex-review, cortex-audit artifact writing
+last_updated: "2026-03-28T00:00:00.000Z"
+last_activity: 2026-03-28 — Plan 03-03 complete (artifact writing for investigate/review/audit)
 progress:
   total_phases: 6
-  completed_phases: 2
-  total_plans: 10
-  completed_plans: 9
+  completed_phases: 3
+  total_plans: 13
+  completed_plans: 13
   percent: 100
 ---
 
@@ -57,6 +57,8 @@ Progress: [██████████] 100%
 | Phase 02-artifact-scaffolding-and-templates P01 | 16min | 2 tasks | 9 files |
 | Phase 02-artifact-scaffolding-and-templates P04 | 2 | 2 tasks | 1 files |
 | Phase 03-new-and-updated-skills P01 | 2min | 2 tasks | 2 files |
+| Phase 03-new-and-updated-skills P02 | 8min | 2 tasks | 2 files |
+| Phase 03-new-and-updated-skills P03 | 18min | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -90,6 +92,9 @@ Recent decisions affecting current work:
 - [Phase 03-new-and-updated-skills]: cortex-clarify is the mandatory gate: no research or spec without a clarify brief
 - [Phase 03-new-and-updated-skills]: --phase evals branches to eval-proposal.md using a different template from research dossier
 - [Phase 03-new-and-updated-skills]: Legacy cortex-research ~/research/ output path and --quick/--deep flags removed in favor of docs/cortex/ routing and --depth interface
+- [Phase 03-new-and-updated-skills]: cortex-spec requires clarify brief AND research dossier — blocks with actionable error if either missing
+- [Phase 03-new-and-updated-skills]: cortex-spec does NOT auto-invoke GSD; human must explicitly import gsd-handoff.md into GSD as separate step
+- [Phase 03-new-and-updated-skills]: Old cortex-status system-health behavior (API keys, upstream versions, Python packages) fully retired in favor of continuity reconstruction from repo-local artifacts
 
 ### Pending Todos
 
@@ -101,6 +106,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T03:08:14.209Z
-Stopped at: Completed 03-01-PLAN.md — cortex-clarify SKILL.md and cortex-research SKILL.md vNext update
+Last session: 2026-03-29T03:08:36.563Z
+Stopped at: Completed 03-02-PLAN.md — cortex-spec (net-new) and cortex-status (behavioral replacement)
 Resume file: None
