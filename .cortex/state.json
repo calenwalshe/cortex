@@ -1,0 +1,17 @@
+{
+  "slug": null,
+  "mode": "clarify",
+  "approval_status": "pending",
+  "active_contract": null,
+  "artifacts": [],
+  "approvals": {
+    "contract": false,
+    "evals": false
+  },
+  "gates": {
+    "clarify_complete": false,
+    "research_complete": false,
+    "spec_complete": false,
+    "contract_approved": false
+  }
+}

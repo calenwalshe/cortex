@@ -1,0 +1,12 @@
+# Scratch runtime files — do not commit
+runs/
+tmp/
+dirty-files.json
+validator-results.json
+
+# Commit state.json (durable continuity state)
+!state.json
+
+# Commit compaction snapshots (durable continuity)
+!compaction/
+!compaction/**
