@@ -20,7 +20,7 @@
 | Command | Purpose | Output Artifact |
 |---------|---------|----------------|
 | `/cortex-clarify` | Convert a fuzzy idea into a written problem frame with goal, non-goals, constraints, assumptions, and open questions | `docs/cortex/clarify/<slug>/<timestamp>-clarify-brief.md` |
-| `/cortex-research` | Run concept, implementation, or eval research with configurable depth and optional team flag | `docs/cortex/research/<slug>/<phase>-<timestamp>.md` |
+| `/cortex-research` | Run concept, implementation, or eval research with configurable depth, optional team mode, and optional eval-plan write step (`--write-plan`) | `docs/cortex/research/<slug>/<phase>-<timestamp>.md` (concept/implementation) or `docs/cortex/evals/<slug>/eval-proposal.md` / `eval-plan.md` |
 | `/cortex-spec` | Compress clarify + research into a GSD-ready handoff pack, spec.md, and first execution contract | `docs/cortex/specs/<slug>/spec.md`, `gsd-handoff.md`; `docs/cortex/contracts/<slug>/contract-001.md` |
 | `/cortex-investigate` | Write investigation artifacts and optionally hand off into a GSD repair contract | `docs/cortex/investigations/<slug>/` |
 | `/cortex-review` | Review implementation against contract compliance and quality lenses | `docs/cortex/reviews/<slug>/` |
@@ -37,6 +37,7 @@ Both artifact roots live in the **target project repo** — the repository where
 | `.cortex/` | Target project repo | Machine state: `state.json`, `dirty-files.json`, compaction snapshots, validator results, continuity files |
 
 > **These paths are in the project where Cortex is used, not in the Cortex framework repo itself.**
+> The framework repo may still include `.cortex/` and `.planning/` for dogfooding and development, but runtime command output belongs to the target project repo.
 
 ## Ownership Boundary
 
@@ -120,17 +121,14 @@ cortex/
 │   ├── cortex-review/
 │   ├── cortex-investigate/
 │   ├── cortex-audit/
-│   ├── cortex-clarify/         # Phase 3 deliverable
-│   ├── cortex-research/        # Phase 3 deliverable
-│   └── cortex-spec/            # Phase 3 deliverable
-├── agents/                     # Phase 4 deliverable — 4 agents
-│   │                           # (cortex-specifier, cortex-critic,
-│   │                           #  cortex-scribe, cortex-eval-designer)
-│   └── (not yet populated)
-├── hooks/                      # Phase 4 deliverable — 10 hooks
-│   ├── cortex-sync.sh          # Placeholder — known credential URL bug (HOOK-10);
-│   │                           # being replaced in Phase 4
-│   └── (remaining hooks not yet populated)
+│   ├── cortex-clarify/
+│   ├── cortex-research/
+│   └── cortex-spec/
+├── .claude/
+│   ├── agents/                 # Installed: 4 agents (cortex-specifier, cortex-critic,
+│   │                           # cortex-scribe, cortex-eval-designer)
+│   ├── hooks/                  # Installed: 11 hook scripts
+│   └── settings.json           # Global hook wiring across 9 Claude Code events
 ├── bin/                        # Scripts
 │   ├── install.sh
 │   ├── sync-upstream.sh
