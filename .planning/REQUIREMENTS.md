@@ -24,14 +24,14 @@
 - [ ] **ART-05**: Contract written to `docs/cortex/contracts/<slug>/contract-001.md` with required schema (id, slug, phase, objective, deliverables, scope, write roots, done criteria, validators, approvals, rollback hints)
 - [ ] **ART-06**: Eval proposal written to `docs/cortex/evals/<slug>/eval-proposal.md`
 - [ ] **ART-07**: Eval plan written to `docs/cortex/evals/<slug>/eval-plan.md` after human approval
-- [ ] **ART-08**: Continuity files maintained: `current-state.md`, `open-questions.md`, `next-prompt.md`, `decisions.md`, `eval-status.md`, `last-compact-summary.md`
+- [x] **ART-08**: Continuity files maintained: `current-state.md`, `open-questions.md`, `next-prompt.md`, `decisions.md`, `eval-status.md`, `last-compact-summary.md`
 
 ### Continuity
 
 - [ ] **CONT-01**: After compaction or `/clear`, `/cortex-status` reconstructs current state from `current-state.md`, `next-prompt.md`, and active contract
 - [ ] **CONT-02**: `current-state.md` schema: current slug, mode, approval status, active contract path, recent artifacts, open questions, blockers, next action
 - [ ] **CONT-03**: `next-prompt.md` contains a short restart prompt a human can paste after `/clear`
-- [ ] **CONT-04**: `.cortex/state.json` tracks Cortex runtime mode, artifacts, approvals, and gates (not GSD roadmap state)
+- [x] **CONT-04**: `.cortex/state.json` tracks Cortex runtime mode, artifacts, approvals, and gates (not GSD roadmap state)
 
 ### Hooks
 
@@ -124,8 +124,8 @@
 | ART-05 | Phase 2: Artifact Scaffolding and Templates | Pending |
 | ART-06 | Phase 2: Artifact Scaffolding and Templates | Pending |
 | ART-07 | Phase 2: Artifact Scaffolding and Templates | Pending |
-| ART-08 | Phase 2: Artifact Scaffolding and Templates | Pending |
-| CONT-04 | Phase 2: Artifact Scaffolding and Templates | Pending |
+| ART-08 | Phase 2: Artifact Scaffolding and Templates | Complete |
+| CONT-04 | Phase 2: Artifact Scaffolding and Templates | Complete |
 | CMD-01 | Phase 3: New and Updated Skills | Pending |
 | CMD-02 | Phase 3: New and Updated Skills | Pending |
 | CMD-03 | Phase 3: New and Updated Skills | Pending |

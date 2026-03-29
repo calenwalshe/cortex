@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 01-01-PLAN.md — CORTEX.md rewrite + INTELLIGENCE_FLOW.md
-last_updated: "2026-03-29T02:27:35.106Z"
+stopped_at: Completed 02-02-PLAN.md — 7 artifact templates in templates/cortex/
+last_updated: "2026-03-29T02:43:26.620Z"
 last_activity: 2026-03-29 — Plan 01-03 complete (EVALS.md, AGENTS.md, README vNext)
 progress:
   total_phases: 6
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  total_plans: 7
+  completed_plans: 5
   percent: 100
 ---
 
@@ -52,6 +52,8 @@ Progress: [██████████] 100%
 *Updated after each plan completion*
 | Phase 01 P02 | 2 | 2 tasks | 2 files |
 | Phase 01-core-docs-and-architecture-alignment P01 | 2 | 2 tasks | 2 files |
+| Phase 02-artifact-scaffolding-and-templates P03 | 4 | 2 tasks | 15 files |
+| Phase 02-artifact-scaffolding-and-templates P02 | 3 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -73,6 +75,11 @@ Recent decisions affecting current work:
 - [Phase 01-core-docs-and-architecture-alignment]: Repair loop re-enters validate, never clarify — bounded convergence model
 - [Phase 01]: Human-readable continuity files placed under docs/cortex/handoffs/ (resolves ambiguity from research)
 - [Phase 01]: COMMANDS.md documents vNext interface explicitly noting SKILL.md legacy divergence — intentional until Phase 3
+- [Phase 02-artifact-scaffolding-and-templates]: Scratch .cortex/ files (runs/, tmp/, dirty-files.json, validator-results.json) excluded from git via .gitignore; durable state.json and compaction/ committed via negation rules
+- [Phase 02-artifact-scaffolding-and-templates]: Continuity template placeholders use {UPPERCASE_FIELD} with lowercase schema field labels to preserve both CONTINUITY.md key names and template fill-in convention
+- [Phase 02-artifact-scaffolding-and-templates]: contract.md eval_plan field marked Required with comment — contracts without it are incomplete per EVALS.md
+- [Phase 02-artifact-scaffolding-and-templates]: spec.md has all 9 mandatory sections — omitting any section is an error by design
+- [Phase 02-artifact-scaffolding-and-templates]: eval-proposal.md APPROVAL_REQUIRED is document-level flag — simplifies human approval flow
 
 ### Pending Todos
 
@@ -84,6 +91,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-29T02:24:12.167Z
-Stopped at: Completed 01-01-PLAN.md — CORTEX.md rewrite + INTELLIGENCE_FLOW.md
+Last session: 2026-03-29T02:43:26.615Z
+Stopped at: Completed 02-02-PLAN.md — 7 artifact templates in templates/cortex/
 Resume file: None
