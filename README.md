@@ -52,11 +52,16 @@ git clone https://github.com/calenwalshe/cortex.git ~/projects/cortex
 # Run the installer (symlinks skills, agents, hooks into ~/.claude/)
 node ~/projects/cortex/bin/install.js
 
+# Bootstrap runtime artifacts in your target project repo
+node ~/projects/cortex/bin/install.js --project /path/to/your/project
+
 # Or via the shell wrapper
 bash ~/projects/cortex/dotfiles-setup.sh
 ```
 
-Once installed, start with `/cortex-clarify <your idea>` to begin the intelligence cycle. The clarify command produces a written problem frame you can review before committing to research and spec work.
+The `--project` step scaffolds `docs/cortex/` and `.cortex/` in your target repo, including `.cortex/state.json` and `.cortex/dirty-files.json`, so hooks and runtime state work immediately.
+
+Once installed and bootstrapped, start with `/cortex-clarify <your idea>` to begin the intelligence cycle. The clarify command produces a written problem frame you can review before committing to research and spec work.
 
 ## Structure
 

@@ -15,6 +15,29 @@ const args = process.argv.slice(2);
 const VERBOSE = args.includes('--verbose') || args.includes('-v');
 const DRY_RUN = args.includes('--dry-run');
 
+function parseProjectRoot(argv) {
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg === '--project') {
+      const value = argv[i + 1];
+      if (!value || value.startsWith('-')) {
+        throw new Error('Missing value for --project. Usage: --project <target-project-root>');
+      }
+      return value;
+    }
+    if (arg.startsWith('--project=')) {
+      const value = arg.slice('--project='.length);
+      if (!value) {
+        throw new Error('Missing value for --project. Usage: --project <target-project-root>');
+      }
+      return value;
+    }
+  }
+  return null;
+}
+
+const PROJECT_ROOT = parseProjectRoot(args);
+
 const MANIFEST = {
   skills: [
     'cortex-audit', 'cortex-clarify', 'cortex-investigate',
@@ -46,7 +69,9 @@ function record(label, status, note = '') {
 function run(cmd, opts = {}) {
   if (DRY_RUN) { log(`[dry-run] ${cmd}`); return ''; }
   try {
-    return execSync(cmd, { stdio: VERBOSE ? 'inherit' : 'pipe', ...opts }).toString().trim();
+    const output = execSync(cmd, { stdio: VERBOSE ? 'inherit' : 'pipe', ...opts });
+    if (!output) return '';
+    return output.toString().trim();
   } catch (err) {
     throw new Error(`Command failed: ${cmd}\n${err.message}`);
   }
@@ -287,6 +312,23 @@ function wireSettings() {
   }
 }
 
+function installProjectRuntime() {
+  if (!PROJECT_ROOT) return;
+  const resolvedProjectRoot = path.resolve(PROJECT_ROOT);
+  const scaffoldScript = path.join(CORTEX_LOCAL, 'scripts', 'cortex', 'scaffold_runtime.sh');
+  const quotedScript = `"${scaffoldScript.replace(/"/g, '\\"')}"`;
+  const quotedTarget = `"${resolvedProjectRoot.replace(/"/g, '\\"')}"`;
+  const command = `bash ${quotedScript} ${quotedTarget}`;
+
+  if (DRY_RUN) {
+    record('Project runtime scaffold', 'would-create', resolvedProjectRoot);
+    return;
+  }
+
+  run(command, { stdio: 'inherit' });
+  record('Project runtime scaffold', 'installed', resolvedProjectRoot);
+}
+
 function printSummary() {
   const LINE = '─'.repeat(54);
 
@@ -301,6 +343,7 @@ function printSummary() {
       { label: 'Hooks   (~/.claude/hooks/)',            prefix: 'Hook:' },
       { label: 'Settings (~/.claude/settings.json)',   prefix: 'Settings:' },
       { label: 'CLAUDE.md',                             prefix: 'CLAUDE.md' },
+      { label: 'Project runtime',                       prefix: 'Project runtime scaffold' },
     ];
 
     for (const { label, prefix } of groups) {
@@ -379,6 +422,7 @@ function main() {
   installClaudeMd();
   installHooks();
   wireSettings();
+  installProjectRuntime();
   printSummary();
 }
 
