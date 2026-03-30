@@ -151,4 +151,4 @@ Human evaluator assesses: (a) do the 12 natural-language prompts fire the correc
 
 **Reviewer:** project lead (user)
 
-**Approval Status:** pending
+**Approval Status:** approved

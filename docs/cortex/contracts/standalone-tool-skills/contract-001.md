@@ -7,7 +7,7 @@
 **Slug:** standalone-tool-skills
 **Phase:** execute
 **Created:** 20260330T200000Z
-**Status:** draft
+**Status:** approved
 
 ---
 
@@ -87,14 +87,14 @@ Build four grouped global Claude Code skills (`/web`, `/ai`, `/google`, `/cli`) 
 
 ## Eval Plan
 
-docs/cortex/evals/standalone-tool-skills/eval-plan.md (pending)
+docs/cortex/evals/standalone-tool-skills/eval-plan.md
 
 ---
 
 ## Approvals
 
-- [ ] Contract approval
-- [ ] Evals approval
+- [x] Contract approval
+- [x] Evals approval
 
 ---
 

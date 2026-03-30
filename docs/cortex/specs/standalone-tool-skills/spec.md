@@ -4,7 +4,7 @@
 
 **Slug:** standalone-tool-skills
 **Timestamp:** 20260330T200000Z
-**Status:** draft
+**Status:** approved
 
 ---
 
