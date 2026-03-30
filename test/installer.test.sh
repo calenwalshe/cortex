@@ -55,7 +55,7 @@ echo ""
 echo "2. Live install symlinks"
 HOME="$TEST_HOME" node "$REPO_DIR/bin/install.js" > /dev/null 2>&1
 
-readarray -t SKILLS < <(python3 -c "import json; d=json.load(open('$MANIFEST_PATH')); [print(x) for x in d['skills']]")
+readarray -t SKILLS < <(python3 -c "import json; d=json.load(open('$MANIFEST_PATH')); [print(x['name'] if isinstance(x, dict) else x) for x in d['skills'] if (x.get('profiles', ['core','full']) if isinstance(x, dict) else ['core','full']).__contains__('core')]")
 SKILL_FAILS=0
 for skill in "${SKILLS[@]}"; do
   if [ ! -L "$TEST_HOME/.claude/skills/$skill" ]; then
@@ -63,9 +63,9 @@ for skill in "${SKILLS[@]}"; do
   fi
 done
 if [ "$SKILL_FAILS" -eq 0 ]; then
-  assert_pass "all ${#SKILLS[@]} skills symlinked to ~/.claude/skills/"
+  assert_pass "all ${#SKILLS[@]} core skills symlinked to ~/.claude/skills/"
 else
-  assert_fail "all ${#SKILLS[@]} skills symlinked" "$SKILL_FAILS skills missing"
+  assert_fail "all ${#SKILLS[@]} core skills symlinked" "$SKILL_FAILS skills missing"
 fi
 
 readarray -t AGENTS < <(python3 -c "import json; d=json.load(open('$MANIFEST_PATH')); [print(x) for x in d['agents']]")
@@ -193,6 +193,133 @@ if [ "$CRED_COUNT" -eq 0 ]; then
 else
   assert_fail "credential audit" "$CRED_COUNT credential URL(s) found"
 fi
+
+# ── Test 6: profile=core installs only framework skills ───
+echo ""
+echo "6. Profile: core"
+CORE_HOME="$(mktemp -d)"
+trap 'rm -rf "$CORE_HOME"' EXIT
+mkdir -p "$CORE_HOME/.claude/skills" "$CORE_HOME/.claude/hooks"
+echo '{}' > "$CORE_HOME/.claude/settings.json"
+mkdir -p "$CORE_HOME/projects"
+ln -s "$REPO_DIR" "$CORE_HOME/projects/cortex"
+
+HOME="$CORE_HOME" node "$REPO_DIR/bin/install.js" --profile=core > /dev/null 2>&1
+
+# core-profile skills should be symlinked
+readarray -t CORE_SKILLS < <(python3 -c "import json; d=json.load(open('$MANIFEST_PATH')); [print(x['name'] if isinstance(x,dict) else x) for x in d['skills'] if ('core' in (x.get('profiles',['core','full']) if isinstance(x,dict) else ['core','full']))]")
+CORE_SKILL_FAILS=0
+for skill in "${CORE_SKILLS[@]}"; do
+  if [ ! -L "$CORE_HOME/.claude/skills/$skill" ]; then
+    CORE_SKILL_FAILS=$((CORE_SKILL_FAILS + 1))
+  fi
+done
+if [ "$CORE_SKILL_FAILS" -eq 0 ]; then
+  assert_pass "--profile=core: all ${#CORE_SKILLS[@]} framework skills symlinked"
+else
+  assert_fail "--profile=core: framework skills" "$CORE_SKILL_FAILS missing"
+fi
+
+# full-only skills must NOT be symlinked
+readarray -t FULL_ONLY_SKILLS < <(python3 -c "import json; d=json.load(open('$MANIFEST_PATH')); [print(x['name'] if isinstance(x,dict) else x) for x in d['skills'] if isinstance(x,dict) and x.get('profiles') == ['full']]")
+UNWANTED_FAILS=0
+for skill in "${FULL_ONLY_SKILLS[@]}"; do
+  if [ -L "$CORE_HOME/.claude/skills/$skill" ] || [ -e "$CORE_HOME/.claude/skills/$skill" ]; then
+    UNWANTED_FAILS=$((UNWANTED_FAILS + 1))
+  fi
+done
+if [ "$UNWANTED_FAILS" -eq 0 ]; then
+  assert_pass "--profile=core: no tool skill symlinks (web/ai/google/cli absent)"
+else
+  assert_fail "--profile=core: tool skill symlinks should be absent" "$UNWANTED_FAILS found"
+fi
+
+# .cortex-profile marker must contain "core"
+MARKER_VAL="$(cat "$CORE_HOME/.claude/.cortex-profile" 2>/dev/null || echo '')"
+if [ "$MARKER_VAL" = "core" ]; then
+  assert_pass "--profile=core: ~/.claude/.cortex-profile contains 'core'"
+else
+  assert_fail "--profile=core: .cortex-profile" "expected 'core', got '$MARKER_VAL'"
+fi
+
+# core output must not mention API keys
+CORE_OUTPUT="$(HOME="$CORE_HOME" node "$REPO_DIR/bin/install.js" --profile=core 2>&1)"
+if echo "$CORE_OUTPUT" | grep -qE "TAVILY_API_KEY|PPLX_API_KEY|FIRECRAWL_API_KEY|GEMINI_API_KEY"; then
+  assert_fail "--profile=core: output must not mention API keys" "API key string found"
+else
+  assert_pass "--profile=core: output contains no API key references"
+fi
+
+rm -rf "$CORE_HOME"
+
+# ── Test 7: profile=full installs all skills ───────────────
+echo ""
+echo "7. Profile: full"
+FULL_HOME="$(mktemp -d)"
+trap 'rm -rf "$FULL_HOME"' EXIT
+mkdir -p "$FULL_HOME/.claude/skills" "$FULL_HOME/.claude/hooks"
+echo '{}' > "$FULL_HOME/.claude/settings.json"
+mkdir -p "$FULL_HOME/projects"
+ln -s "$REPO_DIR" "$FULL_HOME/projects/cortex"
+
+HOME="$FULL_HOME" node "$REPO_DIR/bin/install.js" --profile=full > /dev/null 2>&1
+
+readarray -t ALL_SKILLS < <(python3 -c "import json; d=json.load(open('$MANIFEST_PATH')); [print(x['name'] if isinstance(x,dict) else x) for x in d['skills']]")
+FULL_SKILL_FAILS=0
+for skill in "${ALL_SKILLS[@]}"; do
+  if [ ! -L "$FULL_HOME/.claude/skills/$skill" ]; then
+    FULL_SKILL_FAILS=$((FULL_SKILL_FAILS + 1))
+  fi
+done
+if [ "$FULL_SKILL_FAILS" -eq 0 ]; then
+  assert_pass "--profile=full: all ${#ALL_SKILLS[@]} skills symlinked (framework + tool)"
+else
+  assert_fail "--profile=full: skills" "$FULL_SKILL_FAILS missing"
+fi
+
+FULL_MARKER="$(cat "$FULL_HOME/.claude/.cortex-profile" 2>/dev/null || echo '')"
+if [ "$FULL_MARKER" = "full" ]; then
+  assert_pass "--profile=full: ~/.claude/.cortex-profile contains 'full'"
+else
+  assert_fail "--profile=full: .cortex-profile" "expected 'full', got '$FULL_MARKER'"
+fi
+
+rm -rf "$FULL_HOME"
+
+# ── Test 8: core→full upgrade adds tool skills ─────────────
+echo ""
+echo "8. Upgrade: core → full"
+UPGRADE_HOME="$(mktemp -d)"
+trap 'rm -rf "$UPGRADE_HOME"' EXIT
+mkdir -p "$UPGRADE_HOME/.claude/skills" "$UPGRADE_HOME/.claude/hooks"
+echo '{}' > "$UPGRADE_HOME/.claude/settings.json"
+mkdir -p "$UPGRADE_HOME/projects"
+ln -s "$REPO_DIR" "$UPGRADE_HOME/projects/cortex"
+
+HOME="$UPGRADE_HOME" node "$REPO_DIR/bin/install.js" --profile=core > /dev/null 2>&1
+HOME="$UPGRADE_HOME" node "$REPO_DIR/bin/install.js" --profile=full > /dev/null 2>&1
+
+# All skills present after upgrade
+UPGRADE_FAILS=0
+for skill in "${ALL_SKILLS[@]}"; do
+  if [ ! -L "$UPGRADE_HOME/.claude/skills/$skill" ]; then
+    UPGRADE_FAILS=$((UPGRADE_FAILS + 1))
+  fi
+done
+if [ "$UPGRADE_FAILS" -eq 0 ]; then
+  assert_pass "core→full upgrade: all ${#ALL_SKILLS[@]} skills present after upgrade"
+else
+  assert_fail "core→full upgrade" "$UPGRADE_FAILS skills missing after upgrade"
+fi
+
+UPGRADE_MARKER="$(cat "$UPGRADE_HOME/.claude/.cortex-profile" 2>/dev/null || echo '')"
+if [ "$UPGRADE_MARKER" = "full" ]; then
+  assert_pass "core→full upgrade: .cortex-profile updated to 'full'"
+else
+  assert_fail "core→full upgrade: .cortex-profile" "expected 'full', got '$UPGRADE_MARKER'"
+fi
+
+rm -rf "$UPGRADE_HOME"
 
 # ── Summary ────────────────────────────────────────────────
 echo ""

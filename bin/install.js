@@ -17,6 +17,30 @@ const args = process.argv.slice(2);
 const VERBOSE = args.includes('--verbose') || args.includes('-v');
 const DRY_RUN = args.includes('--dry-run');
 
+function parseProfile(argv) {
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === '--profile' && argv[i + 1] && !argv[i + 1].startsWith('-')) {
+      return argv[i + 1];
+    }
+    if (argv[i].startsWith('--profile=')) {
+      return argv[i].slice('--profile='.length);
+    }
+  }
+  // Fall back to last-used profile from marker file
+  const markerPath = path.join(os.homedir(), '.claude', '.cortex-profile');
+  if (fs.existsSync(markerPath)) {
+    const saved = fs.readFileSync(markerPath, 'utf8').trim();
+    if (saved === 'core' || saved === 'full') return saved;
+  }
+  return 'core';
+}
+
+const PROFILE = parseProfile(args);
+if (PROFILE !== 'core' && PROFILE !== 'full') {
+  console.error(`Unknown profile: "${PROFILE}". Valid values: core, full`);
+  process.exit(1);
+}
+
 function parseProjectRoot(argv) {
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
@@ -55,6 +79,11 @@ function loadRuntimeManifest() {
   if (!Array.isArray(parsed.skills) || !Array.isArray(parsed.agents) || !Array.isArray(parsed.hooks) || !Array.isArray(parsed.hook_events)) {
     throw new Error(`Invalid runtime manifest schema in ${MANIFEST_PATH}`);
   }
+
+  // Normalise skills: support both legacy string[] and current object[] formats
+  parsed.skills = parsed.skills.map(s =>
+    typeof s === 'string' ? { name: s, profiles: ['core', 'full'] } : s
+  );
 
   return parsed;
 }
@@ -114,40 +143,41 @@ function installRepo() {
   record('Clone repo', 'installed', '~/projects/cortex');
 }
 
-// 2. Symlink cortex-* skills into ~/.claude/skills/
+// 2. Symlink skills into ~/.claude/skills/ filtered by active profile
 function installSkills() {
   const skillsDir = path.join(CLAUDE_DIR, 'skills');
   const srcDir = path.join(CORTEX_LOCAL, 'skills');
+  const profileSkills = MANIFEST.skills.filter(s => s.profiles.includes(PROFILE));
 
   if (!DRY_RUN) fs.mkdirSync(skillsDir, { recursive: true });
 
   if (DRY_RUN) {
-    for (const skill of MANIFEST.skills) {
-      const target = path.join(skillsDir, skill);
-      const src = path.join(srcDir, skill);
+    for (const skill of profileSkills) {
+      const target = path.join(skillsDir, skill.name);
+      const src = path.join(srcDir, skill.name);
       let status = 'would-create';
       try {
         const existing = fs.readlinkSync(target);
         status = existing === src ? 'already-linked' : 'would-create';
       } catch { /* absent or not a symlink — would-create */ }
-      record(`Skill: ${skill}`, status);
+      record(`Skill: ${skill.name}`, status);
     }
     return;
   }
 
   let installed = 0, skipped = 0;
-  for (const skill of MANIFEST.skills) {
-    const target = path.join(skillsDir, skill);
-    const src = path.join(srcDir, skill);
+  for (const skill of profileSkills) {
+    const target = path.join(skillsDir, skill.name);
+    const src = path.join(srcDir, skill.name);
     const result = ensureSymlink(src, target);
     if (result === 'already-linked') { skipped++; } else { installed++; }
-    log(`  skill ${skill} — ${result}`);
+    log(`  skill ${skill.name} — ${result}`);
   }
 
   record(
     'Symlink skills',
     installed > 0 ? 'installed' : 'skipped',
-    `${MANIFEST.skills.length} skills (${installed} new, ${skipped} existing)`
+    `${profileSkills.length} skills (${installed} new, ${skipped} existing) [profile: ${PROFILE}]`
   );
 }
 
@@ -317,6 +347,18 @@ function wireSettings() {
   }
 }
 
+// Write ~/.claude/.cortex-profile marker
+function writeProfileMarker() {
+  const markerPath = path.join(CLAUDE_DIR, '.cortex-profile');
+  if (DRY_RUN) {
+    record('Profile marker (~/.claude/.cortex-profile)', 'would-create', PROFILE);
+    return;
+  }
+  fs.mkdirSync(CLAUDE_DIR, { recursive: true });
+  fs.writeFileSync(markerPath, PROFILE + '\n', 'utf8');
+  record('Profile marker (~/.claude/.cortex-profile)', 'installed', PROFILE);
+}
+
 function installProjectRuntime() {
   if (!PROJECT_ROOT) return;
   const resolvedProjectRoot = path.resolve(PROJECT_ROOT);
@@ -401,7 +443,8 @@ function printSummary() {
     process.exit(1);
   }
 
-  console.log(`
+  if (PROFILE === 'full') {
+    console.log(`
  Manual steps required:
    1. Add API keys to ~/.openclaw.secrets.env:
         TAVILY_API_KEY=...
@@ -411,8 +454,10 @@ function printSummary() {
 
    2. Add GH_TOKEN to environment (needed by cortex-sync.sh):
         export GH_TOKEN=<your-github-pat>
+`);
+  }
 
- Verify install:
+  console.log(` Verify install:
    /cortex-status   (in a Claude Code session)
 
 ${LINE}
@@ -420,13 +465,14 @@ ${LINE}
 }
 
 function main() {
-  if (DRY_RUN) console.log('Dry run — no changes will be made\n');
+  if (DRY_RUN) console.log(`Dry run — no changes will be made [profile: ${PROFILE}]\n`);
   installRepo();
   installSkills();
   installAgents();
   installClaudeMd();
   installHooks();
   wireSettings();
+  writeProfileMarker();
   installProjectRuntime();
   printSummary();
 }
