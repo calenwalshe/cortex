@@ -168,6 +168,28 @@ else
   assert_fail "settings.json dedup" "entries before=$CORTEX_ENTRIES after=$CORTEX_ENTRIES_AFTER (expected equal and > 0)"
 fi
 
+
+GLOBAL_ROOT_MATCH=$(python3 -c "
+import json
+manifest = json.load(open('$MANIFEST_PATH'))
+expected_root = manifest['runtime_roots'][manifest['settings_profiles']['global']['hook_root']]
+with open('$TEST_HOME/.claude/settings.json') as f:
+    settings = json.load(f)
+for event, entries in settings.get('hooks', {}).items():
+    for entry in entries:
+        for hook in entry.get('hooks', []):
+            cmd = hook.get('command', '')
+            if 'cortex-' in cmd and expected_root not in cmd:
+                print('bad')
+                raise SystemExit(0)
+print('ok')
+" 2>/dev/null || echo "bad")
+if [ "$GLOBAL_ROOT_MATCH" = "ok" ]; then
+  assert_pass "global installer settings use manifest global runtime root"
+else
+  assert_fail "global settings runtime root" "expected commands to use manifest global root"
+fi
+
 echo ""
 echo "4b. Repo settings manifest sync"
 RENDERED_SETTINGS="$(mktemp)"
@@ -176,6 +198,28 @@ if cmp -s "$RENDERED_SETTINGS" "$REPO_DIR/.claude/settings.json"; then
   assert_pass ".claude/settings.json is generated from runtime-manifest.json"
 else
   assert_fail "repo settings sync" "run: node bin/render-project-settings.js .claude/settings.json"
+fi
+
+
+PROJECT_ROOT_MATCH=$(python3 -c "
+import json
+manifest = json.load(open('$MANIFEST_PATH'))
+expected_root = manifest['runtime_roots'][manifest['settings_profiles']['project']['hook_root']]
+with open('$REPO_DIR/.claude/settings.json') as f:
+    settings = json.load(f)
+for event, entries in settings.get('hooks', {}).items():
+    for entry in entries:
+        for hook in entry.get('hooks', []):
+            cmd = hook.get('command', '')
+            if 'cortex-' in cmd and expected_root not in cmd:
+                print('bad')
+                raise SystemExit(0)
+print('ok')
+" 2>/dev/null || echo "bad")
+if [ "$PROJECT_ROOT_MATCH" = "ok" ]; then
+  assert_pass "repo settings use manifest project runtime root"
+else
+  assert_fail "project settings runtime root" "expected commands to use manifest project root"
 fi
 rm -f "$RENDERED_SETTINGS"
 

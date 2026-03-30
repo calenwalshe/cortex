@@ -5,13 +5,12 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { loadRuntimeManifest, buildSettings } = require('./runtime-manifest');
 
 const HOME = os.homedir();
 const CORTEX_LOCAL = path.join(HOME, 'projects', 'cortex');
-const SCRIPT_REPO_ROOT = path.resolve(__dirname, '..');
 const CLAUDE_DIR = path.join(HOME, '.claude');
 const CORTEX_REPO = 'https://github.com/calenwalshe/cortex.git';
-const MANIFEST_PATH = path.join(SCRIPT_REPO_ROOT, 'runtime-manifest.json');
 
 const args = process.argv.slice(2);
 const VERBOSE = args.includes('--verbose') || args.includes('-v');
@@ -39,25 +38,6 @@ function parseProjectRoot(argv) {
 }
 
 const PROJECT_ROOT = parseProjectRoot(args);
-
-function loadRuntimeManifest() {
-  if (!fs.existsSync(MANIFEST_PATH)) {
-    throw new Error(`Runtime manifest not found: ${MANIFEST_PATH}`);
-  }
-
-  let parsed;
-  try {
-    parsed = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
-  } catch (err) {
-    throw new Error(`Failed to parse runtime manifest: ${MANIFEST_PATH}\n${err.message}`);
-  }
-
-  if (!Array.isArray(parsed.skills) || !Array.isArray(parsed.agents) || !Array.isArray(parsed.hooks) || !Array.isArray(parsed.hook_events)) {
-    throw new Error(`Invalid runtime manifest schema in ${MANIFEST_PATH}`);
-  }
-
-  return parsed;
-}
 
 const MANIFEST = loadRuntimeManifest();
 
@@ -261,19 +241,12 @@ function isHookAlreadyWired(entries, commandFragment) {
 // 6. Wire all 9 hook events in ~/.claude/settings.json
 function wireSettings() {
   const settingsPath = path.join(CLAUDE_DIR, 'settings.json');
-  const hooksDir = path.join(CLAUDE_DIR, 'hooks');
+  const renderedSettings = buildSettings(MANIFEST, 'global');
 
-  const HOOK_EVENTS = MANIFEST.hook_events.map(({ event, hook_file, matcher, timeout, async }) => ({
+  const HOOK_EVENTS = MANIFEST.hook_events.map(({ event, hook_file }) => ({
     event,
     file: hook_file,
-    entry: () => {
-      const hookEntry = { type: 'command', command: path.join(hooksDir, hook_file) };
-      if (typeof timeout === 'number') hookEntry.timeout = timeout;
-      if (typeof async === 'boolean') hookEntry.async = async;
-      const eventEntry = { hooks: [hookEntry] };
-      if (matcher) eventEntry.matcher = matcher;
-      return eventEntry;
-    }
+    entry: renderedSettings.hooks[event][0]
   }));
 
   let settings = {};
@@ -305,7 +278,7 @@ function wireSettings() {
     }
 
     if (!settings.hooks[event]) settings.hooks[event] = [];
-    settings.hooks[event].push(entry());
+    settings.hooks[event].push(entry);
     added++;
     log(`  ${event} → ${file} — wired`);
   }

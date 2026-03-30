@@ -109,5 +109,13 @@
       "hook_file": "cortex-teammate-idle.sh",
       "timeout": 5
     }
-  ]
+  ],
+  "settings_profiles": {
+    "global": {
+      "hook_root": "global"
+    },
+    "project": {
+      "hook_root": "project"
+    }
+  }
 }
