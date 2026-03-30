@@ -1,13 +1,24 @@
 # Next Prompt
 
-We are working on **standalone-tool-skills** in **spec** mode. The last completed action was writing the eval proposal (`docs/cortex/evals/standalone-tool-skills/eval-proposal.md`). All clarify, research, and spec gates are complete. The active contract is at `docs/cortex/contracts/standalone-tool-skills/contract-001.md`.
+We are working on **standalone-tool-skills** in **execute** mode. All 4 skills have been installed:
+- `~/.claude/skills/web/SKILL.md`
+- `~/.claude/skills/ai/SKILL.md`
+- `~/.claude/skills/google/SKILL.md`
+- `~/.claude/skills/cli/SKILL.md`
 
-The next step is: **review and approve the eval proposal, then run `/cortex-research --write-plan`**.
+The gsd-handoff is marked as `imported`. All contract gates are approved.
 
-Ordered remaining steps:
-1. Review `docs/cortex/evals/standalone-tool-skills/eval-proposal.md` — set `Approval Status: pending → approved`
-2. Run `/cortex-research --write-plan` to produce `eval-plan.md`
-3. Review and approve `docs/cortex/specs/standalone-tool-skills/spec.md` and `docs/cortex/contracts/standalone-tool-skills/contract-001.md`
-4. Import `docs/cortex/specs/standalone-tool-skills/gsd-handoff.md` into GSD manually
+The next step is: **run the validators from contract-001.md** to confirm done criteria are met.
+
+Validators to run (from `docs/cortex/contracts/standalone-tool-skills/contract-001.md`):
+1. `ls ~/.claude/skills/web/SKILL.md ~/.claude/skills/ai/SKILL.md ~/.claude/skills/google/SKILL.md ~/.claude/skills/cli/SKILL.md` — all 4 files exist
+2. Manual routing test: "scrape https://example.com" → Firecrawl fires (not WebFetch)
+3. Manual routing test: "search for Claude Code SKILL.md format" → Tavily fires (not WebSearch)
+4. Manual routing test: "read this URL: https://example.com" → Jina fires (not WebFetch)
+5. Manual routing test: "deep research on LLM routing reliability" → Perplexity fires
+6. Manual routing test: "read my latest emails" → Gmail IMAP fires
+7. Manual routing test: `ls -la ~` → /cli auto-executes without confirmation prompt
+8. Manual routing test: `rm -rf /tmp/test` → /cli hard-blocks without confirmation option
+9. Cross-skill test: with all 4 active, "search for X" does not trigger /ai or /cli
 
 Run /cortex-status to see the full current state.

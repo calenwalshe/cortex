@@ -18,9 +18,9 @@
 - docs/cortex/evals/standalone-tool-skills/eval-plan.md
 
 **open_questions:**
-- STITCH_API_KEY: obtain from stitch.withgoogle.com before /google Stitch support ships
+- (see docs/cortex/handoffs/open-questions.md)
 
 **blockers:**
 - (none)
 
-**next_action:** Human must import docs/cortex/specs/standalone-tool-skills/gsd-handoff.md into GSD manually to begin execution. Do NOT run GSD commands from Cortex.
+**next_action:** Run /cortex-status for full reconstruction
