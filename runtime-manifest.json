@@ -4,13 +4,17 @@
     "project": "$CLAUDE_PROJECT_DIR/.claude"
   },
   "skills": [
-    "cortex-audit",
-    "cortex-clarify",
-    "cortex-investigate",
-    "cortex-research",
-    "cortex-review",
-    "cortex-spec",
-    "cortex-status"
+    { "name": "cortex-audit",       "profiles": ["core", "full"] },
+    { "name": "cortex-clarify",     "profiles": ["core", "full"] },
+    { "name": "cortex-investigate", "profiles": ["core", "full"] },
+    { "name": "cortex-research",    "profiles": ["core", "full"] },
+    { "name": "cortex-review",      "profiles": ["core", "full"] },
+    { "name": "cortex-spec",        "profiles": ["core", "full"] },
+    { "name": "cortex-status",      "profiles": ["core", "full"] },
+    { "name": "web",                "profiles": ["full"] },
+    { "name": "ai",                 "profiles": ["full"] },
+    { "name": "google",             "profiles": ["full"] },
+    { "name": "cli",                "profiles": ["full"] }
   ],
   "agents": [
     "cortex-critic.md",
