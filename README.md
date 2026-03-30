@@ -49,15 +49,26 @@ Runtime artifacts are written to the **target project repo** where Cortex is ins
 # Clone the repo
 git clone https://github.com/calenwalshe/cortex.git ~/projects/cortex
 
-# Run the installer (symlinks skills, agents, hooks into ~/.claude/)
+# Install — core profile (default): framework skills only, no external API dependencies
 node ~/projects/cortex/bin/install.js
+
+# Install — full profile: framework skills + tool skills (web, ai, google, cli)
+node ~/projects/cortex/bin/install.js --profile=full
 
 # Bootstrap runtime artifacts in your target project repo
 node ~/projects/cortex/bin/install.js --project /path/to/your/project
-
-# Or via the shell wrapper
-bash ~/projects/cortex/dotfiles-setup.sh
 ```
+
+### Install Profiles
+
+| Profile | Skills installed | Use when |
+|---------|-----------------|----------|
+| `core` (default) | All `cortex-*` framework skills | Behind a corporate firewall, no external API access, or maintaining a downstream fork |
+| `full` | Framework skills + `web`, `ai`, `google`, `cli` tool skills | Full local development with Tavily, Perplexity, Gemini, Gmail, etc. |
+
+The active profile is written to `~/.claude/.cortex-profile` after each install. Re-running with a different profile upgrades or downgrades the tool skill set without touching framework skills.
+
+For downstream fork setup (e.g. cloning Cortex into a Meta internal environment), see [`DOWNSTREAM.md`](./DOWNSTREAM.md).
 
 The `--project` step scaffolds `docs/cortex/` and `.cortex/` in your target repo, including `.cortex/state.json` and `.cortex/dirty-files.json`, so hooks and runtime state work immediately.
 Runtime inventory and hook wiring are defined in `runtime-manifest.json`; installer behavior and installer tests read from that manifest as the single source of truth.
@@ -82,7 +93,11 @@ cortex/                          # Framework repo
 │   ├── cortex-investigate/     # Investigation artifacts
 │   ├── cortex-review/          # Review + contract compliance + repair-on-failure
 │   ├── cortex-audit/           # Security + quality audit (7 lenses)
-│   └── cortex-status/          # State reconstruction after /clear or compaction
+│   ├── cortex-status/          # State reconstruction after /clear or compaction
+│   ├── web/                    # Tool skill: Firecrawl, Tavily, Jina, Crawl4AI (--profile=full)
+│   ├── ai/                     # Tool skill: Perplexity, Gemini, GPT (--profile=full)
+│   ├── google/                 # Tool skill: Gmail, Drive, Stitch (--profile=full)
+│   └── cli/                    # Tool skill: context-aware shell execution (--profile=full)
 ├── .claude/
 │   ├── agents/                 # Subagent definitions
 │   ├── hooks/                  # Hook scripts (session lifecycle, phase guard, task gating)
@@ -90,7 +105,8 @@ cortex/                          # Framework repo
 ├── runtime-manifest.json       # Single source of truth for runtime inventory + hook event wiring
 ├── templates/cortex/           # Artifact templates (clarify, research, spec, contract, evals)
 ├── scripts/cortex/             # scaffold_runtime.sh — bootstrap docs/cortex/ in target repos
-├── bin/                        # install.js — idempotent installer with --dry-run support
+├── bin/                        # install.js — idempotent installer with --profile and --dry-run support
+├── DOWNSTREAM.md               # Downstream fork guide — arc diff workflow, .arcconfig template
 ├── dotfiles-setup.sh           # Shell wrapper for bin/install.js
 ├── layers/                     # Discipline + Thinking rule extracts
 └── upstream/                   # Tracked upstream sources (Superpowers, GStack)
