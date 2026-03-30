@@ -2,9 +2,9 @@
 
 **slug:** cortex-install-profiles
 
-**mode:** spec
+**mode:** execute
 
-**approval_status:** pending
+**approval_status:** approved
 
 **active_contract_path:** docs/cortex/contracts/cortex-install-profiles/contract-001.md
 
