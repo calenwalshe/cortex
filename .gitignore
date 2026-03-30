@@ -11,3 +11,7 @@ Thumbs.db
 
 # Node (if any tooling added later)
 node_modules/
+
+# Build artifacts — GSD planning state and runtime state (local only)
+.planning/
+.cortex/
