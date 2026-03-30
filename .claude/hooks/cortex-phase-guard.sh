@@ -30,8 +30,9 @@ esac
 # Permitted write roots during pre-execution phases
 DOCS_ROOT="${CLAUDE_PROJECT_DIR}/docs/cortex"
 CORTEX_ROOT="${CLAUDE_PROJECT_DIR}/.cortex"
+FIT_ROOT="${CLAUDE_PROJECT_DIR}/docs/cortex/fit"
 
-if [[ "$FILE_PATH" == "$DOCS_ROOT"* ]] || [[ "$FILE_PATH" == "$CORTEX_ROOT"* ]]; then
+if [[ "$FILE_PATH" == "$FIT_ROOT"* ]] || [[ "$FILE_PATH" == "$DOCS_ROOT"* ]] || [[ "$FILE_PATH" == "$CORTEX_ROOT"* ]]; then
   exit 0  # Within permitted roots
 fi
 

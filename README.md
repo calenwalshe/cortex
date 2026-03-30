@@ -60,7 +60,7 @@ bash ~/projects/cortex/dotfiles-setup.sh
 ```
 
 The `--project` step scaffolds `docs/cortex/` and `.cortex/` in your target repo, including `.cortex/state.json` and `.cortex/dirty-files.json`, so hooks and runtime state work immediately.
-Runtime inventory, hook event wiring, and runtime path profiles (global `~/.claude` vs project `$CLAUDE_PROJECT_DIR/.claude`) are defined in `runtime-manifest.json`; the installer, checked-in project settings, and installer tests all read from that manifest as the single source of truth.
+Runtime inventory and hook wiring are defined in `runtime-manifest.json`; installer behavior and installer tests read from that manifest as the single source of truth.
 
 Once installed and bootstrapped, start with `/cortex-clarify <your idea>` to begin the intelligence cycle. The clarify command produces a written problem frame you can review before committing to research and spec work.
 
