@@ -24,3 +24,10 @@
   <!-- list — other options that were evaluated and rejected -->
 - **impact:** {IMPACT}
   <!-- string — what this decision affects (other files, future phases, design choices) -->
+
+## Archive Index
+
+<!-- Each entry records a slug that was archived via /cortex-close -->
+<!-- Entry format: - {ISO8601} | {slug} | closed | contract: {path} | eval-plan: {path} -->
+
+(No archived slugs yet)

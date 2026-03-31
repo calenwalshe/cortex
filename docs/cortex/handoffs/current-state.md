@@ -1,21 +1,22 @@
 # Current State
 
-**slug:** cortex-install-profiles
+**slug:** memory-bank-archive
 
 **mode:** execute
 
 **approval_status:** approved
 
-**active_contract_path:** docs/cortex/contracts/cortex-install-profiles/contract-001.md
+**active_contract_path:** docs/cortex/contracts/memory-bank-archive/contract-001.md
 
 **recent_artifacts:**
-- docs/cortex/clarify/cortex-install-profiles/20260330T230000Z-clarify-brief.md
-- docs/cortex/research/cortex-install-profiles/concept-20260330T230000Z.md
-- docs/cortex/specs/cortex-install-profiles/spec.md
-- docs/cortex/specs/cortex-install-profiles/gsd-handoff.md
-- docs/cortex/contracts/cortex-install-profiles/contract-001.md
-- docs/cortex/evals/cortex-install-profiles/eval-proposal.md
-- docs/cortex/evals/cortex-install-profiles/eval-plan.md
+- docs/cortex/fit/memory-bank-archive/fit-report.md
+- docs/cortex/clarify/memory-bank-archive/20260331T000000Z-clarify-brief.md
+- docs/cortex/research/memory-bank-archive/concept-20260331T000500Z.md
+- docs/cortex/specs/memory-bank-archive/spec.md
+- docs/cortex/specs/memory-bank-archive/gsd-handoff.md
+- docs/cortex/contracts/memory-bank-archive/contract-001.md
+- docs/cortex/evals/memory-bank-archive/eval-proposal.md
+- docs/cortex/evals/memory-bank-archive/eval-plan.md
 
 **open_questions:**
 - (see docs/cortex/handoffs/open-questions.md)

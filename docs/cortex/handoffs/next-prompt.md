@@ -1,18 +1,9 @@
 # Next Prompt
 
-We are working on **cortex-install-profiles** in **execute** mode. Implementation is complete and committed (eefe007).
+We are working on **memory-bank-archive** in **execute** mode. The last completed action was contract approval — spec.md, contract-001.md, eval-proposal.md, and eval-plan.md all produced and approved.
 
 ## Active Contract
-`docs/cortex/contracts/cortex-install-profiles/contract-001.md`
-
-**Objective:** `--profile=core|full` flag in the Cortex installer. Core = framework skills only (firewall-safe). Full = framework + tool skills.
-
-## What Was Built
-- `bin/install.js` — `--profile` flag, skill filter, `.cortex-profile` marker writer, gated API key output
-- `runtime-manifest.json` — migrated from `string[]` to tagged objects with `profiles` membership
-- `skills/web,ai,google,cli/SKILL.md` — tool skills moved into repo as canonical source
-- `test/installer.test.sh` — 9 new profile tests (18/18 passing)
-- `DOWNSTREAM.md` — arc diff workflow + `.arcconfig` template for Meta fork users
+docs/cortex/contracts/memory-bank-archive/contract-001.md
 
 ## Gate State
 - clarify_complete: true
@@ -20,9 +11,14 @@ We are working on **cortex-install-profiles** in **execute** mode. Implementatio
 - spec_complete: true
 - contract_approved: true
 
-## Next Steps
-1. Run evals from `docs/cortex/evals/cortex-install-profiles/eval-plan.md`
-2. Check off each passing dimension in the Results section of the eval plan
-3. Once all 6 dimensions pass, advance mode to `validate`
+## Deliverables Not Yet Built (0/5 done)
+- `skills/cortex-close/SKILL.md` — MISSING
+- `docs/cortex/archive/.gitkeep` — MISSING
+- `scripts/cortex/scaffold_runtime.sh` DOCS_SUBDIRS patch — MISSING
+- `templates/cortex/decisions.md` Archive Index section — MISSING
+- `docs/cortex/handoffs/decisions.md` Archive Index section — MISSING
+
+## Next Step
+Import `docs/cortex/specs/memory-bank-archive/gsd-handoff.md` into GSD to begin execution of the memory-bank-archive deliverables.
 
 Run `/cortex-status` to reconstruct full context.
