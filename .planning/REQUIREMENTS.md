@@ -124,7 +124,7 @@
 
 ### Discovery Loop Skill
 
-- [ ] **DISC-07**: `skills/cortex-experiment/SKILL.md` exists and documents the open/run/close lifecycle, artifact write paths (`docs/cortex/experiments/{slug}/`), state.json write behavior (`mode: experiment`, `experiment_complete` gate), and all four decision rule outcomes (promote/iterate/re-clarify/abandon)
+- [x] **DISC-07**: `skills/cortex-experiment/SKILL.md` exists and documents the open/run/close lifecycle, artifact write paths (`docs/cortex/experiments/{slug}/`), state.json write behavior (`mode: experiment`, `experiment_complete` gate), and all four decision rule outcomes (promote/iterate/re-clarify/abandon)
 
 ## v2 Requirements
 
@@ -223,7 +223,7 @@
 | DISC-04 | Phase 9: Discovery Loop — Infrastructure Patches | Complete |
 | DISC-05 | Phase 9: Discovery Loop — Infrastructure Patches | Complete |
 | DISC-06 | Phase 9: Discovery Loop — Infrastructure Patches | Complete |
-| DISC-07 | Phase 10: Discovery Loop — /cortex-experiment Skill | Pending |
+| DISC-07 | Phase 10: Discovery Loop — /cortex-experiment Skill | Complete |
 
 **Coverage:**
 - v1 requirements: 55 total — all mapped (phases 1–6)

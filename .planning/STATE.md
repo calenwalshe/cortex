@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: cortex-discovery-loop
 status: in_progress
-stopped_at: Phase 8 plan 08-01 complete — DISC-01/02/03 satisfied — DISCOVERY_LOOP.md and two artifact templates written
-last_updated: "2026-04-01T17:00:00.000Z"
-last_activity: 2026-04-01 — Plan 08-01 executed; docs/DISCOVERY_LOOP.md, templates/cortex/learning-contract.md, templates/cortex/experiment-result.md created
+stopped_at: Phase 10 plan 10-01 complete — DISC-07 satisfied
+last_updated: "2026-04-01T19:00:00.000Z"
+last_activity: 2026-04-01 — Phase 10 plan 10-01 executed; skills/cortex-experiment/SKILL.md written; DISC-07 satisfied
 progress:
   total_phases: 11
-  completed_phases: 7
-  total_plans: 20
-  completed_plans: 20
+  completed_phases: 10
+  total_plans: 23
+  completed_plans: 23
   percent: 100
 ---
 
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** A stateless executor can read a Cortex handoff pack and start implementation without guessing architecture or definition of done.
-**Current focus:** Phase 8 — Discovery Loop — Design Docs and Templates
+**Current focus:** Phase 10 — Discovery Loop — /cortex-experiment Skill
 
 ## Current Position
 
-Phase: 8 — Discovery Loop — Design Docs and Templates
-Plan: 08-01 complete
-Status: In progress — ready for next plan in Phase 8
-Last activity: 2026-04-01 — Plan 08-01 executed; 3 tasks, 3 files created (DISCOVERY_LOOP.md, learning-contract.md, experiment-result.md)
+Phase: 10 — Discovery Loop — /cortex-experiment Skill
+Plan: 10-01 complete
+Status: Phase 10 complete — ready to advance to Phase 11
+Last activity: 2026-04-01 — Plan 10-01 executed; DISC-07 satisfied; skills/cortex-experiment/SKILL.md written with full open/run/close lifecycle
 
-Progress: [████████████████████] 19/19 plans (100% of planned work); 7/11 phases complete
+Progress: [████████████████████] 22/22 plans (100%); 9/11 phases complete
 
 ## Performance Metrics
 
@@ -133,6 +133,9 @@ Recent decisions affecting current work:
 - [Phase 08-discovery-loop]: Backward-compat defaults for flat open-questions.md entries are explicit and documented inline (type: knowledge, severity: noncritical, resolution_path: research, status: open)
 - [Phase 08-discovery-loop]: Appetite/Timebox is REQUIRED in learning-contract — marked in both body heading and introductory note; contract is incomplete without it
 - [Phase 08-discovery-loop]: Decision outcomes are an exhaustive enum (promote | iterate | re-clarify | abandon) — documented in both templates with inline HTML comment
+- [Phase 09-discovery-loop-infrastructure-patches]: experiments appended to DOCS_SUBDIRS — one-line patch, no surrounding changes
+- [Phase 09-discovery-loop-infrastructure-patches]: EXPERIMENTS_ROOT follows existing CORTEX_ROOT variable pattern in cortex-phase-guard.sh
+- [Phase 09-discovery-loop-infrastructure-patches]: Backward-compat defaults for flat open-questions.md entries documented inline (type: knowledge, severity: noncritical, resolution_path: research, status: open)
 
 ### Pending Todos
 
@@ -145,7 +148,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Phase 7 complete, ready to plan Phase 8
+Stopped at: Phase 9 complete, ready to plan Phase 10
 Resume file: None
 
 ## Drive Log
@@ -157,3 +160,11 @@ Resume file: None
 | 2026-04-01T15:54:51Z | 7 | verify-plans | PASS |
 | 2026-04-01T16:15:00Z | 7 | execute (07-01) | COMPLETE — 4 tasks, 13 STSH reqs satisfied |
 | 2026-04-01T17:00:00Z | 8 | execute (08-01) | COMPLETE — 3 tasks, DISC-01/02/03 satisfied; 3 files created |
+| 2026-04-01T17:30:00Z | 8 | transition | COMPLETE — Phase 8 marked complete, advancing to Phase 9 |
+| 2026-04-01T18:00:00Z | 9 | execute (09-01) | COMPLETE — 4 tasks, DISC-04/05/06 satisfied; commit f53d6df |
+| 2026-04-01T18:00:00Z | 9 | transition | COMPLETE — Phase 9 marked complete, advancing to Phase 10 |
+| 2026-04-01T18:49:37Z | 10 | research | complete — RESEARCH.md written (subcommands, state fields, decision outcomes, artifact paths, guardrails, DISC-07 definition) |
+| 2026-04-01T18:49:37Z | 10 | plan | complete (1 plan) — 10-01-PLAN.md: T1 define DISC-07, T2 write skills/cortex-experiment/SKILL.md |
+| 2026-04-01T18:49:37Z | 10 | verify-plans | PASS |
+| 2026-04-01T19:00:00Z | 10 | execute (10-01) | COMPLETE — 2 tasks, DISC-07 satisfied; skills/cortex-experiment/SKILL.md written |
+| 2026-04-01T19:00:00Z | 10 | transition | COMPLETE — Phase 10 marked complete, advancing to Phase 11 |

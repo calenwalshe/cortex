@@ -151,7 +151,7 @@ Plans:
   3. `templates/cortex/experiment-result.md` exists with outcome, validated learning, decision (promote/iterate/re-clarify/abandon), rationale, next steps fields
 **Research**: Unlikely (design synthesis from approved spec and research dossier)
 **Plans**: 1 plan
-**Status**: IN PROGRESS — 2026-04-01
+**Status**: COMPLETE — 2026-04-01
 
 Plans:
 - [x] 08-01-PLAN.md — Write docs/DISCOVERY_LOOP.md (6-section design reference), templates/cortex/learning-contract.md (12-field template), templates/cortex/experiment-result.md (8-field close artifact) (DISC-01, DISC-02, DISC-03)
@@ -166,7 +166,11 @@ Plans:
   2. `scripts/cortex/scaffold_runtime.sh` contains `experiments` in DOCS_SUBDIRS
   3. `.claude/hooks/cortex-phase-guard.sh` permits writes to `docs/cortex/experiments/`; product-path guard remains intact
 **Research**: Unlikely (one-line patches with known locations from audit)
-**Plans**: TBD
+**Plans**: 1 plan
+**Status**: COMPLETE — 2026-04-01
+
+Plans:
+- [x] 09-01-PLAN.md — Patch REQUIREMENTS.md (DISC-04/05/06), scaffold_runtime.sh (experiments DOCS_SUBDIRS), cortex-phase-guard.sh (EXPERIMENTS_ROOT), open-questions.md (uncertainty register schema) (DISC-04, DISC-05, DISC-06)
 
 ### Phase 10: Discovery Loop — /cortex-experiment Skill
 **Goal**: Deliver the 8th Cortex command with open/run/close lifecycle, learning-contract and result artifacts, and correct state transitions
@@ -176,7 +180,11 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. `skills/cortex-experiment/SKILL.md` exists and documents open/run/close lifecycle, artifact write paths (`docs/cortex/experiments/{slug}/`), state.json write behavior (mode: experiment, experiment_complete gate), and all four decision rule outcomes (promote/iterate/re-clarify/abandon)
 **Research**: Unlikely (implements spec design; no external APIs)
-**Plans**: TBD
+**Plans**: 1
+**Status**: COMPLETE — 2026-04-01
+
+Plans:
+- [x] 10-01-PLAN.md — Define DISC-07 in REQUIREMENTS.md; write skills/cortex-experiment/SKILL.md with full open/run/close lifecycle (DISC-07)
 
 ### Phase 11: Discovery Loop — Update Existing Skills and Docs
 **Goal**: Update /cortex-research, /cortex-spec, CORTEX.md, INTELLIGENCE_FLOW.md, and COMMANDS.md to reflect the discovery loop model, tighten the spec gate, and document the 8-command surface
@@ -204,7 +212,7 @@ Plans:
 | 5. Eval Subsystem | 2/2 | Complete    | 2026-03-29 |
 | 6. Installer and Operational Cleanup | 2/2 | Complete    | 2026-03-29 |
 | 7. Idea Stash | 1/1 | Complete    | 2026-04-01 |
-| 8. Discovery Loop — Design Docs and Templates | 1/1 | In progress | 2026-04-01 (08-01 complete) |
-| 9. Discovery Loop — Infrastructure Patches | 0/? | Not started | - |
-| 10. Discovery Loop — /cortex-experiment Skill | 0/? | Not started | - |
+| 8. Discovery Loop — Design Docs and Templates | 1/1 | Complete    | 2026-04-01 |
+| 9. Discovery Loop — Infrastructure Patches | 1/1 | Complete    | 2026-04-01 |
+| 10. Discovery Loop — /cortex-experiment Skill | 1/1 | Complete    | 2026-04-01 |
 | 11. Discovery Loop — Update Existing Skills and Docs | 0/? | Not started | - |
