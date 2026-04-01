@@ -1,0 +1,156 @@
+[
+  {
+    "id": "commands-cortex-clarify",
+    "source_glob": "skills/cortex-clarify/SKILL.md",
+    "target_doc": "docs/COMMANDS.md",
+    "target_section": "## /cortex-clarify",
+    "prompt_hint": "Update Purpose, Inputs, Outputs, Rules, State Effects, and Block Conditions only. Do not touch Flag Reference or Artifact Path Quick Reference."
+  },
+  {
+    "id": "commands-cortex-research",
+    "source_glob": "skills/cortex-research/SKILL.md",
+    "target_doc": "docs/COMMANDS.md",
+    "target_section": "## /cortex-research",
+    "prompt_hint": "Update Purpose, Inputs, Outputs, Rules, State Effects, and Block Conditions only. Do not touch Flag Reference or Artifact Path Quick Reference."
+  },
+  {
+    "id": "commands-cortex-spec",
+    "source_glob": "skills/cortex-spec/SKILL.md",
+    "target_doc": "docs/COMMANDS.md",
+    "target_section": "## /cortex-spec",
+    "prompt_hint": "Update Purpose, Inputs, Outputs, Rules, State Effects, and Block Conditions only. Do not touch Flag Reference or Artifact Path Quick Reference."
+  },
+  {
+    "id": "commands-cortex-investigate",
+    "source_glob": "skills/cortex-investigate/SKILL.md",
+    "target_doc": "docs/COMMANDS.md",
+    "target_section": "## /cortex-investigate",
+    "prompt_hint": "Update Purpose, Inputs, Outputs, Rules, State Effects, and Block Conditions only. Do not touch Flag Reference or Artifact Path Quick Reference."
+  },
+  {
+    "id": "commands-cortex-review",
+    "source_glob": "skills/cortex-review/SKILL.md",
+    "target_doc": "docs/COMMANDS.md",
+    "target_section": "## /cortex-review",
+    "prompt_hint": "Update Purpose, Inputs, Outputs, Rules, State Effects, and Block Conditions only. Do not touch Flag Reference or Artifact Path Quick Reference."
+  },
+  {
+    "id": "commands-cortex-audit",
+    "source_glob": "skills/cortex-audit/SKILL.md",
+    "target_doc": "docs/COMMANDS.md",
+    "target_section": "## /cortex-audit",
+    "prompt_hint": "Update Purpose, Inputs, Outputs, Rules, State Effects, and Block Conditions only. Do not touch Flag Reference or Artifact Path Quick Reference."
+  },
+  {
+    "id": "commands-cortex-status",
+    "source_glob": "skills/cortex-status/SKILL.md",
+    "target_doc": "docs/COMMANDS.md",
+    "target_section": "## /cortex-status",
+    "prompt_hint": "Update Purpose, Inputs, Outputs, Rules, State Effects, and Block Conditions only. Do not touch Flag Reference or Artifact Path Quick Reference."
+  },
+  {
+    "id": "commands-cortex-experiment",
+    "source_glob": "skills/cortex-experiment/SKILL.md",
+    "target_doc": "docs/COMMANDS.md",
+    "target_section": "## /cortex-experiment",
+    "prompt_hint": "Update Purpose, Inputs, Outputs, Rules, State Effects, and Block Conditions only. Do not touch Flag Reference or Artifact Path Quick Reference."
+  },
+  {
+    "id": "hooks-cortex-session-start",
+    "source_glob": ".claude/hooks/cortex-session-start.sh",
+    "target_doc": "docs/HOOKS.md",
+    "target_section": "### cortex-session-start",
+    "prompt_hint": "Update Trigger conditions, Inputs, Outputs (files written), Side effects, and state.json interaction. Also check Hook Overview table row for event/async/blocking changes."
+  },
+  {
+    "id": "hooks-cortex-precompact",
+    "source_glob": ".claude/hooks/cortex-precompact.sh",
+    "target_doc": "docs/HOOKS.md",
+    "target_section": "### cortex-precompact",
+    "prompt_hint": "Update Trigger conditions, Inputs, Outputs (files written), Side effects, and state.json interaction. Also check Hook Overview table row for event/async/blocking changes."
+  },
+  {
+    "id": "hooks-cortex-postcompact",
+    "source_glob": ".claude/hooks/cortex-postcompact.sh",
+    "target_doc": "docs/HOOKS.md",
+    "target_section": "### cortex-postcompact",
+    "prompt_hint": "Update Trigger conditions, Inputs, Outputs (files written), Side effects, and state.json interaction. Also check Hook Overview table row for event/async/blocking changes."
+  },
+  {
+    "id": "hooks-cortex-session-end",
+    "source_glob": ".claude/hooks/cortex-session-end.sh",
+    "target_doc": "docs/HOOKS.md",
+    "target_section": "### cortex-session-end",
+    "prompt_hint": "Update Trigger conditions, Inputs, Outputs (files written), Side effects, and state.json interaction. Also check Hook Overview table row for event/async/blocking changes."
+  },
+  {
+    "id": "hooks-cortex-phase-guard",
+    "source_glob": ".claude/hooks/cortex-phase-guard.sh",
+    "target_doc": "docs/HOOKS.md",
+    "target_section": "### cortex-phase-guard",
+    "prompt_hint": "Update Trigger conditions, Inputs, Outputs (files written), Side effects, and state.json interaction. Also check Hook Overview table row for event/async/blocking changes."
+  },
+  {
+    "id": "hooks-cortex-write-guard",
+    "source_glob": ".claude/hooks/cortex-write-guard.sh",
+    "target_doc": "docs/HOOKS.md",
+    "target_section": "### cortex-write-guard",
+    "prompt_hint": "Update Trigger conditions, Inputs, Outputs (files written), Side effects, and state.json interaction. Also check Hook Overview table row for event/async/blocking changes."
+  },
+  {
+    "id": "hooks-cortex-validator-trigger",
+    "source_glob": ".claude/hooks/cortex-validator-trigger.sh",
+    "target_doc": "docs/HOOKS.md",
+    "target_section": "### cortex-validator-trigger",
+    "prompt_hint": "Update Trigger conditions, Inputs, Outputs (files written), Side effects, and state.json interaction. Also check Hook Overview table row for event/async/blocking changes."
+  },
+  {
+    "id": "hooks-cortex-sync",
+    "source_glob": ".claude/hooks/cortex-sync.sh",
+    "target_doc": "docs/HOOKS.md",
+    "target_section": "### cortex-sync",
+    "prompt_hint": "Update Trigger conditions, Inputs, Outputs (files written), Side effects, and state.json interaction. Also check Hook Overview table row for event/async/blocking changes."
+  },
+  {
+    "id": "hooks-cortex-distribute",
+    "source_glob": ".claude/hooks/cortex-distribute.sh",
+    "target_doc": "docs/HOOKS.md",
+    "target_section": "### cortex-distribute",
+    "prompt_hint": "Update Trigger conditions, Inputs, Outputs (files written), Side effects, and state.json interaction. Also check Hook Overview table row for event/async/blocking changes."
+  },
+  {
+    "id": "hooks-cortex-task-created",
+    "source_glob": ".claude/hooks/cortex-task-created.sh",
+    "target_doc": "docs/HOOKS.md",
+    "target_section": "### cortex-task-created",
+    "prompt_hint": "Update Trigger conditions, Inputs, Outputs (files written), Side effects, and state.json interaction. Also check Hook Overview table row for event/async/blocking changes."
+  },
+  {
+    "id": "hooks-cortex-task-completed",
+    "source_glob": ".claude/hooks/cortex-task-completed.sh",
+    "target_doc": "docs/HOOKS.md",
+    "target_section": "### cortex-task-completed",
+    "prompt_hint": "Update Trigger conditions, Inputs, Outputs (files written), Side effects, and state.json interaction. Also check Hook Overview table row for event/async/blocking changes."
+  },
+  {
+    "id": "hooks-cortex-teammate-idle",
+    "source_glob": ".claude/hooks/cortex-teammate-idle.sh",
+    "target_doc": "docs/HOOKS.md",
+    "target_section": "### cortex-teammate-idle",
+    "prompt_hint": "Update Trigger conditions, Inputs, Outputs (files written), Side effects, and state.json interaction. Also check Hook Overview table row for event/async/blocking changes."
+  },
+  {
+    "id": "continuity-state-json",
+    "source_glob": ".cortex/state.json",
+    "target_doc": "docs/CONTINUITY.md",
+    "target_section": "## .cortex/state.json Schema",
+    "prompt_hint": "Update the JSON schema block and key fields table. Only modify if a top-level or nested field was added, removed, or renamed."
+  },
+  {
+    "id": "continuity-hook-stack",
+    "source_glob": ".claude/hooks/cortex-*.sh",
+    "target_doc": "docs/CONTINUITY.md",
+    "target_section": "## The Continuity Stack",
+    "prompt_hint": "Update the Layer 2: Session Hooks table if a hook's event type, async flag, or action description changed. Update the hook count sentence if hooks were added or removed."
+  }
+]
