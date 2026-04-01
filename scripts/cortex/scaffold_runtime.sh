@@ -30,7 +30,7 @@ echo "Scaffolding Cortex runtime at: $TARGET"
 echo ""
 
 # ── docs/cortex/ subdirectories ───────────────────────────────────────────────
-DOCS_SUBDIRS=(clarify research specs contracts evals investigations reviews audits handoffs archive)
+DOCS_SUBDIRS=(clarify research specs contracts evals investigations reviews audits handoffs archive experiments)
 
 for subdir in "${DOCS_SUBDIRS[@]}"; do
   mkdir -p "$TARGET/docs/cortex/$subdir"
