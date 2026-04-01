@@ -24,6 +24,7 @@ This file documents all installed Cortex hook scripts. Hooks are shell scripts w
 | `cortex-task-created` | TaskCreated | — | No | Yes (can deny) |
 | `cortex-task-completed` | TaskCompleted | — | No | Yes (can deny) |
 | `cortex-teammate-idle` | TeammateIdle | — | No | Yes (returns exit 2) |
+| `auto-doc-sync` | pre-commit (git) | — | No | No |
 
 ---
 
@@ -341,3 +342,36 @@ This file documents all installed Cortex hook scripts. Hooks are shell scripts w
 - Always exits 2 — the TeammateIdle protocol interprets this as "agent should keep working."
 
 **state.json interaction:** Reads `mode`, `slug`. Does not write state.json.
+
+---
+
+### auto-doc-sync
+
+**Script:** `hooks/auto-doc-sync.sh` (symlinked via `.claude/hooks/auto-doc-sync.sh`)
+**Event:** git pre-commit (not a Claude lifecycle hook — runs via git's `pre-commit` hook mechanism)
+**Async:** No (synchronous — runs before `git commit` completes)
+**Blocking:** No — always exits 0. All failure paths (missing API key, API errors, invalid response) produce a warning and exit cleanly. Never blocks a commit.
+
+**Trigger conditions:**
+- Fires on every `git commit` when installed as a git pre-commit hook.
+- Skips immediately when `SKIP_LLM_GITHOOK=1` is set or `SKIP` env var contains `auto-doc-sync`.
+- Skips when no staged files match any entry in `.auto-doc-sync.json`.
+
+**Inputs:**
+- `.auto-doc-sync.json` — mapping config at repo root. Each entry specifies `source_glob`, `target_doc`, `target_section`, and `prompt_hint`. 22 entries covering COMMANDS.md (8), HOOKS.md (12), and CONTINUITY.md (2).
+- `git diff --cached` — staged diffs for matched source files.
+- `git diff --cached --name-only` — list of staged files for source matching and conflict detection.
+- Target doc files (`docs/COMMANDS.md`, `docs/HOOKS.md`, `docs/CONTINUITY.md`) — current section content is read and sent to the LLM as context.
+- `ANTHROPIC_API_KEY` env var — required for API calls. Hook soft-fails if unset.
+
+**Outputs (files written):**
+- Updated sections in target doc files (working tree only — `git add` is never called). The hook replaces the matched section content with the LLM-generated update.
+- Unified diff printed to stdout for each updated file.
+
+**Side effects:**
+- Makes a single batched HTTP POST to the Anthropic Messages API (`claude-haiku-4-5-20241022` model) with all triggered mappings. One API call per commit regardless of how many source files changed.
+- Heuristic classifier skips the LLM call entirely for trivial diffs (whitespace-only or comment-only changes). For `.md` files, markdown headings (`#`) are treated as content, not comments.
+- Conflict detection: if a target doc is already in the staging area, the hook skips that target and prints a notice. `FORCE_DOC_SYNC=1` overrides this check.
+- Per-file skip marker: if `<!-- auto-doc-sync:skip -->` appears in the first 50 lines of a target doc, that target is skipped.
+
+**state.json interaction:** None. This hook does not read or write `.cortex/state.json`.
