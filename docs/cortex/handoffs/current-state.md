@@ -1,24 +1,26 @@
 # Current State
 
-**slug:** cortex-documentation-audit
+**slug:** auto-doc-sync
 
-**mode:** done
+**mode:** clarify
 
-**approval_status:** approved
+**approval_status:** pending
 
-**active_contract_path:** docs/cortex/contracts/cortex-documentation-audit/contract-001.md
+**active_contract_path:** (none)
 
 **recent_artifacts:**
-- docs/cortex/clarify/cortex-documentation-audit/20260401T190000Z-clarify-brief.md
-- docs/cortex/research/cortex-documentation-audit/concept-20260401T191500Z.md
-- docs/cortex/specs/cortex-documentation-audit/spec.md
-- docs/cortex/specs/cortex-documentation-audit/gsd-handoff.md
-- docs/cortex/contracts/cortex-documentation-audit/contract-001.md
+- docs/cortex/clarify/auto-doc-sync/20260401T200000Z-clarify-brief.md
 
 **open_questions:**
-- (none)
+- What is the complete source-to-doc mapping table?
+- Does the generated update auto-commit or stage for human review?
+- How does the hook distinguish minor fixes from architectural changes requiring human review?
+- What is the LLM invocation mechanism from a git pre-commit hook?
+- What is the failure mode when the API is unavailable?
+- Does the hook scope updates to the directly changed section or scan downstream dependencies?
+- How are multi-file commits handled — batched or sequential LLM calls?
 
 **blockers:**
 - (none)
 
-**next_action:** Slug closed. Run /cortex-clarify to begin a new work item.
+**next_action:** Run /cortex-research --phase concept to begin concept research
