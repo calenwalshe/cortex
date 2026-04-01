@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: cortex-discovery-loop
 status: in_progress
-stopped_at: Phase 10 plan 10-01 complete — DISC-07 satisfied
-last_updated: "2026-04-01T19:00:00.000Z"
-last_activity: 2026-04-01 — Phase 10 plan 10-01 executed; skills/cortex-experiment/SKILL.md written; DISC-07 satisfied
+stopped_at: Phase 11 plan 01 complete — DISC-08 and DISC-09 satisfied
+last_updated: "2026-04-01T19:45:00.000Z"
+last_activity: 2026-04-01 — Phase 11 plan 01 complete; cortex-research and cortex-spec SKILL.md updated with discovery loop gates
 progress:
   total_phases: 11
   completed_phases: 10
-  total_plans: 23
-  completed_plans: 23
+  total_plans: 22
+  completed_plans: 22
   percent: 100
 ---
 
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** A stateless executor can read a Cortex handoff pack and start implementation without guessing architecture or definition of done.
-**Current focus:** Phase 10 — Discovery Loop — /cortex-experiment Skill
+**Current focus:** Phase 11 — Discovery Loop — Update Existing Skills and Docs
 
 ## Current Position
 
-Phase: 10 — Discovery Loop — /cortex-experiment Skill
-Plan: 10-01 complete
-Status: Phase 10 complete — ready to advance to Phase 11
-Last activity: 2026-04-01 — Plan 10-01 executed; DISC-07 satisfied; skills/cortex-experiment/SKILL.md written with full open/run/close lifecycle
+Phase: 11 — Discovery Loop — Update Existing Skills and Docs
+Plan: 01 complete
+Status: In progress — DISC-08 and DISC-09 satisfied; remaining: DISC-10 (CORTEX.md), DISC-11 (INTELLIGENCE_FLOW.md), DISC-12 (COMMANDS.md)
+Last activity: 2026-04-01 — Plan 11-01 complete; cortex-research SKILL.md (reclarify_required write + warning) and cortex-spec SKILL.md (3 spec-readiness blockers) updated
 
-Progress: [████████████████████] 22/22 plans (100%); 9/11 phases complete
+Progress: [████████████████████] 23/23 plans (one phase 11 plan complete); 10/11 phases complete
 
 ## Performance Metrics
 
@@ -136,6 +136,8 @@ Recent decisions affecting current work:
 - [Phase 09-discovery-loop-infrastructure-patches]: experiments appended to DOCS_SUBDIRS — one-line patch, no surrounding changes
 - [Phase 09-discovery-loop-infrastructure-patches]: EXPERIMENTS_ROOT follows existing CORTEX_ROOT variable pattern in cortex-phase-guard.sh
 - [Phase 09-discovery-loop-infrastructure-patches]: Backward-compat defaults for flat open-questions.md entries documented inline (type: knowledge, severity: noncritical, resolution_path: research, status: open)
+- [Phase 10-discovery-loop-cortex-experiment-skill]: experiment_complete: true written by close for ALL four decisions — the gate is satisfied regardless of decision taken
+- [Phase 10-discovery-loop-cortex-experiment-skill]: /cortex-experiment run is read-only — no state.json writes, no artifact written; guidance-only reminder
 
 ### Pending Todos
 
@@ -148,7 +150,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Phase 9 complete, ready to plan Phase 10
+Stopped at: Phase 10 complete, ready to plan Phase 11
 Resume file: None
 
 ## Drive Log
@@ -167,4 +169,4 @@ Resume file: None
 | 2026-04-01T18:49:37Z | 10 | plan | complete (1 plan) — 10-01-PLAN.md: T1 define DISC-07, T2 write skills/cortex-experiment/SKILL.md |
 | 2026-04-01T18:49:37Z | 10 | verify-plans | PASS |
 | 2026-04-01T19:00:00Z | 10 | execute (10-01) | COMPLETE — 2 tasks, DISC-07 satisfied; skills/cortex-experiment/SKILL.md written |
-| 2026-04-01T19:00:00Z | 10 | transition | COMPLETE — Phase 10 marked complete, advancing to Phase 11 |
+| 2026-04-01T19:30:00Z | 10 | transition | COMPLETE — Phase 10 marked complete, advancing to Phase 11 |

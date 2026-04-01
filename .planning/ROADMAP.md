@@ -199,7 +199,10 @@ Plans:
   5. `docs/COMMANDS.md` contains a `/cortex-experiment` entry with lifecycle actions, artifact paths, and state transitions
   6. All existing clarify briefs, research dossiers, specs, and execution contracts remain valid without modification
 **Research**: Unlikely (targeted edits to known files)
-**Plans**: TBD
+**Plans**: TBD (11-01 complete)
+
+Plans:
+- [x] 11-01-PLAN.md — Add reclarify_required write + warning to cortex-research/SKILL.md; add three spec-readiness blockers to cortex-spec/SKILL.md Phase 1 (DISC-08, DISC-09)
 
 ## Progress
 
@@ -215,4 +218,4 @@ Plans:
 | 8. Discovery Loop — Design Docs and Templates | 1/1 | Complete    | 2026-04-01 |
 | 9. Discovery Loop — Infrastructure Patches | 1/1 | Complete    | 2026-04-01 |
 | 10. Discovery Loop — /cortex-experiment Skill | 1/1 | Complete    | 2026-04-01 |
-| 11. Discovery Loop — Update Existing Skills and Docs | 0/? | Not started | - |
+| 11. Discovery Loop — Update Existing Skills and Docs | 1/? | In progress | - |
