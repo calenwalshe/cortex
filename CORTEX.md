@@ -15,7 +15,7 @@
 | 3. Discipline | Superpowers extracts | During implementation | "Am I writing this correctly?" |
 | 4. Thinking | GStack extracts | Always on | "Am I reasoning honestly?" |
 
-## 7-Command Surface
+## 8-Command Surface
 
 | Command | Purpose | Output Artifact |
 |---------|---------|----------------|
@@ -26,6 +26,7 @@
 | `/cortex-review` | Review implementation against contract compliance and quality lenses | `docs/cortex/reviews/<slug>/` |
 | `/cortex-audit` | Write security/correctness audit with required lenses (auth, data, secrets, unsafe tools, input validation, deps, misuse) | `docs/cortex/audits/<slug>/` |
 | `/cortex-status` | Reconstruct current state from repo-local artifacts; update continuity handoff files | `.cortex/state.json`, `docs/cortex/` continuity files |
+| `/cortex-experiment` | Open a bounded hypothesis test, run it, and close with a decision (promote/iterate/re-clarify/abandon) | `docs/cortex/experiments/<slug>/learning-contract-{id}.md` (open), `experiment-result-{id}.md` (close) |
 
 ## Artifact Roots
 
@@ -61,6 +62,8 @@ The full lifecycle from idea to done follows a fixed spine:
 7. **assure** — all validators pass; eval suite runs; human approval is obtained if required.
 8. **done** — the contract is closed; continuity artifacts are updated.
 
+The pre-spec phases (clarify → research → spec) operate as a discovery loop, not a strict sequence. Research evidence can return the flow to clarify (`reclarify_required: true`). A critical uncertainty that cannot be resolved by research opens an experiment. Only when all three spec-readiness blockers clear does `/cortex-spec` permit commitment. See `docs/DISCOVERY_LOOP.md` for the full loop design: mode transitions, spec-readiness gate, write-root policy, and convergence guardrails.
+
 See `docs/INTELLIGENCE_FLOW.md` for the full ASCII spine diagram with loop annotations and gate conditions.
 
 ## Continuity Model
@@ -95,7 +98,7 @@ Chat history is ephemeral. All Cortex state lives in repo-local artifacts under 
 1. **GSD owns all state.** No other layer writes to `.planning/` or `STATE.md`.
 2. **Discipline rules are behavioral, not orchestrational.** They say "write tests first" not "now run this workflow."
 3. **Thinking rules are always-on but passive.** They shape HOW Claude reasons without dictating WHAT to do.
-4. **Skill namespace:** All Cortex skills use `/cortex-*` prefix (7 skills total). No collision with `/gsd:*` or any upstream skill namespace.
+4. **Skill namespace:** All Cortex skills use `/cortex-*` prefix (8 skills total). No collision with `/gsd:*` or any upstream skill namespace.
 5. **No duplicate review loops.** GSD's verify-work IS the review gate. Discipline and thinking layers enhance that gate's quality.
 6. **Cortex never writes to `.planning/`** — GSD owns all workflow state.
 
@@ -123,6 +126,7 @@ cortex/
 │   ├── cortex-audit/
 │   ├── cortex-clarify/
 │   ├── cortex-research/
+│   ├── cortex-experiment/
 │   └── cortex-spec/
 ├── .claude/
 │   ├── agents/                 # Installed: 4 agents (cortex-specifier, cortex-critic,
