@@ -34,6 +34,30 @@ Also trigger when the user says:
 
 5. Read the clarify brief in full.
 
+6. Check `.cortex/state.json` for `reclarify_required`.
+   - If `reclarify_required: true`, block with:
+     ```
+     BLOCKED: reclarify_required is true.
+     Research evidence has changed the problem frame. Run /cortex-clarify to reframe before speccing.
+     ```
+
+7. Read `docs/cortex/handoffs/open-questions.md`. Check for any entries where both `severity: critical` AND `status: open`.
+   - If any such entries exist, block with:
+     ```
+     BLOCKED: [N] critical uncertainties are still open.
+     Resolve or explicitly accept-risk each one before speccing.
+     ```
+   - If the file does not exist or contains only flat/legacy entries (no structured fields), treat all entries as `severity: noncritical` by default (backward-compat default per `docs/DISCOVERY_LOOP.md` §3).
+
+8. Inspect all research dossiers for the active slug (`docs/cortex/research/{slug}/*.md`). For each core assumption listed in any dossier, verify it is backed by at least one research finding or experiment result within the dossiers.
+   - If any assumption has no evidence backing, block with:
+     ```
+     BLOCKED: [N] core assumption(s) have no evidence backing.
+     Run /cortex-research or /cortex-experiment to gather supporting evidence.
+     ```
+
+See `docs/DISCOVERY_LOOP.md` §4 for full spec-readiness gate semantics.
+
 ### Phase 2: Synthesize Spec
 
 Read the template at `templates/cortex/spec.md`.
