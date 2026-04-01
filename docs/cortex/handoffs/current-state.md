@@ -2,7 +2,7 @@
 
 **slug:** auto-doc-sync
 
-**mode:** execute
+**mode:** done
 
 **approval_status:** approved
 
@@ -25,4 +25,4 @@
 **blockers:**
 - (none)
 
-**next_action:** Phase 12 complete — all 11 ADSYNC requirements satisfied, 7/7 validators pass, 8/8 tests pass
+**next_action:** Phase 12 complete — all 11 ADSYNC requirements satisfied, 7/7 validators pass, 8/8 tests pass. Run /cortex-clarify to start the next work item.

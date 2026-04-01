@@ -1,1 +1,3 @@
-cortex-documentation-audit is closed (mode: done). All documentation gaps have been patched: CORTEX.md (command count, hook count, DISCOVERY_LOOP.md), COMMANDS.md (State Effects + Block Conditions for all 8 commands), CONTINUITY.md (3 new state.json fields), EVALS.md (--write-plan row), AGENTS.md (--team composition, scribe hook triggers), and the new docs/HOOKS.md (12-hook reference). No active work item. Run /cortex-clarify to begin a new slug.
+The auto-doc-sync slug is complete (done mode). All 11 ADSYNC requirements satisfied, 7/7 validators pass, 8/8 tests pass. The active contract at docs/cortex/contracts/auto-doc-sync/contract-001.md is fulfilled.
+The next step is to run /cortex-clarify to start the next work item, or /cortex-status for full state.
+Run /cortex-status to see the full current state.
