@@ -66,6 +66,10 @@
     {
       "file": "cortex-write-guard.sh",
       "wiring": "manual"
+    },
+    {
+      "file": "auto-doc-sync.sh",
+      "wiring": "manual"
     }
   ],
   "hook_events": [

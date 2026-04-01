@@ -1,0 +1,1 @@
+../../hooks/auto-doc-sync.sh
