@@ -280,6 +280,64 @@ No flags or arguments.
 
 ---
 
+## /cortex-experiment
+
+**Syntax**
+```bash
+/cortex-experiment <open|run|close>
+```
+
+**Purpose**
+Manages the full lifecycle of a bounded hypothesis test: open a learning contract, run the experiment (human-driven), and close with a structured decision. Implements the experiment mode in the discovery loop. Only used for critical uncertainties with `resolution_path: experiment` in the uncertainty register.
+
+**Inputs**
+
+| Argument | Required | Description |
+|----------|----------|-------------|
+| `open` | Required (one of three) | Start a new experiment; writes the learning contract |
+| `run` | Required (one of three) | Orientation-only; prints active contract summary; no artifact written |
+| `close` | Required (one of three) | Close the active experiment; collects results; writes experiment-result artifact |
+
+**Outputs**
+
+| Subcommand | Artifact | Path | Contents |
+|------------|----------|------|----------|
+| `open` | Learning contract | `docs/cortex/experiments/<slug>/learning-contract-{id}.md` | Hypothesis, experiment design, learning threshold, timebox, key metrics |
+| `run` | (none) | — | Read-only guidance; no artifact written |
+| `close` | Experiment result | `docs/cortex/experiments/<slug>/experiment-result-{id}.md` | Actual outcomes, validated learning, decision, rationale, next steps |
+
+**State Transitions**
+
+| Decision (close) | mode written | reclarify_required |
+|------------------|--------------|--------------------|
+| `promote` | `research` | unchanged |
+| `iterate` | `research` | unchanged |
+| `re-clarify` | `clarify` | `true` |
+| `abandon` | `research` | unchanged |
+
+`experiment_complete: true` is written to `.cortex/state.json` for ALL four decisions.
+
+**Rules**
+- `open` blocks if `.cortex/state.json` has no active slug. Run `/cortex-clarify` first.
+- `open` warns loudly (does not block) if an open learning contract already exists for the slug.
+- `open` blocks if the user cannot provide an Appetite / Timebox — this field is required.
+- `run` and `close` block if `state.json` mode is not `experiment`.
+- `close` only accepts `promote`, `iterate`, `re-clarify`, or `abandon` as decision values.
+- `experiment_complete: true` is written by `close` for ALL four decisions — the gate is satisfied regardless of decision.
+- `run` is read-only: no artifact is written, no state.json changes made.
+- All experiment artifacts live under `docs/cortex/experiments/<slug>/`. No other write roots used.
+
+**Example**
+```
+/cortex-experiment open
+/cortex-experiment run
+/cortex-experiment close
+```
+
+See `docs/DISCOVERY_LOOP.md` for full experiment mode semantics, convergence guardrails, and the WIP limit policy.
+
+---
+
 ## Flag Reference
 
 | Flag | Commands | Values | Description |
@@ -306,7 +364,9 @@ docs/cortex/
 ├── reviews/<slug>/...
 ├── audits/<slug>/...
 ├── evals/<slug>/eval-proposal.md
-└── evals/<slug>/eval-plan.md
+├── evals/<slug>/eval-plan.md
+├── experiments/<slug>/learning-contract-{id}.md
+└── experiments/<slug>/experiment-result-{id}.md
 
 .cortex/
 ├── state.json
