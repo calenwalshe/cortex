@@ -4,6 +4,7 @@ The sequential spine describes how a feature moves from a fuzzy idea to a shippe
 verified outcome. Cortex owns the intelligence phases. GSD owns execution. The repair
 loop re-enters validate — it never restarts from clarify.
 Runtime artifacts in this flow are written to the target project repo; this framework repo may still contain `.cortex/` and `.planning/` for dogfooding and development.
+The pre-spec phases (clarify, research, spec) operate as a discovery loop with backtracking paths — see `docs/DISCOVERY_LOOP.md` for the authoritative design reference.
 
 ---
 
@@ -11,8 +12,15 @@ Runtime artifacts in this flow are written to the target project repo; this fram
 
 ```
   ┌──────────┐   ┌──────────┐   ┌──────┐
-  │ clarify  │──▶│ research │──▶│ spec │
-  └──────────┘   └──────────┘   └──────┘
+  │ clarify  │──▶│ research │──▶│ spec │◀── spec-readiness gate
+  └──────────┘   └──────────┘   └──────┘    (3 blockers — see below)
+       ▲               │
+       └───────────────┘
+         reclarify_required
+         (research → clarify backtrack)
+
+  experiment mode: research → experiment → research|clarify|spec
+  See docs/DISCOVERY_LOOP.md for full loop semantics.
                                     │
                            ── GSD handoff ──
                                     │
@@ -77,6 +85,8 @@ fixtures, rubrics). Each phase produces a dossier. Research depth is configurabl
 
 **Gate to advance:** At least one research dossier exists. All open questions from
 clarify are either answered or explicitly deferred with rationale.
+
+**Backtrack condition:** If research evidence invalidates the problem frame or core assumptions, `/cortex-research` sets `reclarify_required: true` and the flow returns to clarify before proceeding. See `docs/DISCOVERY_LOOP.md` §1.
 
 **Continuity artifacts written:** `docs/cortex/research/<slug>/<phase>-<timestamp>.md`,
 `docs/cortex/handoffs/current-state.md`, `docs/cortex/handoffs/open-questions.md`
@@ -192,7 +202,7 @@ preserved in `docs/cortex/handoffs/decisions.md`.
 | From → To | Gate Condition |
 |-----------|---------------|
 | clarify → research | Clarify brief written; open questions surfaced (need not be resolved) |
-| research → spec | Research dossier exists for at least one phase |
+| research → spec | All three spec-readiness blockers clear: (1) `reclarify_required: false` in state.json, (2) no `severity: critical` AND `status: open` entries in open-questions.md, (3) all core assumptions backed by evidence. See `docs/DISCOVERY_LOOP.md` §4. |
 | spec → execute | `spec.md` + `gsd-handoff.md` + `contract-001.md` exist and are approved by human |
 | execute → validate | GSD phase/plan marked complete |
 | validate → repair | One or more contract validators failed |

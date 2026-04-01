@@ -256,6 +256,29 @@ If `approval_required: false` OR `Approval Status: approved`:
 | `mode` | `research` |
 | `artifacts` | Append artifact path just written |
 | `gates.research_complete` | `true` (flip when at least one dossier exists) |
+| `reclarify_required` | `true` — **conditional**: write only when research evidence invalidates the current problem frame or core assumptions (see below) |
+
+**Conditional: reclarify_required**
+
+After synthesizing findings, evaluate whether the research evidence contradicts or materially changes the problem frame or core assumptions established in the clarify brief.
+
+If evidence invalidates the frame or assumptions:
+1. Write `reclarify_required: true` to `.cortex/state.json`.
+2. Emit the following warning in the output (before the normal dossier confirmation):
+
+```
+⚠ RECLARIFY REQUIRED
+════════════════════════════════════════
+Research evidence has changed the problem frame or invalidated core assumptions.
+
+Run /cortex-clarify to reframe before proceeding to /cortex-spec.
+(reclarify_required: true has been written to .cortex/state.json)
+════════════════════════════════════════
+```
+
+If evidence does not invalidate the frame, do not write `reclarify_required` and do not emit the warning.
+
+See `docs/DISCOVERY_LOOP.md` §1 (research → clarify backtrack transition) for full semantics.
 
 ## Rules
 

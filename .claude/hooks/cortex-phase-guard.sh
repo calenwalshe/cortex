@@ -23,7 +23,7 @@ case "$MODE" in
   clarify|research|spec)
     ;;
   *)
-    exit 0  # execute/validate/repair/assure/done — no restriction
+    exit 0  # execute/experiment/validate/repair/assure/done — no restriction
     ;;
 esac
 
@@ -31,8 +31,9 @@ esac
 DOCS_ROOT="${CLAUDE_PROJECT_DIR}/docs/cortex"
 CORTEX_ROOT="${CLAUDE_PROJECT_DIR}/.cortex"
 FIT_ROOT="${CLAUDE_PROJECT_DIR}/docs/cortex/fit"
+EXPERIMENTS_ROOT="${CLAUDE_PROJECT_DIR}/docs/cortex/experiments"
 
-if [[ "$FILE_PATH" == "$FIT_ROOT"* ]] || [[ "$FILE_PATH" == "$DOCS_ROOT"* ]] || [[ "$FILE_PATH" == "$CORTEX_ROOT"* ]]; then
+if [[ "$FILE_PATH" == "$FIT_ROOT"* ]] || [[ "$FILE_PATH" == "$DOCS_ROOT"* ]] || [[ "$FILE_PATH" == "$CORTEX_ROOT"* ]] || [[ "$FILE_PATH" == "$EXPERIMENTS_ROOT"* ]]; then
   exit 0  # Within permitted roots
 fi
 
