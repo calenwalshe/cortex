@@ -126,6 +126,40 @@
 
 - [x] **DISC-07**: `skills/cortex-experiment/SKILL.md` exists and documents the open/run/close lifecycle, artifact write paths (`docs/cortex/experiments/{slug}/`), state.json write behavior (`mode: experiment`, `experiment_complete` gate), and all four decision rule outcomes (promote/iterate/re-clarify/abandon)
 
+## v1.3 Requirements
+
+### Documentation Audit
+
+- [ ] **DOC-01**: `CORTEX.md` intro paragraph references "8 commands" (not "7 commands")
+- [ ] **DOC-02**: `CORTEX.md` docs/ file structure section describes `COMMANDS.md` as "8-command reference"
+- [ ] **DOC-03**: `CORTEX.md` docs/ file structure section lists `DISCOVERY_LOOP.md`
+- [ ] **DOC-04**: `docs/CONTINUITY.md` state.json schema table includes `reclarify_required`, `experiment_complete`, and `eval_complete` fields with type and description
+- [ ] **DOC-05**: `docs/CONTINUITY.md` example JSON block includes `reclarify_required`, `experiment_complete`, and `eval_complete`
+- [ ] **DOC-06**: `docs/EVALS.md` invocation table includes a `--write-plan` row identifying `/cortex-research --write-plan` as the mechanism
+- [ ] **DOC-07**: `docs/AGENTS.md` documents `--team` flag composition: which agents are invoked, what each does, how they coordinate
+- [ ] **DOC-08**: `docs/AGENTS.md` cortex-scribe invocation section lists which hooks trigger it
+- [ ] **DOC-09**: `docs/COMMANDS.md` includes a "State Effects" row for each of the 8 command entries, listing which state.json fields are read and written
+- [ ] **DOC-10**: `docs/COMMANDS.md` includes a "Block Conditions" row for each of the 8 command entries, listing preconditions that cause the command to refuse to run
+- [ ] **DOC-11**: `docs/HOOKS.md` exists and includes an entry for each of the 12 installed hooks
+- [ ] **DOC-12**: Each `docs/HOOKS.md` entry documents: trigger event, conditions, inputs, outputs (files written), side effects, async/sync flag, state.json interaction
+- [ ] **DOC-13**: No statement in the updated docs contradicts the corresponding SKILL.md or hook script source of truth
+
+## v1.3 Requirements — auto-doc-sync
+
+### Auto-Doc-Sync Hook
+
+- [ ] **ADSYNC-01**: `.auto-doc-sync.json` exists at repo root with 22 mapping entries (8 COMMANDS.md, 12 HOOKS.md, 2 CONTINUITY.md) — each entry has source_glob, target_doc, target_section, prompt_hint
+- [ ] **ADSYNC-02**: `hooks/auto-doc-sync.sh` implements the full pipeline: escape hatch → source file filter → heuristic classify → conflict detect → batched LLM call → parse → write → diff
+- [ ] **ADSYNC-03**: Hook exits 0 immediately when `SKIP_LLM_GITHOOK=1` is set; exits 0 with no action when no staged files match any mapping entry
+- [ ] **ADSYNC-04**: Hook skips a target doc when it is already in `git diff --cached --name-only` or when `<!-- auto-doc-sync:skip -->` is in its first 50 lines; `FORCE_DOC_SYNC=1` overrides the staged-doc skip
+- [ ] **ADSYNC-05**: Hook soft-fails (exit 0, warning to stdout) when `ANTHROPIC_API_KEY` is unset or when the API call times out / returns an error — never blocks a commit
+- [ ] **ADSYNC-06**: For multi-file commits touching N mapped source files, the hook makes exactly 1 batched API call (not N sequential calls)
+- [ ] **ADSYNC-07**: Heuristic classifier identifies comment-only and whitespace-only diffs and skips the LLM call for them
+- [ ] **ADSYNC-08**: Hook writes updated doc content to the working tree without calling `git add`; prints a unified diff to stdout
+- [ ] **ADSYNC-09**: `test/auto-doc-sync.test.sh` covers: skip-if-no-key, skip-if-no-match, skip-if-staged, skip-if-marker, valid-response-parse, invalid-response-handle
+- [ ] **ADSYNC-10**: `bin/install.js --dry-run` includes the auto-doc-sync hook; installer wires it into settings and copies config
+- [ ] **ADSYNC-11**: `docs/HOOKS.md` contains a `### auto-doc-sync` entry with all required subsections (trigger, inputs, outputs, side effects, state.json interaction)
+
 ## v2 Requirements
 
 ### Extended Capabilities
@@ -225,10 +259,23 @@
 | DISC-06 | Phase 9: Discovery Loop — Infrastructure Patches | Complete |
 | DISC-07 | Phase 10: Discovery Loop — /cortex-experiment Skill | Complete |
 
+| ADSYNC-01 | Phase 12: Auto-Doc-Sync | Complete |
+| ADSYNC-02 | Phase 12: Auto-Doc-Sync | Complete |
+| ADSYNC-03 | Phase 12: Auto-Doc-Sync | Complete |
+| ADSYNC-04 | Phase 12: Auto-Doc-Sync | Complete |
+| ADSYNC-05 | Phase 12: Auto-Doc-Sync | Complete |
+| ADSYNC-06 | Phase 12: Auto-Doc-Sync | Complete |
+| ADSYNC-07 | Phase 12: Auto-Doc-Sync | Complete |
+| ADSYNC-08 | Phase 12: Auto-Doc-Sync | Complete |
+| ADSYNC-09 | Phase 12: Auto-Doc-Sync | Complete |
+| ADSYNC-10 | Phase 12: Auto-Doc-Sync | Complete |
+| ADSYNC-11 | Phase 12: Auto-Doc-Sync | Complete |
+
 **Coverage:**
 - v1 requirements: 55 total — all mapped (phases 1–6)
 - v1.1 requirements: 13 total — all mapped (phase 7)
 - v1.2 requirements: 7 total — all mapped (phases 8–10)
+- v1.3 requirements: 11 total — all mapped (phase 12)
 - Unmapped: 0
 
 ---

@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.2
-milestone_name: cortex-discovery-loop
-status: in_progress
-stopped_at: Phase 11 plan 02 complete — DISC-10, DISC-11, DISC-12 satisfied; Phase 11 complete
-last_updated: "2026-04-01T20:15:00.000Z"
-last_activity: 2026-04-01 — Phase 11 plan 02 complete; CORTEX.md (8-command surface), INTELLIGENCE_FLOW.md (backtracking annotation), COMMANDS.md (/cortex-experiment entry) updated
+milestone: v1.3
+milestone_name: auto-doc-sync
+status: complete
+stopped_at: Phase 12 complete — all ADSYNC requirements satisfied, all validators pass
+last_updated: "2026-04-02T01:30:00.000Z"
+last_activity: 2026-04-02 — Phase 12 (auto-doc-sync) executed; 6 commits, 7/7 validators pass, 8/8 tests pass
 progress:
-  total_phases: 11
-  completed_phases: 11
-  total_plans: 24
-  completed_plans: 24
+  total_phases: 12
+  completed_phases: 12
+  total_plans: 26
+  completed_plans: 26
   percent: 100
 ---
 
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** A stateless executor can read a Cortex handoff pack and start implementation without guessing architecture or definition of done.
-**Current focus:** Phase 11 — Discovery Loop — Update Existing Skills and Docs
+**Current focus:** Phase 12 — Auto-Doc-Sync — Pre-Commit LLM Doc Updater
 
 ## Current Position
 
-Phase: 11 — Discovery Loop — Update Existing Skills and Docs
-Plan: 02 complete — Phase 11 COMPLETE
-Status: All DISC requirements satisfied (DISC-08 through DISC-12); milestone v1.2 cortex-discovery-loop complete
-Last activity: 2026-04-01 — Plan 11-02 complete; CORTEX.md (8-command surface), INTELLIGENCE_FLOW.md (backtracking), COMMANDS.md (/cortex-experiment) updated
+Phase: 12 — Auto-Doc-Sync — Pre-Commit LLM Doc Updater (COMPLETE)
+Plan: 12-02 complete — all plans executed
+Status: All ADSYNC-01 through ADSYNC-11 requirements satisfied; 7/7 validators pass; 8/8 tests pass
+Last activity: 2026-04-02 — Phase 12 executed (12-01: config + prompt + hook + tests; 12-02: installer + docs)
 
-Progress: [████████████████████] 24/24 plans; 11/11 phases complete
+Progress: [█████████████████████] 26/26 plans; 12/12 phases complete
 
 ## Performance Metrics
 

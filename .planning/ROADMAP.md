@@ -221,3 +221,27 @@ Plans:
 | 9. Discovery Loop — Infrastructure Patches | 1/1 | Complete    | 2026-04-01 |
 | 10. Discovery Loop — /cortex-experiment Skill | 1/1 | Complete    | 2026-04-01 |
 | 11. Discovery Loop — Update Existing Skills and Docs | 2/2 | Complete    | 2026-04-01 |
+| 12. Auto-Doc-Sync — Pre-Commit LLM Doc Updater | 2/2 | Complete    | 2026-04-02 |
+
+### Phase 12: Auto-Doc-Sync — Pre-Commit LLM Doc Updater
+**Goal**: Build a git pre-commit hook that auto-generates documentation updates for COMMANDS.md, HOOKS.md, and CONTINUITY.md whenever their corresponding source files are modified
+**Depends on:** Phase 11
+**Requirements**: ADSYNC-01, ADSYNC-02, ADSYNC-03, ADSYNC-04, ADSYNC-05, ADSYNC-06, ADSYNC-07, ADSYNC-08, ADSYNC-09, ADSYNC-10, ADSYNC-11
+**Contract**: docs/cortex/contracts/auto-doc-sync/contract-001.md
+**Eval Plan**: docs/cortex/evals/auto-doc-sync/eval-plan.md
+**Success Criteria** (what must be TRUE):
+  1. `.auto-doc-sync.json` exists with 22 mapping entries covering all source-to-doc relationships
+  2. `hooks/auto-doc-sync.sh` implements the full pipeline (filter → classify → detect → call → parse → write) and passes `shellcheck`
+  3. Hook never blocks a commit — soft-fails on API errors, skips when no mapped files are staged
+  4. Single batched API call for multi-file commits; heuristic classifier skips LLM for trivial changes
+  5. Three escape hatches documented and functional: `SKIP_LLM_GITHOOK`, `SKIP=auto-doc-sync`, `FORCE_DOC_SYNC=1`
+  6. `test/auto-doc-sync.test.sh` passes all 6 core test scenarios
+  7. Installer wires the hook; `docs/HOOKS.md` documents it
+**Research**: Complete (concept, implementation, mapping table dossiers in docs/cortex/research/auto-doc-sync/)
+**Plans**: 2 plans
+
+**Status**: COMPLETE — 2026-04-02
+
+Plans:
+- [x] 12-01-PLAN.md — Core hook: .auto-doc-sync.json config, hooks/auto-doc-sync-prompt.md template, hooks/auto-doc-sync.sh script, test/auto-doc-sync.test.sh (ADSYNC-01 through ADSYNC-09)
+- [x] 12-02-PLAN.md — Installer integration + documentation: update bin/install.js, runtime-manifest.json, docs/HOOKS.md (ADSYNC-10, ADSYNC-11)
