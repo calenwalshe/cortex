@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: cortex-discovery-loop
 status: in_progress
-stopped_at: Phase 11 plan 01 complete — DISC-08 and DISC-09 satisfied
-last_updated: "2026-04-01T19:45:00.000Z"
-last_activity: 2026-04-01 — Phase 11 plan 01 complete; cortex-research and cortex-spec SKILL.md updated with discovery loop gates
+stopped_at: Phase 11 plan 02 complete — DISC-10, DISC-11, DISC-12 satisfied; Phase 11 complete
+last_updated: "2026-04-01T20:15:00.000Z"
+last_activity: 2026-04-01 — Phase 11 plan 02 complete; CORTEX.md (8-command surface), INTELLIGENCE_FLOW.md (backtracking annotation), COMMANDS.md (/cortex-experiment entry) updated
 progress:
   total_phases: 11
-  completed_phases: 10
-  total_plans: 22
-  completed_plans: 22
+  completed_phases: 11
+  total_plans: 24
+  completed_plans: 24
   percent: 100
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 11 — Discovery Loop — Update Existing Skills and Docs
-Plan: 01 complete
-Status: In progress — DISC-08 and DISC-09 satisfied; remaining: DISC-10 (CORTEX.md), DISC-11 (INTELLIGENCE_FLOW.md), DISC-12 (COMMANDS.md)
-Last activity: 2026-04-01 — Plan 11-01 complete; cortex-research SKILL.md (reclarify_required write + warning) and cortex-spec SKILL.md (3 spec-readiness blockers) updated
+Plan: 02 complete — Phase 11 COMPLETE
+Status: All DISC requirements satisfied (DISC-08 through DISC-12); milestone v1.2 cortex-discovery-loop complete
+Last activity: 2026-04-01 — Plan 11-02 complete; CORTEX.md (8-command surface), INTELLIGENCE_FLOW.md (backtracking), COMMANDS.md (/cortex-experiment) updated
 
-Progress: [████████████████████] 23/23 plans (one phase 11 plan complete); 10/11 phases complete
+Progress: [████████████████████] 24/24 plans; 11/11 phases complete
 
 ## Performance Metrics
 
@@ -150,7 +150,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Phase 10 complete, ready to plan Phase 11
+Stopped at: Phase 11 complete — milestone v1.2 cortex-discovery-loop complete
 Resume file: None
 
 ## Drive Log
