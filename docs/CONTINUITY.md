@@ -127,7 +127,10 @@ Run /cortex-status to see the full current state.
     "research_complete": true,
     "spec_complete": true,
     "contract_approved": false
-  }
+  },
+  "reclarify_required": false,
+  "experiment_complete": false,
+  "eval_complete": false
 }
 ```
 
@@ -135,6 +138,14 @@ Run /cortex-status to see the full current state.
 - `mode` — matches the `mode` field in `current-state.md`; drives phase-guard behavior
 - `approvals` — tracks whether the contract and eval plan have received human approval
 - `gates` — boolean flags for phase transition prerequisites; a gate must be `true` before the system advances
+
+**Optional / conditional fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `reclarify_required` | boolean | `true` when research evidence invalidates the current problem frame. Written conditionally by `/cortex-research` and unconditionally by `/cortex-experiment close` on a `re-clarify` decision. Blocks `/cortex-spec` until the field is absent or `false`. |
+| `experiment_complete` | boolean | `true` after any `/cortex-experiment close` call, regardless of decision (`promote`, `iterate`, `re-clarify`, or `abandon`). Satisfies the experiment gate for the current slug. |
+| `eval_complete` | boolean | `true` when all evals in the active eval plan have passed and the assure phase is confirmed. Blocks the `assure → done` transition until set. |
 
 ---
 

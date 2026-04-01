@@ -1,7 +1,7 @@
 # Cortex
 
 > A lifecycle intelligence system that sits above GSD. Cortex converts fuzzy ideas
-> into GSD-ready execution contracts via 7 commands and a sequential spine. GSD
+> into GSD-ready execution contracts via 8 commands and a sequential spine. GSD
 > remains the workflow owner; Cortex adds the intelligence layer — clarifying,
 > researching, speccing, validating, repairing, and assuring so that execution is
 > always grounded in a clear definition of done.
@@ -98,7 +98,7 @@ Chat history is ephemeral. All Cortex state lives in repo-local artifacts under 
 1. **GSD owns all state.** No other layer writes to `.planning/` or `STATE.md`.
 2. **Discipline rules are behavioral, not orchestrational.** They say "write tests first" not "now run this workflow."
 3. **Thinking rules are always-on but passive.** They shape HOW Claude reasons without dictating WHAT to do.
-4. **Skill namespace:** All Cortex skills use `/cortex-*` prefix (8 skills total). No collision with `/gsd:*` or any upstream skill namespace.
+4. **Skill namespace:** All Cortex skills use `/cortex-*` prefix (8 commands total). No collision with `/gsd:*` or any upstream skill namespace.
 5. **No duplicate review loops.** GSD's verify-work IS the review gate. Discipline and thinking layers enhance that gate's quality.
 6. **Cortex never writes to `.planning/`** — GSD owns all workflow state.
 
@@ -131,7 +131,7 @@ cortex/
 ├── .claude/
 │   ├── agents/                 # Installed: 4 agents (cortex-specifier, cortex-critic,
 │   │                           # cortex-scribe, cortex-eval-designer)
-│   ├── hooks/                  # Installed: 11 hook scripts
+│   ├── hooks/                  # Installed: 12 hook scripts
 │   └── settings.json           # Global hook wiring across 9 Claude Code events
 ├── bin/                        # Scripts
 │   ├── install.sh
@@ -144,7 +144,8 @@ cortex/
 │   └── gstack/
 └── docs/                       # Architecture and reference docs
     ├── INTELLIGENCE_FLOW.md    # Sequential spine diagram with loops and gates
-    ├── COMMANDS.md             # 7-command reference with inputs, outputs, rules
+    ├── DISCOVERY_LOOP.md       # Discovery loop design: mode transitions, spec-readiness gate, write-root policy
+    ├── COMMANDS.md             # 8-command reference with inputs, outputs, rules
     ├── CONTINUITY.md           # Continuity strategy and artifact schemas
     ├── EVALS.md                # Eval lifecycle, matrix, and harness guide
     └── AGENTS.md               # Agent roster, tools, permission modes

@@ -81,7 +81,7 @@ When an eval fails: a repair recommendation is written to `docs/cortex/` in the 
 | Operation | How to invoke |
 |-----------|--------------|
 | Eval proposal | `/cortex-research --phase evals` |
-| Eval plan | Written by eval-designer after human approves the proposal |
+| Eval plan | `/cortex-research --write-plan` — reads `eval-proposal.md`, checks approval status, writes `eval-plan.md` |
 | Eval execution | Triggered by `cortex-validator-trigger` hook or run manually |
 
 ---

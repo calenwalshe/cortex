@@ -37,6 +37,22 @@ Paths are relative to the target project repo. The slug is derived from the idea
 - The clarify brief is the required gate to `/cortex-research`. Research cannot begin without one.
 - Does not modify any GSD planning state (`.planning/`, `STATE.md`).
 
+**State Effects**
+
+| Field | Operation | Value |
+|-------|-----------|-------|
+| `slug` | writes | derived slug |
+| `mode` | writes | `"clarify"` |
+| `approval_status` | writes | `"pending"` |
+| `active_contract` | writes | `null` |
+| `artifacts` | appends | clarify brief path |
+| `gates.clarify_complete` | writes | `true` |
+
+Also writes `docs/cortex/handoffs/current-state.md` with all continuity fields.
+
+**Block Conditions**
+- Warns (does NOT block) if `.cortex/state.json` already has a different active slug; requires user confirmation before overwriting the active context.
+
 **Example**
 ```
 /cortex-clarify "add smart retry logic to the API client"
@@ -80,6 +96,23 @@ Produces a research dossier for the current slug at a specified phase and depth.
 - Each phase must be explicitly requested by the human — the system does not auto-advance to the next phase.
 - `--team` is opt-in only. Agent team mode is never default behavior.
 
+**State Effects**
+
+| Field | Operation | Value |
+|-------|-----------|-------|
+| `mode` | writes | `"research"` |
+| `artifacts` | appends | dossier path (concept/implementation) or eval proposal path |
+| `gates.research_complete` | writes | `true` (when at least one dossier exists) |
+| `reclarify_required` | writes (conditional) | `true` — only when research evidence invalidates the current problem frame |
+| `approvals.evals` | writes (`--write-plan` only) | `true` — after successfully writing `eval-plan.md` |
+
+Also writes `docs/cortex/handoffs/current-state.md`.
+
+**Block Conditions**
+- Blocks if no clarify brief exists for the active slug (run `/cortex-clarify` first)
+- Blocks (`--write-plan`) if `eval-proposal.md` has `approval_required: true` and `Approval Status` is not `approved`
+- Blocks (`--write-plan`) if `Approval Status: rejected` in the eval proposal
+
 **Example**
 ```
 /cortex-research --phase implementation --depth deep
@@ -121,6 +154,26 @@ No flags or arguments. The command always operates on the current active slug.
 - The spec and contract must be human-approved before execution begins. Approval is a hard gate.
 - Contract numbering starts at `contract-001.md`. Subsequent repair contracts increment the counter.
 
+**State Effects**
+
+| Field | Operation | Value |
+|-------|-----------|-------|
+| `mode` | writes | `"spec"` |
+| `approval_status` | writes | `"pending"` |
+| `active_contract` | writes | `docs/cortex/contracts/<slug>/contract-001.md` |
+| `artifacts` | appends | spec.md, gsd-handoff.md, and contract-001.md paths |
+| `gates.spec_complete` | writes | `true` |
+
+Also writes `docs/cortex/handoffs/current-state.md`.
+
+**Block Conditions**
+- Blocks if `.cortex/state.json` is missing or has no active slug
+- Blocks if no clarify brief exists for the active slug
+- Blocks if no research dossier exists for the active slug
+- Blocks if `reclarify_required: true` in state.json
+- Blocks if any open question has `severity: critical` AND `status: open` in `open-questions.md`
+- Blocks if any core assumption in the research dossiers has no evidence backing
+
 **Example**
 ```
 /cortex-spec
@@ -156,6 +209,17 @@ Writes an investigation artifact that documents findings, root cause analysis, a
 - Can produce a repair contract for GSD handoff. The human imports the repair contract explicitly — the command does not call GSD.
 - Investigation artifacts are written to the target project repo, not the Cortex repo.
 
+**State Effects**
+
+| Field | Operation | Value |
+|-------|-----------|-------|
+| `artifacts` | appends | investigation artifact path (and repair contract path if written) |
+
+Also updates `docs/cortex/handoffs/current-state.md` (`recent_artifacts`, `blockers` if BLOCKED, `next_action`).
+
+**Block Conditions**
+- Blocks if `slug` is null in state.json AND no `<subject>` argument is provided
+
 **Example**
 ```
 /cortex-investigate "rate limiter not triggering in test environment"
@@ -189,6 +253,18 @@ Writes a review artifact that evaluates the target against the active contract's
 - Review always checks the active contract's done criteria and validators. Contract compliance is a required section — it cannot be omitted.
 - Output is always written as a repo-local artifact. Chat-only responses do not count as review outputs.
 - The `<target>` can be a single file, a directory, or a PR reference.
+
+**State Effects**
+
+| Field | Operation | Value |
+|-------|-----------|-------|
+| `artifacts` | appends | review artifact path |
+| `mode` | writes (conditional) | `"repair"` — only when P0 eval failures are detected |
+
+Also updates `docs/cortex/handoffs/current-state.md` and `docs/cortex/handoffs/eval-status.md`.
+
+**Block Conditions**
+- None — slug defaults to `"unknown"` if neither state.json slug nor `<target>` argument is available.
 
 **Example**
 ```
@@ -231,6 +307,17 @@ Writes a security and quality audit artifact covering all required audit lenses 
 - No lens may be omitted without an explicit documented note explaining why it is not applicable.
 - Output is always a repo-local artifact. Chat-only audit responses do not count.
 
+**State Effects**
+
+| Field | Operation | Value |
+|-------|-----------|-------|
+| `artifacts` | appends | audit artifact path |
+
+Also updates `docs/cortex/handoffs/current-state.md` (`recent_artifacts`, `blockers` if CRITICAL findings, `next_action`).
+
+**Block Conditions**
+- None — slug defaults to `"unknown"` if neither state.json slug nor `<target>` argument is available.
+
 **Example**
 ```
 /cortex-audit src/
@@ -272,6 +359,14 @@ No flags or arguments.
 - Designed specifically for use after `/clear` or compaction when chat context is lost.
 - Does not modify product code or GSD state.
 - See `docs/CONTINUITY.md` for the full resume protocol and artifact schemas.
+
+**State Effects**
+- Reads `.cortex/state.json` (no mutations to state.json).
+- Writes `docs/cortex/handoffs/current-state.md` with reconciled state from all artifact sources.
+- Writes `docs/cortex/handoffs/next-prompt.md` with a paste-ready restart prompt.
+
+**Block Conditions**
+- None — safe to run at any time, including when no state.json exists.
 
 **Example**
 ```
@@ -316,6 +411,31 @@ Manages the full lifecycle of a bounded hypothesis test: open a learning contrac
 | `abandon` | `research` | unchanged |
 
 `experiment_complete: true` is written to `.cortex/state.json` for ALL four decisions.
+
+**State Effects**
+
+| Subcommand | Field | Operation | Value |
+|------------|-------|-----------|-------|
+| `open` | `mode` | writes | `"experiment"` |
+| `open` | `artifacts` | appends | learning contract path |
+| `run` | _(none)_ | — | Read-only; no state.json changes |
+| `close` | `experiment_complete` | writes | `true` (all decisions) |
+| `close` | `mode` | writes | decision-driven (see State Transitions table above) |
+| `close` | `reclarify_required` | writes (conditional) | `true` — only for `re-clarify` decision |
+| `close` | `artifacts` | appends | experiment result path |
+
+`open` and `close` also write `docs/cortex/handoffs/current-state.md`. `close` additionally updates the learning contract's `status` to `closed`.
+
+**Block Conditions**
+
+- `open` blocks if `.cortex/state.json` has no active slug (run `/cortex-clarify` first)
+- `open` blocks if the user cannot provide an Appetite / Timebox (required field)
+- `open` warns (does NOT block) if an open learning contract already exists for the slug
+- `run` blocks if `state.json` mode is not `"experiment"`
+- `close` blocks if `state.json` mode is not `"experiment"`
+- `close` blocks if no open learning contract is found for the slug
+- `close` blocks if decision is not one of `promote | iterate | re-clarify | abandon`
+- `close` blocks if any required result field (Actual Outcomes, Validated Learning, Decision, Rationale, Next Steps) is missing
 
 **Rules**
 - `open` blocks if `.cortex/state.json` has no active slug. Run `/cortex-clarify` first.

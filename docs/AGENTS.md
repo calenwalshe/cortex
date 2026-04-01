@@ -70,7 +70,15 @@ cortex-scribe maintains all continuity artifacts. It runs at session transitions
 
 **Read permission scope:** All files in the target repo and Cortex framework.
 
-**Invocation:** Invoked by hooks at session transitions (`cortex-session-end`), compaction events (`cortex-precompact`, `cortex-postcompact`), and phase transitions. Can be invoked directly via `@cortex-scribe` or by running `/cortex-status`.
+**Invocation:** Invoked by hooks at session transitions, compaction events, and phase transitions. Can be invoked directly via `@cortex-scribe` or by running `/cortex-status`.
+
+**Hook triggers:**
+
+| Hook | Claude Code Event | When |
+|------|------------------|------|
+| `cortex-session-end` | Stop (async) | After every agent response turn — writes `current-state.md` from state.json |
+| `cortex-precompact` | PreCompact | Before `/compact` — writes pre-compaction snapshot to `.cortex/compaction/` |
+| `cortex-postcompact` | PostCompact | After `/compact` — writes `last-compact-summary.md` and refreshes `next-prompt.md` |
 
 **Output artifacts:**
 - `docs/cortex/handoffs/current-state.md` updates — current slug, mode, approval status, active contract, recent artifacts, open questions, blockers, next action
@@ -118,6 +126,19 @@ No agent writes outside `docs/cortex/` or `.cortex/` unless explicitly listed in
 | Sub-agent (standard) | Cortex commands invoke agents when needed — e.g. `/cortex-spec` invokes cortex-specifier |
 | Team mode | `/cortex-research --team` invokes the full agent team for concept research |
 | Direct invocation | `@cortex-specifier`, `@cortex-critic`, `@cortex-scribe`, `@cortex-eval-designer` |
+
+### `--team` Flag Composition
+
+When `/cortex-research --team` is invoked, the following agents run in parallel as sub-agents alongside the primary research executor:
+
+| Agent | Role in team mode | What it does |
+|-------|------------------|--------------|
+| `cortex-critic` | Adversarial reviewer | Reviews research findings for logical gaps, unsupported assumptions, and missing edge cases. Returns a critique that is incorporated into the final dossier before it is written. |
+| `cortex-specifier` | Compression synthesizer | Available to draft a preliminary problem frame or scope from early findings — useful when the research pass will immediately feed into `/cortex-spec`. |
+| `cortex-eval-designer` | Eval candidate identifier | Flags which eval dimensions are likely to apply given the research findings — useful during concept research to anticipate eval complexity before the evals phase. |
+| `cortex-scribe` | Continuity writer | Updates `current-state.md` and `next-prompt.md` after the team research completes, reflecting the new artifacts and next recommended action. |
+
+**Coordination model:** The primary research executor runs the full research pipeline (all phases and tools). Sub-agents receive a copy of the synthesized findings and return their output concurrently. The primary executor merges agent outputs before writing the final dossier. cortex-critic's findings are incorporated as a "Critique" section. Agent team mode is opt-in and adds API cost — it is never the default.
 
 ---
 
