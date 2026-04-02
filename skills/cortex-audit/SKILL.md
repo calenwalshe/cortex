@@ -13,6 +13,8 @@ Also trigger when: "security audit", "threat model", "OWASP check", "security re
 - `/cortex-audit --comprehensive` — monthly deep scan (2/10 bar, more findings)
 - `/cortex-audit --diff` — only check branch changes vs base
 - `/cortex-audit --quick` — infrastructure + secrets only (fastest)
+- `--autonomy <preset>` — override the autonomy preset for this invocation only. Valid values: `supervised`, `gates-only`, `full-auto`. Passed to the resolver as the invocation layer (highest precedence in the 4-layer resolution).
+- `--gate <name>=<bool>` — override a specific gate for this invocation only. Example: `--gate security_verdict=false`. Repeatable. Passed to the resolver as invocation-layer gate overrides.
 
 ## Persona
 
@@ -203,7 +205,7 @@ Audit artifact written: docs/cortex/audits/{slug}/{timestamp}.md
 After producing the Security Posture Report, resolve the autonomy config to determine if human review of the findings is required:
 1. Read `.cortex/autonomy.json` (project-level) and `~/.claude/cortex-autonomy.json` (global-level) if they exist.
 2. Determine the active preset (default: `supervised` if no config found).
-3. Look up `gates.security_verdict` in the resolved config. Resolution order: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of config.
+3. Look up `gates.security_verdict` in the resolved config. If `--autonomy` or `--gate` flags were provided, use them as the invocation layer (highest precedence in the 4-layer resolution). Resolution order: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of config.
 4. If `gates.security_verdict` is `false`: **auto-proceed** — the audit artifact is written and the pipeline continues without pausing for human review of findings. Log the skip by appending a row to `docs/cortex/handoffs/decisions.md`: `| {ISO timestamp} | security_verdict | auto-skipped | autonomy: {preset} |`. Update `next_action` in `docs/cortex/handoffs/current-state.md` to reflect the auto-proceed: include the text "Security audit auto-proceeded (autonomy: {preset})".
 5. If `gates.security_verdict` is `true` (or no autonomy config exists): **require human review** — after writing the audit artifact, output a prompt asking the user to review findings before proceeding. Set `next_action` in `current-state.md` to: "Review security audit at {artifact_path} — CRITICAL/HIGH findings require human acknowledgment before proceeding."
 

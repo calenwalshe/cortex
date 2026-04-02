@@ -8,6 +8,8 @@ Also trigger when: "clarify this idea", "help me frame this", "what problem are 
 
 ## Arguments
 - `/cortex-clarify <idea>` — the idea, problem, or feature as a quoted string or inline text (required)
+- `--autonomy <preset>` — override the autonomy preset for this invocation only. Valid values: `supervised`, `gates-only`, `full-auto`. Passed to the resolver as the invocation layer (highest precedence in the 4-layer resolution).
+- `--gate <name>=<bool>` — override a specific gate for this invocation only. Example: `--gate slug_conflict=false`. Can be repeated for multiple gates. Passed to the resolver as invocation-layer gate overrides.
 
 ## Instructions
 
@@ -33,7 +35,7 @@ Read `.cortex/state.json`.
 Before evaluating slug conflict, resolve the autonomy config:
 1. Read `.cortex/autonomy.json` (project-level) and `~/.claude/cortex-autonomy.json` (global-level) if they exist.
 2. Determine the active preset (default: `supervised` if no config found).
-3. Look up `gates.slug_conflict` in the resolved config. Resolution order: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of config.
+3. Look up `gates.slug_conflict` in the resolved config. If `--autonomy` or `--gate` flags were provided, use them as the invocation layer (highest precedence in the 4-layer resolution). Resolution order: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of config.
 4. If `gates.slug_conflict` is `false`: **skip the slug conflict check entirely** — auto-proceed without warning or asking confirmation. Log the skip by appending a row to `docs/cortex/handoffs/decisions.md`: `| {ISO timestamp} | slug_conflict | auto-skipped | autonomy: {preset} |`.
 5. If `gates.slug_conflict` is `true` (or no autonomy config exists): evaluate the slug conflict check as described below (existing behavior preserved).
 

@@ -10,6 +10,8 @@ Also trigger when: "review this", "review my code", "code review", "PR review", 
 - `/cortex-review [<target>]` — file, PR, or component to review; defaults to current active contract scope
 - `/cortex-review --security` — security-focused review only
 - `/cortex-review --pr N` — review a specific PR number
+- `--autonomy <preset>` — override the autonomy preset for this invocation only. Valid values: `supervised`, `gates-only`, `full-auto`. Passed to the resolver as the invocation layer (highest precedence in the 4-layer resolution).
+- `--gate <name>=<bool>` — override a specific gate for this invocation only. Example: `--gate compliance_verdict=false`. Repeatable. Passed to the resolver as invocation-layer gate overrides.
 
 ## Anti-Sycophancy Rules (MANDATORY)
 
@@ -138,7 +140,7 @@ This section is required — it cannot be omitted. Append it to the CODE REVIEW 
 Before evaluating contract compliance gates, resolve the autonomy config:
 1. Read `.cortex/autonomy.json` (project-level) and `~/.claude/cortex-autonomy.json` (global-level) if they exist.
 2. Determine the active preset (default: `supervised` if no config found).
-3. Resolve all gate values using 4-layer precedence: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of config.
+3. Resolve all gate values using 4-layer precedence. If `--autonomy` or `--gate` flags were provided, use them as the invocation layer (highest precedence in the 4-layer resolution). Resolution order: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of config.
 
 The following gates apply to this section:
 - `eval_validation` — Controls the eval plan validation block. False in `full-auto` and `gates-only` presets.

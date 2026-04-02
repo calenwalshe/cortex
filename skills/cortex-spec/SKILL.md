@@ -15,7 +15,10 @@ Also trigger when the user says:
 
 ## Arguments
 
-`/cortex-spec` — no flags or arguments; always operates on the current active slug from `.cortex/state.json`.
+`/cortex-spec` — operates on the current active slug from `.cortex/state.json`.
+
+- `--autonomy <preset>` — override the autonomy preset for this invocation only. Valid values: `supervised`, `gates-only`, `full-auto`. Passed to the resolver as the invocation layer (highest precedence in the 4-layer resolution).
+- `--gate <name>=<bool>` — override a specific gate for this invocation only. Example: `--gate contract_approval=false`. Can be repeated. Passed to the resolver as invocation-layer gate overrides.
 
 ## Instructions
 
@@ -25,7 +28,7 @@ Also trigger when the user says:
 Before evaluating prerequisite gates, resolve the autonomy config once for this invocation:
 1. Read `.cortex/autonomy.json` (project-level) and `~/.claude/cortex-autonomy.json` (global-level) if they exist.
 2. Determine the active preset (default: `supervised` if no config found).
-3. Resolve all gate values using 4-layer precedence: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of any config.
+3. Resolve all gate values using 4-layer precedence. If `--autonomy` or `--gate` flags were provided, use them as the invocation layer (highest precedence in the 4-layer resolution). Resolution order: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of any config.
 4. The resolved gate values are used in steps 6, 7, and 8 below, and in Phase 5.
 
 The following gates apply to this skill:

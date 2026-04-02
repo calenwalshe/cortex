@@ -15,6 +15,8 @@ Also trigger when: "research this", "deep dive on", "investigate topic", "what d
 | `--phase` | Optional | Research phase: `concept`, `implementation`, or `evals` | `concept` |
 | `--depth` | Optional | Research depth: `quick`, `standard`, or `deep` | `standard` |
 | `--team` | Optional flag | Invokes agent team for research (opt-in, adds cost) | Off |
+| `--autonomy` | Optional | Override autonomy preset for this invocation: `supervised`, `gates-only`, `full-auto` | Current config |
+| `--gate` | Optional | Override specific gate: `--gate eval_proposal=false`. Repeatable. | Current config |
 
 ## Instructions
 
@@ -185,7 +187,7 @@ After evaluating all 8: set document-level `approval_required: true` if ANY dime
 Before checking eval proposal approval status, resolve the autonomy config:
 1. Read `.cortex/autonomy.json` (project-level) and `~/.claude/cortex-autonomy.json` (global-level) if they exist.
 2. Determine the active preset (default: `supervised` if no config found).
-3. Look up `gates.eval_proposal` in the resolved config. Resolution order: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of config.
+3. Look up `gates.eval_proposal` in the resolved config. If `--autonomy` or `--gate` flags were provided, use them as the invocation layer (highest precedence in the 4-layer resolution). Resolution order: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of config.
 4. If `gates.eval_proposal` is `false`: **skip the approval status check** — proceed directly to writing the eval plan as if `Approval Status: approved`. Log the skip by appending a row to `docs/cortex/handoffs/decisions.md`: `| {ISO timestamp} | eval_proposal | auto-skipped | autonomy: {preset} |`. Continue to the "If `approval_required: false` OR `Approval Status: approved`:" branch below.
 5. If `gates.eval_proposal` is `true` (or no autonomy config exists): evaluate the approval status check as described below (existing behavior preserved — blocks when approval is pending).
 
