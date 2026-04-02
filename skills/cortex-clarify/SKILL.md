@@ -29,7 +29,15 @@ Record the slug — it is used in all subsequent steps.
 
 Read `.cortex/state.json`.
 
-- If `slug` field is already set to a **different** active slug, warn the user and ask to confirm before overwriting the active context.
+**Autonomy gate check (`slug_conflict`):**
+Before evaluating slug conflict, resolve the autonomy config:
+1. Read `.cortex/autonomy.json` (project-level) and `~/.claude/cortex-autonomy.json` (global-level) if they exist.
+2. Determine the active preset (default: `supervised` if no config found).
+3. Look up `gates.slug_conflict` in the resolved config. Resolution order: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of config.
+4. If `gates.slug_conflict` is `false`: **skip the slug conflict check entirely** — auto-proceed without warning or asking confirmation. Log the skip by appending a row to `docs/cortex/handoffs/decisions.md`: `| {ISO timestamp} | slug_conflict | auto-skipped | autonomy: {preset} |`.
+5. If `gates.slug_conflict` is `true` (or no autonomy config exists): evaluate the slug conflict check as described below (existing behavior preserved).
+
+- If `slug` field is already set to a **different** active slug AND the `slug_conflict` gate is active (per autonomy check above): warn the user and ask to confirm before overwriting the active context.
 - If the file does not exist, proceed without warning.
 - If `slug` matches the derived slug, proceed without warning.
 

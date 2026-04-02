@@ -21,6 +21,19 @@ Also trigger when the user says:
 
 ### Phase 1: Validate Prerequisites
 
+**Autonomy config resolution:**
+Before evaluating prerequisite gates, resolve the autonomy config once for this invocation:
+1. Read `.cortex/autonomy.json` (project-level) and `~/.claude/cortex-autonomy.json` (global-level) if they exist.
+2. Determine the active preset (default: `supervised` if no config found).
+3. Resolve all gate values using 4-layer precedence: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of any config.
+4. The resolved gate values are used in steps 6, 7, and 8 below, and in Phase 5.
+
+The following gates apply to this skill:
+- `reclarify` — **MANDATORY** (always true, cannot be disabled). Controls step 6.
+- `critical_uncertainty` — Controls step 7. False in `full-auto` preset.
+- `evidence_backing` — Controls step 8. False in `full-auto` preset.
+- `contract_approval` — Controls Phase 5 approval gate. False in `full-auto` preset.
+
 1. Read `.cortex/state.json` to get the active slug.
    - If state.json does not exist or has no active slug: block with "No active slug found. Run /cortex-clarify first."
 
@@ -34,14 +47,18 @@ Also trigger when the user says:
 
 5. Read the clarify brief in full.
 
-6. Check `.cortex/state.json` for `reclarify_required`.
+6. **Gate: `reclarify` (MANDATORY — always enforced regardless of autonomy preset)**
+   Check `.cortex/state.json` for `reclarify_required`.
    - If `reclarify_required: true`, block with:
      ```
      BLOCKED: reclarify_required is true.
      Research evidence has changed the problem frame. Run /cortex-clarify to reframe before speccing.
      ```
 
-7. Read `docs/cortex/handoffs/open-questions.md`. Check for any entries where both `severity: critical` AND `status: open`.
+7. **Gate: `critical_uncertainty` (autonomy-conditional)**
+   If `gates.critical_uncertainty` is `false` (per autonomy resolution above): skip this check — auto-proceed. Log the skip by appending to `docs/cortex/handoffs/decisions.md`: `| {ISO timestamp} | critical_uncertainty | auto-skipped | autonomy: {preset} |`.
+   If `gates.critical_uncertainty` is `true` (or no autonomy config exists): evaluate as follows:
+   Read `docs/cortex/handoffs/open-questions.md`. Check for any entries where both `severity: critical` AND `status: open`.
    - If any such entries exist, block with:
      ```
      BLOCKED: [N] critical uncertainties are still open.
@@ -49,7 +66,10 @@ Also trigger when the user says:
      ```
    - If the file does not exist or contains only flat/legacy entries (no structured fields), treat all entries as `severity: noncritical` by default (backward-compat default per `docs/DISCOVERY_LOOP.md` §3).
 
-8. Inspect all research dossiers for the active slug (`docs/cortex/research/{slug}/*.md`). For each core assumption listed in any dossier, verify it is backed by at least one research finding or experiment result within the dossiers.
+8. **Gate: `evidence_backing` (autonomy-conditional)**
+   If `gates.evidence_backing` is `false` (per autonomy resolution above): skip this check — auto-proceed. Log the skip by appending to `docs/cortex/handoffs/decisions.md`: `| {ISO timestamp} | evidence_backing | auto-skipped | autonomy: {preset} |`.
+   If `gates.evidence_backing` is `true` (or no autonomy config exists): evaluate as follows:
+   Inspect all research dossiers for the active slug (`docs/cortex/research/{slug}/*.md`). For each core assumption listed in any dossier, verify it is backed by at least one research finding or experiment result within the dossiers.
    - If any assumption has no evidence backing, block with:
      ```
      BLOCKED: [N] core assumption(s) have no evidence backing.
@@ -143,11 +163,15 @@ Create directory if it does not exist: `mkdir -p docs/cortex/contracts/{slug}/`
 - Append all three artifact paths to the `artifacts` array
 - `gates.spec_complete`: true
 
+**Gate: `contract_approval` (autonomy-conditional)**
+If `gates.contract_approval` is `false` (per autonomy resolution from Phase 1): auto-approve — set `approval_status` to `approved` instead of `pending` in both `current-state.md` and `.cortex/state.json`. Log the skip by appending to `docs/cortex/handoffs/decisions.md`: `| {ISO timestamp} | contract_approval | auto-skipped | autonomy: {preset} |`. Update `next_action` to skip the manual approval step.
+If `gates.contract_approval` is `true` (or no autonomy config exists): set `approval_status` to `pending` as currently specified (existing behavior preserved).
+
 ## Rules
 
 - **Requires clarify brief AND at least one research dossier.** Blocks with an explicit error message if either is missing. Running without prerequisites is not allowed.
 - **This skill does NOT auto-invoke GSD.** Cortex never calls GSD commands. The human must explicitly import `gsd-handoff.md` into GSD as a separate manual step.
-- **The spec and contract require human approval before any execution begins.** This is a hard gate — approval_status must be set to `approved` before GSD execution can start.
+- **The spec and contract require human approval before any execution begins — unless the `contract_approval` autonomy gate is disabled.** When the gate is active, approval_status must be set to `approved` manually before GSD execution can start. When the gate is disabled, the system auto-approves.
 - **All 9 spec sections are mandatory.** Omitting any section is an error. The executor must verify all 9 are present before writing the file.
 - **The `eval_plan` field is mandatory on every contract.** Contracts without it are incomplete and must not advance past spec state.
 - **Contract numbering starts at contract-001.md.** Subsequent repair contracts increment the counter. Never overwrite an existing contract.

@@ -181,6 +181,14 @@ After evaluating all 8: set document-level `approval_required: true` if ANY dime
 
 **Trigger:** Only run this phase when explicitly asked to write the eval plan (e.g., `/cortex-research --write-plan` or "write the eval plan").
 
+**Autonomy gate check (`eval_proposal`):**
+Before checking eval proposal approval status, resolve the autonomy config:
+1. Read `.cortex/autonomy.json` (project-level) and `~/.claude/cortex-autonomy.json` (global-level) if they exist.
+2. Determine the active preset (default: `supervised` if no config found).
+3. Look up `gates.eval_proposal` in the resolved config. Resolution order: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of config.
+4. If `gates.eval_proposal` is `false`: **skip the approval status check** — proceed directly to writing the eval plan as if `Approval Status: approved`. Log the skip by appending a row to `docs/cortex/handoffs/decisions.md`: `| {ISO timestamp} | eval_proposal | auto-skipped | autonomy: {preset} |`. Continue to the "If `approval_required: false` OR `Approval Status: approved`:" branch below.
+5. If `gates.eval_proposal` is `true` (or no autonomy config exists): evaluate the approval status check as described below (existing behavior preserved — blocks when approval is pending).
+
 **Prerequisites:**
 
 1. Read `docs/cortex/evals/{slug}/eval-proposal.md`
@@ -189,7 +197,7 @@ After evaluating all 8: set document-level `approval_required: true` if ANY dime
 
 **Decision logic:**
 
-If `approval_required: true` AND `Approval Status:` is NOT `approved`:
+If the `eval_proposal` gate is active (per autonomy check above) AND `approval_required: true` AND `Approval Status:` is NOT `approved`:
 
   Output the following and STOP — do not write eval-plan.md:
 
