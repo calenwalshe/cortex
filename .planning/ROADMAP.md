@@ -291,6 +291,12 @@ Plans:
   3. Each patched skill file contains a conditional gate wrapper that reads the resolved autonomy config and either prompts the user or auto-proceeds based on the gate value
 **Research**: Likely (need to audit each skill file for gate locations and insertion points)
 **Research topics**: Exact gate insertion points in each of the ~8 SKILL.md files, gate naming conventions
+**Plans**: 3 plans
+
+Plans:
+- [ ] 14-01-PLAN.md — Patch cortex-clarify, cortex-research, cortex-audit with single-gate autonomy wrappers
+- [ ] 14-02-PLAN.md — Patch cortex-spec (4 gates) and cortex-review (2 gates) with autonomy wrappers
+- [ ] 14-03-PLAN.md — Add --autonomy/--gate invocation flags to all 5 skills + gate conditional test script
 
 ### Phase 15: Bridge and GSD Integration
 **Goal**: `/cortex-bridge` generates a complete GSD milestone scaffold from Cortex artifacts, and GSD's discuss action consumes Cortex context instead of re-asking answered questions -- eliminating the manual handoff gap
@@ -330,7 +336,7 @@ Plans:
 | 10. Discovery Loop — /cortex-experiment Skill | 1/1 | Complete | 2026-04-01 |
 | 11. Discovery Loop — Update Existing Skills and Docs | 2/2 | Complete | 2026-04-01 |
 | 12. Auto-Doc-Sync — Pre-Commit LLM Doc Updater | 2/2 | Complete | 2026-04-02 |
-| 13. Autonomy Config Foundation | 1/1 | Complete   | 2026-04-02 |
-| 14. Gate Patches | 0/0 | Not started | - |
+| 13. Autonomy Config Foundation | 1/1 | Complete    | 2026-04-02 |
+| 14. Gate Patches | 0/3 | In progress | - |
 | 15. Bridge and GSD Integration | 0/0 | Not started | - |
 | 16. Observability and Verification | 0/0 | Not started | - |
