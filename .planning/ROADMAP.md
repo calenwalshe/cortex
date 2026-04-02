@@ -309,6 +309,11 @@ Plans:
   3. GSD drive discuss action generates CONTEXT.md from Cortex clarify brief and research dossiers (not the minimal "Claude's Discretion" template) when Cortex artifacts exist and the `discuss_phase` gate is disabled
 **Research**: Likely (GSD artifact format requirements, gsd-handoff.md -> GSD mapping, drive-workflow.md patch points)
 **Research topics**: GSD `.planning/` file schemas (PROJECT.md, ROADMAP.md, REQUIREMENTS.md, STATE.md, config.json), drive-workflow.md discuss action dispatch logic
+**Plans**: 2 plans
+
+Plans:
+- [ ] 15-01-PLAN.md — Build /cortex-bridge SKILL.md and bridge output validation tests (AUTON-05, AUTON-06)
+- [ ] 15-02-PLAN.md — Patch GSD drive-workflow.md discuss action with Cortex-aware branch + config.json flag sync (AUTON-10)
 
 ### Phase 16: Observability and Verification
 **Goal**: Users can preview autonomy behavior before committing, every auto-decision is logged for audit, and `/cortex-status` shows the current autonomy posture -- making the system transparent and debuggable
@@ -337,6 +342,6 @@ Plans:
 | 11. Discovery Loop — Update Existing Skills and Docs | 2/2 | Complete | 2026-04-01 |
 | 12. Auto-Doc-Sync — Pre-Commit LLM Doc Updater | 2/2 | Complete | 2026-04-02 |
 | 13. Autonomy Config Foundation | 1/1 | Complete    | 2026-04-02 |
-| 14. Gate Patches | 3/3 | Complete   | 2026-04-02 |
-| 15. Bridge and GSD Integration | 0/0 | Not started | - |
+| 14. Gate Patches | 3/3 | Complete    | 2026-04-02 |
+| 15. Bridge and GSD Integration | 0/2 | Not started | - |
 | 16. Observability and Verification | 0/0 | Not started | - |
