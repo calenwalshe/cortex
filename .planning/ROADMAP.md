@@ -45,7 +45,7 @@ Cortex evolves from a layered wrapper with 5 utilities into a lifecycle intellig
 ### v1.4 adaptive-autonomy (Phases 13-16) -- IN PROGRESS
 
 - [x] **Phase 13: Autonomy Config Foundation** - Define the autonomy config schema, three presets, config resolution logic, and mandatory gate enforcement (completed 2026-04-02)
-- [ ] **Phase 14: Gate Patches** - Patch ~8 Cortex skill files with conditional gate wrappers that read autonomy config
+- [x] **Phase 14: Gate Patches** - Patch ~8 Cortex skill files with conditional gate wrappers that read autonomy config (completed 2026-04-02)
 - [ ] **Phase 15: Bridge and GSD Integration** - Build `/cortex-bridge` command and patch GSD drive discuss action to consume Cortex artifacts
 - [ ] **Phase 16: Observability and Verification** - Add --dry-run mode, autonomy decision logging, /cortex-status autonomy display, and tests
 
@@ -296,7 +296,7 @@ Plans:
 Plans:
 - [x] 14-01-PLAN.md — Patch cortex-clarify, cortex-research, cortex-audit with single-gate autonomy wrappers
 - [x] 14-02-PLAN.md — Patch cortex-spec (4 gates) and cortex-review (2 gates) with autonomy wrappers
-- [ ] 14-03-PLAN.md — Add --autonomy/--gate invocation flags to all 5 skills + gate conditional test script
+- [x] 14-03-PLAN.md — Add --autonomy/--gate invocation flags to all 5 skills + gate conditional test script
 
 ### Phase 15: Bridge and GSD Integration
 **Goal**: `/cortex-bridge` generates a complete GSD milestone scaffold from Cortex artifacts, and GSD's discuss action consumes Cortex context instead of re-asking answered questions -- eliminating the manual handoff gap
@@ -337,6 +337,6 @@ Plans:
 | 11. Discovery Loop — Update Existing Skills and Docs | 2/2 | Complete | 2026-04-01 |
 | 12. Auto-Doc-Sync — Pre-Commit LLM Doc Updater | 2/2 | Complete | 2026-04-02 |
 | 13. Autonomy Config Foundation | 1/1 | Complete    | 2026-04-02 |
-| 14. Gate Patches | 2/3 | In Progress|  |
+| 14. Gate Patches | 3/3 | Complete   | 2026-04-02 |
 | 15. Bridge and GSD Integration | 0/0 | Not started | - |
 | 16. Observability and Verification | 0/0 | Not started | - |
