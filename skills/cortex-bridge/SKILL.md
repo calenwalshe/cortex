@@ -426,6 +426,7 @@ Next: Run /gsd:drive or /gsd:plan-phase 1
 ```
 
 **`--dry-run` behavior:** When `--dry-run` flag is present:
+- Resolve autonomy config using `resolveAutonomyWithSources` from `scripts/cortex/resolve-autonomy.js` and print the resolved gate table showing gate name, value, and source layer for all 13 gates.
 - Print the summary table showing what WOULD be generated (artifact paths, estimated line counts, phase count).
 - Do NOT write any files.
 - Do NOT create any directories.

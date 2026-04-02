@@ -10,6 +10,16 @@ Also trigger when: "clarify this idea", "help me frame this", "what problem are 
 - `/cortex-clarify <idea>` — the idea, problem, or feature as a quoted string or inline text (required)
 - `--autonomy <preset>` — override the autonomy preset for this invocation only. Valid values: `supervised`, `gates-only`, `full-auto`. Passed to the resolver as the invocation layer (highest precedence in the 4-layer resolution).
 - `--gate <name>=<bool>` — override a specific gate for this invocation only. Example: `--gate slug_conflict=false`. Can be repeated for multiple gates. Passed to the resolver as invocation-layer gate overrides.
+- `--dry-run` — print the resolved autonomy gate table without executing any command logic, writing files, or modifying state.
+
+### --dry-run Mode
+
+If `--dry-run` is passed:
+1. Resolve autonomy config using `resolveAutonomyWithSources` from `scripts/cortex/resolve-autonomy.js`
+2. Print the resolved gate table showing gate name, value, and source layer for all 13 gates
+3. Print which gates this specific command checks (cortex-clarify checks `slug_conflict`)
+4. Do NOT execute any command logic, write any files, or modify any state
+5. Exit after printing the table
 
 ## Instructions
 
@@ -36,7 +46,11 @@ Before evaluating slug conflict, resolve the autonomy config:
 1. Read `.cortex/autonomy.json` (project-level) and `~/.claude/cortex-autonomy.json` (global-level) if they exist.
 2. Determine the active preset (default: `supervised` if no config found).
 3. Look up `gates.slug_conflict` in the resolved config. If `--autonomy` or `--gate` flags were provided, use them as the invocation layer (highest precedence in the 4-layer resolution). Resolution order: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of config.
-4. If `gates.slug_conflict` is `false`: **skip the slug conflict check entirely** — auto-proceed without warning or asking confirmation. Log the skip by appending a row to `docs/cortex/handoffs/decisions.md`: `| {ISO timestamp} | slug_conflict | auto-skipped | autonomy: {preset} |`.
+4. If `gates.slug_conflict` is `false`: **skip the slug conflict check entirely** — auto-proceed without warning or asking confirmation.
+   When auto-proceeding (gate is false/skipped), append a decision log entry to `docs/cortex/handoffs/decisions.md` under the `## Autonomy Decisions` section:
+   ```
+   - {ISO8601 timestamp} | gate: slug_conflict | value: false (auto-skipped) | preset: {active_preset} | command: /cortex-clarify
+   ```
 5. If `gates.slug_conflict` is `true` (or no autonomy config exists): evaluate the slug conflict check as described below (existing behavior preserved).
 
 - If `slug` field is already set to a **different** active slug AND the `slug_conflict` gate is active (per autonomy check above): warn the user and ask to confirm before overwriting the active context.

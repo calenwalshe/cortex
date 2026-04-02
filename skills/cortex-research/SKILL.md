@@ -17,6 +17,16 @@ Also trigger when: "research this", "deep dive on", "investigate topic", "what d
 | `--team` | Optional flag | Invokes agent team for research (opt-in, adds cost) | Off |
 | `--autonomy` | Optional | Override autonomy preset for this invocation: `supervised`, `gates-only`, `full-auto` | Current config |
 | `--gate` | Optional | Override specific gate: `--gate eval_proposal=false`. Repeatable. | Current config |
+| `--dry-run` | Optional | Print resolved autonomy gate table without executing any command logic or writing files | Off |
+
+### --dry-run Mode
+
+If `--dry-run` is passed:
+1. Resolve autonomy config using `resolveAutonomyWithSources` from `scripts/cortex/resolve-autonomy.js`
+2. Print the resolved gate table showing gate name, value, and source layer for all 13 gates
+3. Print which gates this specific command checks (cortex-research checks `eval_proposal`)
+4. Do NOT execute any command logic, write any files, or modify any state
+5. Exit after printing the table
 
 ## Instructions
 
@@ -188,7 +198,12 @@ Before checking eval proposal approval status, resolve the autonomy config:
 1. Read `.cortex/autonomy.json` (project-level) and `~/.claude/cortex-autonomy.json` (global-level) if they exist.
 2. Determine the active preset (default: `supervised` if no config found).
 3. Look up `gates.eval_proposal` in the resolved config. If `--autonomy` or `--gate` flags were provided, use them as the invocation layer (highest precedence in the 4-layer resolution). Resolution order: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of config.
-4. If `gates.eval_proposal` is `false`: **skip the approval status check** — proceed directly to writing the eval plan as if `Approval Status: approved`. Log the skip by appending a row to `docs/cortex/handoffs/decisions.md`: `| {ISO timestamp} | eval_proposal | auto-skipped | autonomy: {preset} |`. Continue to the "If `approval_required: false` OR `Approval Status: approved`:" branch below.
+4. If `gates.eval_proposal` is `false`: **skip the approval status check** — proceed directly to writing the eval plan as if `Approval Status: approved`.
+   When auto-proceeding (gate is false/skipped), append a decision log entry to `docs/cortex/handoffs/decisions.md` under the `## Autonomy Decisions` section:
+   ```
+   - {ISO8601 timestamp} | gate: eval_proposal | value: false (auto-skipped) | preset: {active_preset} | command: /cortex-research
+   ```
+   Continue to the "If `approval_required: false` OR `Approval Status: approved`:" branch below.
 5. If `gates.eval_proposal` is `true` (or no autonomy config exists): evaluate the approval status check as described below (existing behavior preserved — blocks when approval is pending).
 
 **Prerequisites:**

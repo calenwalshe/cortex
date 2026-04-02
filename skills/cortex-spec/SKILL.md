@@ -19,6 +19,16 @@ Also trigger when the user says:
 
 - `--autonomy <preset>` — override the autonomy preset for this invocation only. Valid values: `supervised`, `gates-only`, `full-auto`. Passed to the resolver as the invocation layer (highest precedence in the 4-layer resolution).
 - `--gate <name>=<bool>` — override a specific gate for this invocation only. Example: `--gate contract_approval=false`. Can be repeated. Passed to the resolver as invocation-layer gate overrides.
+- `--dry-run` — print the resolved autonomy gate table without executing any command logic, writing files, or modifying state.
+
+### --dry-run Mode
+
+If `--dry-run` is passed:
+1. Resolve autonomy config using `resolveAutonomyWithSources` from `scripts/cortex/resolve-autonomy.js`
+2. Print the resolved gate table showing gate name, value, and source layer for all 13 gates
+3. Print which gates this specific command checks (cortex-spec checks `reclarify`, `critical_uncertainty`, `evidence_backing`, `contract_approval`)
+4. Do NOT execute any command logic, write any files, or modify any state
+5. Exit after printing the table
 
 ## Instructions
 
@@ -59,7 +69,11 @@ The following gates apply to this skill:
      ```
 
 7. **Gate: `critical_uncertainty` (autonomy-conditional)**
-   If `gates.critical_uncertainty` is `false` (per autonomy resolution above): skip this check — auto-proceed. Log the skip by appending to `docs/cortex/handoffs/decisions.md`: `| {ISO timestamp} | critical_uncertainty | auto-skipped | autonomy: {preset} |`.
+   If `gates.critical_uncertainty` is `false` (per autonomy resolution above): skip this check — auto-proceed.
+   When auto-proceeding (gate is false/skipped), append a decision log entry to `docs/cortex/handoffs/decisions.md` under the `## Autonomy Decisions` section:
+   ```
+   - {ISO8601 timestamp} | gate: critical_uncertainty | value: false (auto-skipped) | preset: {active_preset} | command: /cortex-spec
+   ```
    If `gates.critical_uncertainty` is `true` (or no autonomy config exists): evaluate as follows:
    Read `docs/cortex/handoffs/open-questions.md`. Check for any entries where both `severity: critical` AND `status: open`.
    - If any such entries exist, block with:
@@ -70,7 +84,11 @@ The following gates apply to this skill:
    - If the file does not exist or contains only flat/legacy entries (no structured fields), treat all entries as `severity: noncritical` by default (backward-compat default per `docs/DISCOVERY_LOOP.md` §3).
 
 8. **Gate: `evidence_backing` (autonomy-conditional)**
-   If `gates.evidence_backing` is `false` (per autonomy resolution above): skip this check — auto-proceed. Log the skip by appending to `docs/cortex/handoffs/decisions.md`: `| {ISO timestamp} | evidence_backing | auto-skipped | autonomy: {preset} |`.
+   If `gates.evidence_backing` is `false` (per autonomy resolution above): skip this check — auto-proceed.
+   When auto-proceeding (gate is false/skipped), append a decision log entry to `docs/cortex/handoffs/decisions.md` under the `## Autonomy Decisions` section:
+   ```
+   - {ISO8601 timestamp} | gate: evidence_backing | value: false (auto-skipped) | preset: {active_preset} | command: /cortex-spec
+   ```
    If `gates.evidence_backing` is `true` (or no autonomy config exists): evaluate as follows:
    Inspect all research dossiers for the active slug (`docs/cortex/research/{slug}/*.md`). For each core assumption listed in any dossier, verify it is backed by at least one research finding or experiment result within the dossiers.
    - If any assumption has no evidence backing, block with:
@@ -167,7 +185,12 @@ Create directory if it does not exist: `mkdir -p docs/cortex/contracts/{slug}/`
 - `gates.spec_complete`: true
 
 **Gate: `contract_approval` (autonomy-conditional)**
-If `gates.contract_approval` is `false` (per autonomy resolution from Phase 1): auto-approve — set `approval_status` to `approved` instead of `pending` in both `current-state.md` and `.cortex/state.json`. Log the skip by appending to `docs/cortex/handoffs/decisions.md`: `| {ISO timestamp} | contract_approval | auto-skipped | autonomy: {preset} |`. Update `next_action` to skip the manual approval step.
+If `gates.contract_approval` is `false` (per autonomy resolution from Phase 1): auto-approve — set `approval_status` to `approved` instead of `pending` in both `current-state.md` and `.cortex/state.json`.
+When auto-proceeding (gate is false/skipped), append a decision log entry to `docs/cortex/handoffs/decisions.md` under the `## Autonomy Decisions` section:
+```
+- {ISO8601 timestamp} | gate: contract_approval | value: false (auto-skipped) | preset: {active_preset} | command: /cortex-spec
+```
+Update `next_action` to skip the manual approval step.
 If `gates.contract_approval` is `true` (or no autonomy config exists): set `approval_status` to `pending` as currently specified (existing behavior preserved).
 
 ## Rules

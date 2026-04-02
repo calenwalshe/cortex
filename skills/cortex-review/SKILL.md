@@ -12,6 +12,16 @@ Also trigger when: "review this", "review my code", "code review", "PR review", 
 - `/cortex-review --pr N` — review a specific PR number
 - `--autonomy <preset>` — override the autonomy preset for this invocation only. Valid values: `supervised`, `gates-only`, `full-auto`. Passed to the resolver as the invocation layer (highest precedence in the 4-layer resolution).
 - `--gate <name>=<bool>` — override a specific gate for this invocation only. Example: `--gate compliance_verdict=false`. Repeatable. Passed to the resolver as invocation-layer gate overrides.
+- `--dry-run` — print the resolved autonomy gate table without executing any command logic, writing files, or modifying state.
+
+### --dry-run Mode
+
+If `--dry-run` is passed:
+1. Resolve autonomy config using `resolveAutonomyWithSources` from `scripts/cortex/resolve-autonomy.js`
+2. Print the resolved gate table showing gate name, value, and source layer for all 13 gates
+3. Print which gates this specific command checks (cortex-review checks `eval_validation`, `compliance_verdict`)
+4. Do NOT execute any command logic, write any files, or modify any state
+5. Exit after printing the table
 
 ## Anti-Sycophancy Rules (MANDATORY)
 
@@ -161,7 +171,11 @@ For each validator in the contract, note whether it would pass based on review f
 **Eval Plan Validation:**
 
 **Gate: `eval_validation` (autonomy-conditional)**
-If `gates.eval_validation` is `false` (per autonomy resolution above): skip the eval plan validation block — do not produce `[BLOCK]` issues for missing or pending eval plans. Instead, produce a `[NOTE]` level entry: `[NOTE] contract eval_plan — eval plan validation skipped (autonomy: {preset})`. Log the skip by appending to `docs/cortex/handoffs/decisions.md`: `| {ISO timestamp} | eval_validation | auto-skipped | autonomy: {preset} |`.
+If `gates.eval_validation` is `false` (per autonomy resolution above): skip the eval plan validation block — do not produce `[BLOCK]` issues for missing or pending eval plans. Instead, produce a `[NOTE]` level entry: `[NOTE] contract eval_plan — eval plan validation skipped (autonomy: {preset})`.
+When auto-proceeding (gate is false/skipped), append a decision log entry to `docs/cortex/handoffs/decisions.md` under the `## Autonomy Decisions` section:
+```
+- {ISO8601 timestamp} | gate: eval_validation | value: false (auto-skipped) | preset: {active_preset} | command: /cortex-review
+```
 If `gates.eval_validation` is `true` (or no autonomy config exists): evaluate as follows:
 
 Read `eval_plan:` field from the active contract.
@@ -179,7 +193,12 @@ Read `eval_plan:` field from the active contract.
 - If file exists → no issue; note `[PASS] eval_plan — {path} exists`.
 
 **Gate: `compliance_verdict` (autonomy-conditional)**
-If `gates.compliance_verdict` is `false` (per autonomy resolution above): auto-proceed — still produce the compliance verdict line in the output (for logging), but do NOT block the pipeline on a NON-COMPLIANT verdict. Log the skip by appending to `docs/cortex/handoffs/decisions.md`: `| {ISO timestamp} | compliance_verdict | auto-skipped | autonomy: {preset} |`. The review artifact is written regardless.
+If `gates.compliance_verdict` is `false` (per autonomy resolution above): auto-proceed — still produce the compliance verdict line in the output (for logging), but do NOT block the pipeline on a NON-COMPLIANT verdict.
+When auto-proceeding (gate is false/skipped), append a decision log entry to `docs/cortex/handoffs/decisions.md` under the `## Autonomy Decisions` section:
+```
+- {ISO8601 timestamp} | gate: compliance_verdict | value: false (auto-skipped) | preset: {active_preset} | command: /cortex-review
+```
+The review artifact is written regardless.
 If `gates.compliance_verdict` is `true` (or no autonomy config exists): state an overall compliance verdict as currently specified. A NON-COMPLIANT verdict blocks the pipeline (existing behavior preserved):
 
 ```
