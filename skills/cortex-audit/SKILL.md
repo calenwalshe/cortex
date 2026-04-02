@@ -187,7 +187,7 @@ Once all 7 lenses are documented:
 **Update `docs/cortex/handoffs/current-state.md`:**
 - `recent_artifacts`: append `docs/cortex/audits/{slug}/{timestamp}.md`
 - `blockers`: set if any CRITICAL findings were discovered
-- `next_action`: reflect highest-severity findings or "Audit complete — no critical findings"
+- `next_action`: set based on the `security_verdict` autonomy gate check (see "Autonomy Gate: Security Verdict" section below)
 
 **Update `.cortex/state.json`:**
 - Append audit artifact path to the `artifacts` array.
@@ -196,6 +196,16 @@ Once all 7 lenses are documented:
 ```
 Audit artifact written: docs/cortex/audits/{slug}/{timestamp}.md
 ```
+
+## Autonomy Gate: Security Verdict
+
+**Autonomy gate check (`security_verdict`):**
+After producing the Security Posture Report, resolve the autonomy config to determine if human review of the findings is required:
+1. Read `.cortex/autonomy.json` (project-level) and `~/.claude/cortex-autonomy.json` (global-level) if they exist.
+2. Determine the active preset (default: `supervised` if no config found).
+3. Look up `gates.security_verdict` in the resolved config. Resolution order: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of config.
+4. If `gates.security_verdict` is `false`: **auto-proceed** — the audit artifact is written and the pipeline continues without pausing for human review of findings. Log the skip by appending a row to `docs/cortex/handoffs/decisions.md`: `| {ISO timestamp} | security_verdict | auto-skipped | autonomy: {preset} |`. Update `next_action` in `docs/cortex/handoffs/current-state.md` to reflect the auto-proceed: include the text "Security audit auto-proceeded (autonomy: {preset})".
+5. If `gates.security_verdict` is `true` (or no autonomy config exists): **require human review** — after writing the audit artifact, output a prompt asking the user to review findings before proceeding. Set `next_action` in `current-state.md` to: "Review security audit at {artifact_path} — CRITICAL/HIGH findings require human acknowledgment before proceeding."
 
 ## Confidence Gate
 
