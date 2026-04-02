@@ -11,6 +11,7 @@
     { "name": "cortex-review",      "profiles": ["core", "full"] },
     { "name": "cortex-spec",        "profiles": ["core", "full"] },
     { "name": "cortex-status",      "profiles": ["core", "full"] },
+    { "name": "cortex-bridge",      "profiles": ["core", "full"] },
     { "name": "power-search",       "profiles": ["full"] },
     { "name": "google",             "profiles": ["full"] },
     { "name": "cli",                "profiles": ["full"] }
