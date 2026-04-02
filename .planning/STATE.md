@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: adaptive-autonomy
-status: executing
-stopped_at: Completed 16-01-PLAN.md
-last_updated: "2026-04-02T21:10:56.852Z"
+status: verifying
+stopped_at: Completed 16-02-PLAN.md
+last_updated: "2026-04-02T21:15:15.615Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 16
-  completed_phases: 14
+  completed_phases: 15
   total_plans: 34
-  completed_plans: 31
+  completed_plans: 32
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 
 Phase: 16 (Observability and Verification) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-02
 
 Progress: [░░░░░░░░░░░░░░░░░░░░] 0/0 plans; 0/4 phases complete
@@ -58,6 +58,7 @@ Progress: [░░░░░░░░░░░░░░░░░░░░] 0/0 pla
 | Phase 15-bridge-and-gsd-integration P01 | 3 | 2 tasks | 2 files |
 | Phase 15-bridge-and-gsd-integration P02 | 2 | 2 tasks | 2 files |
 | Phase 16-observability-and-verification P01 | 25 | 2 tasks | 8 files |
+| Phase 16-observability-and-verification P02 | 12 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,7 @@ Recent decisions affecting current work:
 - [Phase 16-01]: resolveAutonomyWithSources uses per-key for..of loops so each gate source can be tracked individually
 - [Phase 16-01]: _dry_run and _sources implemented as JSON envelope flags to preserve stdin-piped JSON interface
 - [Phase 16-01]: AUTON-09 decision log format is bullet list under Autonomy Decisions section (not table rows)
+- [Phase 16-observability-and-verification]: Autonomy display in cortex-status is informational — reads config, does not modify; missing config defaults silently to supervised
 
 ### Pending Todos
 
@@ -98,6 +100,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-02T21:10:56.845Z
-Stopped at: Completed 16-01-PLAN.md
+Last session: 2026-04-02T21:15:15.608Z
+Stopped at: Completed 16-02-PLAN.md
 Resume file: None

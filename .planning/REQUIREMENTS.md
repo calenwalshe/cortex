@@ -181,7 +181,7 @@
 
 - [x] **AUTON-08**: --dry-run prints resolved gate values and bridge preview without writing any files or changing state
 - [x] **AUTON-09**: Every auto-skipped gate logged to docs/cortex/handoffs/decisions.md with timestamp, gate name, and autonomy preset
-- [ ] **AUTON-12**: /cortex-status displays current autonomy level and which gates are active/skipped
+- [x] **AUTON-12**: /cortex-status displays current autonomy level and which gates are active/skipped
 
 ## v2 Requirements
 
@@ -303,7 +303,7 @@
 | AUTON-09 | Phase 16: Observability and Verification | Complete |
 | AUTON-10 | Phase 15: Bridge and GSD Integration | Complete |
 | AUTON-11 | Phase 13: Autonomy Config Foundation | Complete |
-| AUTON-12 | Phase 16: Observability and Verification | Pending |
+| AUTON-12 | Phase 16: Observability and Verification | Complete |
 
 **Coverage:**
 - v1 requirements: 55 total -- all mapped (phases 1-6)
