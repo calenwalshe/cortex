@@ -120,8 +120,72 @@ function resolveAutonomy(options) {
   return { preset, gates: resolved };
 }
 
+/**
+ * resolveAutonomyWithSources(options) → { preset, gates, sources }
+ *
+ * Same as resolveAutonomy but also returns a `sources` object mapping each gate
+ * name to the layer that set its final value:
+ *   "preset" | "global" | "project" | "invocation" | "mandatory"
+ *
+ * @param {object} options - Same as resolveAutonomy
+ * @returns {{ preset: string, gates: object, sources: object }}
+ */
+function resolveAutonomyWithSources(options) {
+  const { invocationFlags = null, projectConfig = null, globalConfig = null } = options || {};
+
+  // 1. Resolve active preset
+  const preset =
+    invocationFlags?.preset ??
+    projectConfig?.preset ??
+    globalConfig?.preset ??
+    'supervised';
+
+  if (!PRESET_DEFAULTS[preset]) {
+    throw new Error(`Unknown preset: "${preset}". Valid presets: ${Object.keys(PRESET_DEFAULTS).join(', ')}`);
+  }
+
+  // 2. Start from preset defaults — all sources are "preset"
+  const resolved = Object.assign({}, PRESET_DEFAULTS[preset]);
+  const sources = {};
+  for (const gate of Object.keys(resolved)) {
+    sources[gate] = 'preset';
+  }
+
+  // 3. Apply global config gate overrides
+  if (globalConfig && globalConfig.gates) {
+    for (const [gate, val] of Object.entries(globalConfig.gates)) {
+      resolved[gate] = val;
+      sources[gate] = 'global';
+    }
+  }
+
+  // 4. Apply project config gate overrides
+  if (projectConfig && projectConfig.gates) {
+    for (const [gate, val] of Object.entries(projectConfig.gates)) {
+      resolved[gate] = val;
+      sources[gate] = 'project';
+    }
+  }
+
+  // 5. Apply invocation gate flags
+  if (invocationFlags && invocationFlags.gates) {
+    for (const [gate, val] of Object.entries(invocationFlags.gates)) {
+      resolved[gate] = val;
+      sources[gate] = 'invocation';
+    }
+  }
+
+  // 6. Mandatory gate enforcement — forced true LAST
+  for (const gate of MANDATORY_GATES) {
+    resolved[gate] = true;
+    sources[gate] = 'mandatory';
+  }
+
+  return { preset, gates: resolved, sources };
+}
+
 // ── Exports ──────────────────────────────────────────────────────────────────
-module.exports = { resolveAutonomy, PRESET_DEFAULTS, MANDATORY_GATES };
+module.exports = { resolveAutonomy, resolveAutonomyWithSources, PRESET_DEFAULTS, MANDATORY_GATES };
 
 // ── CLI mode — accept JSON from stdin, output resolved config ─────────────────
 if (require.main === module) {
@@ -131,6 +195,43 @@ if (require.main === module) {
   process.stdin.on('end', () => {
     try {
       const opts = input.trim() ? JSON.parse(input) : {};
+
+      // --dry-run mode: print human-readable gate table
+      if (opts._dry_run) {
+        const { preset, gates, sources } = resolveAutonomyWithSources(opts);
+        const LINE = '\u2550'.repeat(40);
+        const SEP  = '\u2500'.repeat(22);
+        console.log('AUTONOMY DRY-RUN');
+        console.log(LINE);
+        console.log(`Preset: ${preset}`);
+        console.log('');
+        console.log(
+          'Gate                    Value   Source'
+        );
+        console.log(`${SEP}  \u2500\u2500\u2500\u2500\u2500   \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500`
+        );
+        for (const [gate, val] of Object.entries(gates)) {
+          const src = sources[gate] || 'preset';
+          const name = gate.padEnd(22);
+          const value = String(val).padEnd(5);
+          console.log(`${name}  ${value}   ${src}`);
+        }
+        console.log('');
+        console.log('Bridge preview:');
+        console.log('  Would generate: PROJECT.md, ROADMAP.md, REQUIREMENTS.md, STATE.md, config.json, CONTEXT.md');
+        console.log('  Would sync: workflow.skip_discuss_cortex to config.json');
+        console.log(LINE);
+        return;
+      }
+
+      // --sources mode: return JSON with sources object
+      if (opts._sources) {
+        const result = resolveAutonomyWithSources(opts);
+        console.log(JSON.stringify(result));
+        return;
+      }
+
+      // Default: JSON output (existing behavior — no regression)
       const result = resolveAutonomy(opts);
       console.log(JSON.stringify(result));
     } catch (err) {
