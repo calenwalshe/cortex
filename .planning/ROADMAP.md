@@ -44,7 +44,7 @@ Cortex evolves from a layered wrapper with 5 utilities into a lifecycle intellig
 
 ### v1.4 adaptive-autonomy (Phases 13-16) -- IN PROGRESS
 
-- [ ] **Phase 13: Autonomy Config Foundation** - Define the autonomy config schema, three presets, config resolution logic, and mandatory gate enforcement
+- [x] **Phase 13: Autonomy Config Foundation** - Define the autonomy config schema, three presets, config resolution logic, and mandatory gate enforcement (completed 2026-04-02)
 - [ ] **Phase 14: Gate Patches** - Patch ~8 Cortex skill files with conditional gate wrappers that read autonomy config
 - [ ] **Phase 15: Bridge and GSD Integration** - Build `/cortex-bridge` command and patch GSD drive discuss action to consume Cortex artifacts
 - [ ] **Phase 16: Observability and Verification** - Add --dry-run mode, autonomy decision logging, /cortex-status autonomy display, and tests
@@ -278,7 +278,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 13-01-PLAN.md — Autonomy config template, 4-layer resolver, test suite (AUTON-03, AUTON-04, AUTON-07, AUTON-11)
+- [x] 13-01-PLAN.md — Autonomy config template, 4-layer resolver, test suite (AUTON-03, AUTON-04, AUTON-07, AUTON-11)
 
 ### Phase 14: Gate Patches
 **Goal**: Every Cortex skill file that has a human gate reads the autonomy config and conditionally skips or enforces the gate based on resolved config -- making presets actually control pipeline flow
@@ -330,7 +330,7 @@ Plans:
 | 10. Discovery Loop — /cortex-experiment Skill | 1/1 | Complete | 2026-04-01 |
 | 11. Discovery Loop — Update Existing Skills and Docs | 2/2 | Complete | 2026-04-01 |
 | 12. Auto-Doc-Sync — Pre-Commit LLM Doc Updater | 2/2 | Complete | 2026-04-02 |
-| 13. Autonomy Config Foundation | 0/1 | Not started | - |
+| 13. Autonomy Config Foundation | 1/1 | Complete   | 2026-04-02 |
 | 14. Gate Patches | 0/0 | Not started | - |
 | 15. Bridge and GSD Integration | 0/0 | Not started | - |
 | 16. Observability and Verification | 0/0 | Not started | - |

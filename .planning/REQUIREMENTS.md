@@ -66,7 +66,7 @@
 - [ ] **LOOP-01**: No task closes without satisfying the contract's validator list
 - [ ] **LOOP-02**: If validation fails, system produces repair recommendation or opens repair contract
 - [ ] **LOOP-03**: After each loop iteration, continuity artifacts are updated
-- [ ] **LOOP-04**: State transitions: clarify → research → spec → execute → validate → repair → assure → done
+- [ ] **LOOP-04**: State transitions: clarify -> research -> spec -> execute -> validate -> repair -> assure -> done
 
 ### Installer
 
@@ -149,7 +149,7 @@
 ### Auto-Doc-Sync Hook
 
 - [ ] **ADSYNC-01**: `.auto-doc-sync.json` exists at repo root with 22 mapping entries (8 COMMANDS.md, 12 HOOKS.md, 2 CONTINUITY.md) — each entry has source_glob, target_doc, target_section, prompt_hint
-- [ ] **ADSYNC-02**: `hooks/auto-doc-sync.sh` implements the full pipeline: escape hatch → source file filter → heuristic classify → conflict detect → batched LLM call → parse → write → diff
+- [ ] **ADSYNC-02**: `hooks/auto-doc-sync.sh` implements the full pipeline: escape hatch -> source file filter -> heuristic classify -> conflict detect -> batched LLM call -> parse -> write -> diff
 - [ ] **ADSYNC-03**: Hook exits 0 immediately when `SKIP_LLM_GITHOOK=1` is set; exits 0 with no action when no staged files match any mapping entry
 - [ ] **ADSYNC-04**: Hook skips a target doc when it is already in `git diff --cached --name-only` or when `<!-- auto-doc-sync:skip -->` is in its first 50 lines; `FORCE_DOC_SYNC=1` overrides the staged-doc skip
 - [ ] **ADSYNC-05**: Hook soft-fails (exit 0, warning to stdout) when `ANTHROPIC_API_KEY` is unset or when the API call times out / returns an error — never blocks a commit
@@ -159,6 +159,29 @@
 - [ ] **ADSYNC-09**: `test/auto-doc-sync.test.sh` covers: skip-if-no-key, skip-if-no-match, skip-if-staged, skip-if-marker, valid-response-parse, invalid-response-handle
 - [ ] **ADSYNC-10**: `bin/install.js --dry-run` includes the auto-doc-sync hook; installer wires it into settings and copies config
 - [ ] **ADSYNC-11**: `docs/HOOKS.md` contains a `### auto-doc-sync` entry with all required subsections (trigger, inputs, outputs, side effects, state.json interaction)
+
+## v1.4 Requirements — adaptive-autonomy
+
+### Autonomy Config
+
+- [ ] **AUTON-01**: Full-auto preset runs Cortex pipeline without stops except mandatory gates (ux_taste_eval, human_action, reclarify)
+- [ ] **AUTON-02**: Supervised preset matches current behavior — all gates active, backward compatible
+- [x] **AUTON-03**: Per-gate overrides take precedence over preset defaults
+- [x] **AUTON-04**: Mandatory gates (ux_taste_eval, human_action, reclarify) cannot be disabled by any preset or per-gate override
+- [x] **AUTON-07**: Config resolution follows 4-layer precedence: invocation flag > project .cortex/autonomy.json > global ~/.claude/cortex-autonomy.json > preset defaults
+- [x] **AUTON-11**: Missing autonomy config defaults to supervised preset (full backward compatibility)
+
+### Bridge
+
+- [ ] **AUTON-05**: /cortex-bridge generates valid GSD artifacts (PROJECT.md, ROADMAP.md, REQUIREMENTS.md, STATE.md, config.json, CONTEXT.md) from Cortex outputs without human intervention
+- [ ] **AUTON-06**: Bridge-generated ROADMAP.md success criteria match contract done_criteria exactly
+- [ ] **AUTON-10**: GSD drive discuss action generates CONTEXT.md from Cortex clarify brief (not minimal "Claude's Discretion" template) when Cortex artifacts exist and discuss_phase gate is disabled
+
+### Observability
+
+- [ ] **AUTON-08**: --dry-run prints resolved gate values and bridge preview without writing any files or changing state
+- [ ] **AUTON-09**: Every auto-skipped gate logged to docs/cortex/handoffs/decisions.md with timestamp, gate name, and autonomy preset
+- [ ] **AUTON-12**: /cortex-status displays current autonomy level and which gates are active/skipped
 
 ## v2 Requirements
 
@@ -258,7 +281,6 @@
 | DISC-05 | Phase 9: Discovery Loop — Infrastructure Patches | Complete |
 | DISC-06 | Phase 9: Discovery Loop — Infrastructure Patches | Complete |
 | DISC-07 | Phase 10: Discovery Loop — /cortex-experiment Skill | Complete |
-
 | ADSYNC-01 | Phase 12: Auto-Doc-Sync | Complete |
 | ADSYNC-02 | Phase 12: Auto-Doc-Sync | Complete |
 | ADSYNC-03 | Phase 12: Auto-Doc-Sync | Complete |
@@ -270,14 +292,27 @@
 | ADSYNC-09 | Phase 12: Auto-Doc-Sync | Complete |
 | ADSYNC-10 | Phase 12: Auto-Doc-Sync | Complete |
 | ADSYNC-11 | Phase 12: Auto-Doc-Sync | Complete |
+| AUTON-01 | Phase 14: Gate Patches | Pending |
+| AUTON-02 | Phase 14: Gate Patches | Pending |
+| AUTON-03 | Phase 13: Autonomy Config Foundation | Complete |
+| AUTON-04 | Phase 13: Autonomy Config Foundation | Complete |
+| AUTON-05 | Phase 15: Bridge and GSD Integration | Pending |
+| AUTON-06 | Phase 15: Bridge and GSD Integration | Pending |
+| AUTON-07 | Phase 13: Autonomy Config Foundation | Complete |
+| AUTON-08 | Phase 16: Observability and Verification | Pending |
+| AUTON-09 | Phase 16: Observability and Verification | Pending |
+| AUTON-10 | Phase 15: Bridge and GSD Integration | Pending |
+| AUTON-11 | Phase 13: Autonomy Config Foundation | Complete |
+| AUTON-12 | Phase 16: Observability and Verification | Pending |
 
 **Coverage:**
-- v1 requirements: 55 total — all mapped (phases 1–6)
-- v1.1 requirements: 13 total — all mapped (phase 7)
-- v1.2 requirements: 7 total — all mapped (phases 8–10)
-- v1.3 requirements: 11 total — all mapped (phase 12)
+- v1 requirements: 55 total -- all mapped (phases 1-6)
+- v1.1 requirements: 13 total -- all mapped (phase 7)
+- v1.2 requirements: 7 total -- all mapped (phases 8-10)
+- v1.3 requirements: 11 total -- all mapped (phase 12)
+- v1.4 requirements: 12 total -- all mapped (phases 13-16)
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-29*
-*Last updated: 2026-04-01 — DISC-07 added; Phase 10 Discovery Loop /cortex-experiment Skill*
+*Last updated: 2026-04-02 -- v1.4 adaptive-autonomy requirements mapped to phases 13-16*
