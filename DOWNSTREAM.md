@@ -91,7 +91,7 @@ git rebase origin/main
 git push internal main --force-with-lease
 ```
 
-The `--profile=core` install ensures the `skills/web/`, `skills/ai/`, `skills/google/`, and `skills/cli/` directories are never symlinked in your environment. Upstream changes to those files will not appear in your install and do not need conflict resolution.
+The `--profile=core` install ensures the `skills/power-search/`, `skills/google/`, and `skills/cli/` directories are never symlinked in your environment. Upstream changes to those files will not appear in your install and do not need conflict resolution. The `power-search` pip package is also only installed under `full` profile.
 
 ---
 

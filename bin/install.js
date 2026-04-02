@@ -114,18 +114,28 @@ function run(cmd, opts = {}) {
 // Returns 'already-linked', 'linked', or throws.
 // Handles: absent (ENOENT), stale symlink (wrong target), regular file (EINVAL).
 function ensureSymlink(src, target) {
-  try {
-    const existing = fs.readlinkSync(target);
-    if (existing === src) return 'already-linked';
-    fs.unlinkSync(target);
-  } catch (e) {
-    if (e.code === 'EINVAL') {
-      // target is a regular file (e.g. old copy) — replace with symlink
+  // Check if target already exists
+  let lstat;
+  try { lstat = fs.lstatSync(target); } catch (e) {
+    if (e.code === 'ENOENT') { /* absent — create below */ }
+    else throw e;
+  }
+
+  if (lstat) {
+    // Already a correct symlink?
+    if (lstat.isSymbolicLink()) {
+      const existing = fs.readlinkSync(target);
+      if (existing === src) return 'already-linked';
       fs.unlinkSync(target);
-    } else if (e.code !== 'ENOENT') {
-      throw e;
+    } else if (lstat.isDirectory()) {
+      // Real directory (legacy manual install) — replace with symlink
+      fs.rmSync(target, { recursive: true, force: true });
+    } else {
+      // Regular file — remove
+      fs.unlinkSync(target);
     }
   }
+
   fs.symlinkSync(src, target);
   return 'linked';
 }
@@ -446,13 +456,13 @@ function printSummary() {
   if (PROFILE === 'full') {
     console.log(`
  Manual steps required:
-   1. Add API keys to ~/.api-keys (sourced by .bashrc):
-        export TAVILY_API_KEY=...
-        export PPLX_API_KEY=...
-        export FIRECRAWL_API_KEY=...
-        export GEMINI_API_KEY=...
-        export OPENAI_API_KEY=...
-        export GH_TOKEN=...
+   1. Add API keys to ~/.api-keys (sourced by .bashrc) for power-search:
+        export TAVILY_API_KEY=...    # web search
+        export PPLX_API_KEY=...      # deep research (Perplexity)
+        export FIRECRAWL_API_KEY=... # JS scraping
+        export GEMINI_API_KEY=...    # Gemini + Google grounded search
+        export OPENAI_API_KEY=...    # GPT-4o
+        export GH_TOKEN=...         # GitHub CLI
 `);
   }
 
@@ -461,6 +471,40 @@ function printSummary() {
 
 ${LINE}
 `);
+}
+
+// Install the power-search Python package (full profile only)
+function installPowerSearch() {
+  if (PROFILE !== 'full') return;
+
+  const pkg = 'power-search';
+  const repo = 'https://github.com/calenwalshe/claude-power-search.git';
+
+  if (DRY_RUN) {
+    record('pip install power-search', 'would-install', `pip install git+${repo}`);
+    return;
+  }
+
+  try {
+    // Check if already installed
+    const installed = execSync('pip show power-search 2>/dev/null', { stdio: 'pipe' }).toString();
+    if (installed.includes('power-search')) {
+      log('power-search already installed — upgrading');
+    }
+  } catch { /* not installed yet — proceed */ }
+
+  try {
+    execSync(`pip install --upgrade "power-search @ git+${repo}" 2>&1`, { stdio: 'pipe', timeout: 120000 });
+    record('pip install power-search', 'installed', 'Unified search/AI router with cost tracking');
+  } catch (err) {
+    // pip writes progress to stderr — check if install actually succeeded
+    try {
+      execSync('python -c "import power_search"', { stdio: 'pipe' });
+      record('pip install power-search', 'installed', 'Unified search/AI router with cost tracking');
+    } catch {
+      record('pip install power-search', 'error', err.message.slice(0, 120));
+    }
+  }
 }
 
 function main() {
@@ -472,6 +516,7 @@ function main() {
   installHooks();
   wireSettings();
   writeProfileMarker();
+  installPowerSearch();
   installProjectRuntime();
   printSummary();
 }

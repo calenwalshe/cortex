@@ -52,7 +52,7 @@ git clone https://github.com/calenwalshe/cortex.git ~/projects/cortex
 # Install — core profile (default): framework skills only, no external API dependencies
 node ~/projects/cortex/bin/install.js
 
-# Install — full profile: framework skills + tool skills (web, ai, google, cli)
+# Install — full profile: framework skills + tool skills (power-search, google, cli)
 node ~/projects/cortex/bin/install.js --profile=full
 
 # Bootstrap runtime artifacts in your target project repo
@@ -64,7 +64,7 @@ node ~/projects/cortex/bin/install.js --project /path/to/your/project
 | Profile | Skills installed | Use when |
 |---------|-----------------|----------|
 | `core` (default) | All `cortex-*` framework skills | Behind a corporate firewall, no external API access, or maintaining a downstream fork |
-| `full` | Framework skills + `web`, `ai`, `google`, `cli` tool skills | Full local development with Tavily, Perplexity, Gemini, Gmail, etc. |
+| `full` | Framework skills + `power-search`, `google`, `cli` tool skills + `power-search` pip package | Full local development with Tavily, Perplexity, Gemini, Gmail, etc. |
 
 The active profile is written to `~/.claude/.cortex-profile` after each install. Re-running with a different profile upgrades or downgrades the tool skill set without touching framework skills.
 
@@ -94,8 +94,7 @@ cortex/                          # Framework repo
 │   ├── cortex-review/          # Review + contract compliance + repair-on-failure
 │   ├── cortex-audit/           # Security + quality audit (7 lenses)
 │   ├── cortex-status/          # State reconstruction after /clear or compaction
-│   ├── web/                    # Tool skill: Firecrawl, Tavily, Jina, Crawl4AI (--profile=full)
-│   ├── ai/                     # Tool skill: Perplexity, Gemini, GPT (--profile=full)
+│   ├── power-search/           # Tool skill: unified search/AI router — Tavily, Jina, Firecrawl, Crawl4AI, Perplexity, Gemini, GPT (--profile=full)
 │   ├── google/                 # Tool skill: Gmail, Drive, Stitch (--profile=full)
 │   └── cli/                    # Tool skill: context-aware shell execution (--profile=full)
 ├── .claude/
