@@ -1,16 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.4
-milestone_name: adaptive-autonomy
-status: verifying
-stopped_at: Completed 16-02-PLAN.md
-last_updated: "2026-04-02T23:53:00.021Z"
-last_activity: 2026-04-02
+milestone: v1.5
+milestone_name: token-efficiency
+status: planning
+stopped_at: Bridge import complete
+last_updated: "2026-04-02T23:55:00Z"
+last_activity: 2026-04-02 — Bridge import from Cortex artifacts
 progress:
-  total_phases: 16
-  completed_phases: 16
-  total_plans: 34
-  completed_plans: 34
+  total_phases: 8
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -19,23 +20,22 @@ progress:
 
 See: .planning/PROJECT.md (updated 2026-04-02)
 
-**Core value:** A stateless executor can read a Cortex handoff pack and start implementation without guessing architecture or definition of done.
-**Current focus:** Phase 16 — Observability and Verification
+**Core value:** Every API call and LLM turn is tracked in queryable storage, enabling data-driven infrastructure planning and automatic Codex offloading for suitable tasks.
+**Current focus:** Phase 17 — cortex-research Power-Search Refactor
 
 ## Current Position
 
-Phase: 16
+Phase: 17 — cortex-research Power-Search Refactor
 Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-04-02
+Status: Ready for planning
+Last activity: 2026-04-02 — Bridge import complete
 
-Progress: [░░░░░░░░░░░░░░░░░░░░] 0/0 plans; 0/4 phases complete
+Progress: [░░░░░░░░░░░░░░░░░░░░░] 0/0 plans; 0/8 phases complete
 
 ## Performance Metrics
 
 **Velocity:**
-
-- Total plans completed: 0 (this milestone)
+- Total plans completed: 0
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -45,50 +45,19 @@ Progress: [░░░░░░░░░░░░░░░░░░░░] 0/0 pla
 |-------|-------|-------|----------|
 | - | - | - | - |
 
-**Recent Trend (prior milestones):**
-
-- v1.3 auto-doc-sync: 2 plans, ~20min total
-- v1.2 discovery-loop: 6 plans across 4 phases
-- Trend: Stable
-
-| Phase 13-autonomy-config-foundation P01 | 3min | 3 tasks | 4 files |
-| Phase 14-gate-patches P02 | 5min | 2 tasks | 2 files |
-| Phase 14-gate-patches P01 | 2min | 3 tasks | 3 files |
-| Phase 14-gate-patches P03 | 4min | 2 tasks | 6 files |
-| Phase 15-bridge-and-gsd-integration P01 | 3 | 2 tasks | 2 files |
-| Phase 15-bridge-and-gsd-integration P02 | 2 | 2 tasks | 2 files |
-| Phase 16-observability-and-verification P01 | 25 | 2 tasks | 8 files |
-| Phase 16-observability-and-verification P02 | 12 | 2 tasks | 3 files |
-
 ## Accumulated Context
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
+Bridge import from Cortex contract: docs/cortex/contracts/token-efficiency/contract-001.md
 
-- GSD remains workflow owner (Cortex never writes .planning/)
-- Runtime artifacts live in target project repo under docs/cortex/ and .cortex/
-- /cortex-spec does not auto-invoke GSD import (explicit human step)
-- Autonomy config lives at .cortex/autonomy.json (not .planning/config.json or state.json) -- different lifecycle from both
-- Mandatory gates (ux_taste_eval, human_action, reclarify) cannot be disabled by any config
-- Bridge generates GSD artifacts directly (no Skill() chaining -- avoids issue #686)
-- Config resolution: invocation > project > global > preset defaults (4 layers)
-- [Phase 13-autonomy-config-foundation]: Mandatory gate enforcement applied LAST in the merge chain — ensures ux_taste_eval, human_action, reclarify cannot be suppressed at any layer
-- [Phase 13-autonomy-config-foundation]: CLI stdin/stdout JSON mode on resolver enables bash test harness without additional dependencies
-- [Phase 14-gate-patches]: reclarify gate in cortex-spec is mandatory (always enforced) — annotated explicitly to prevent misconfiguration
-- [Phase 14-gate-patches]: contract_approval auto-approve path sets approval_status=approved when gate is disabled; compliance_verdict still produces verdict line even when auto-proceeding
-- [Phase 14-gate-patches]: Gate check wrappers inserted before blocking condition so auto-skip bypasses entire evaluation
-- [Phase 14-gate-patches]: next_action in cortex-audit Store Results delegates to autonomy gate section rather than hardcoding a value
-- [Phase 14-gate-patches]: Test script uses PASS=$((PASS+1)) not ((PASS++)) to avoid set -e false-falsy exit
-- [Phase 15-bridge-and-gsd-integration]: AUTON-06: done_criteria items must appear verbatim in ROADMAP success criteria — no paraphrase allowed
-- [Phase 15-bridge-and-gsd-integration]: Bridge syncs discuss_phase autonomy gate to config.json workflow.skip_discuss_cortex — keeps GSD reading config.json, not .cortex/ paths
-- [Phase 15-bridge-and-gsd-integration]: GSD reads .planning/config.json workflow.skip_discuss_cortex — never reads .cortex/autonomy.json directly
-- [Phase 15-bridge-and-gsd-integration]: Cortex-enriched discuss path falls through silently to minimal path when Cortex artifacts missing
-- [Phase 16-01]: resolveAutonomyWithSources uses per-key for..of loops so each gate source can be tracked individually
-- [Phase 16-01]: _dry_run and _sources implemented as JSON envelope flags to preserve stdin-piped JSON interface
-- [Phase 16-01]: AUTON-09 decision log format is bullet list under Autonomy Decisions section (not table rows)
-- [Phase 16-observability-and-verification]: Autonomy display in cortex-status is informational — reads config, does not modify; missing config defaults silently to supervised
+Key architecture decisions (from Cortex research):
+- Three independently shippable workstreams: refactor → ledger → Codex handoff
+- Separate token-ledger.db from power-search usage.db (ATTACH for cross-DB joins)
+- Keep gpt-researcher for --depth deep (post-hoc cost log only)
+- Static 9-rule task router (dynamic analysis deferred)
+- No Codex retries on failure (immediate fallback to Claude)
+- better-sqlite3 for hook DB writes (~0.5ms vs ~50ms Python subprocess)
 
 ### Pending Todos
 
@@ -100,6 +69,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-02T21:15:15.608Z
-Stopped at: Completed 16-02-PLAN.md
+Last session: 2026-04-02T23:55:00Z
+Stopped at: Bridge import complete
 Resume file: None
