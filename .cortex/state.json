@@ -1,22 +1,19 @@
 {
-  "slug": "auto-doc-sync",
-  "mode": "done",
+  "slug": "adaptive-autonomy",
+  "mode": "execute",
   "approval_status": "approved",
-  "active_contract": "docs/cortex/contracts/auto-doc-sync/contract-001.md",
+  "active_contract": "docs/cortex/contracts/adaptive-autonomy/contract-001.md",
   "artifacts": [
-    "docs/cortex/clarify/auto-doc-sync/20260401T200000Z-clarify-brief.md",
-    "docs/cortex/research/auto-doc-sync/concept-20260401T220000Z.md",
-    "docs/cortex/research/auto-doc-sync/implementation-20260401T235900Z.md",
-    "docs/cortex/research/auto-doc-sync/implementation-mapping-20260402T000500Z.md",
-    "docs/cortex/specs/auto-doc-sync/spec.md",
-    "docs/cortex/specs/auto-doc-sync/gsd-handoff.md",
-    "docs/cortex/contracts/auto-doc-sync/contract-001.md",
-    "docs/cortex/evals/auto-doc-sync/eval-proposal.md",
-    "docs/cortex/evals/auto-doc-sync/eval-plan.md"
+    "docs/cortex/clarify/adaptive-autonomy/20260402T060000Z-clarify-brief.md",
+    "docs/cortex/research/adaptive-autonomy/concept-20260402T061500Z.md",
+    "docs/cortex/research/adaptive-autonomy/implementation-20260402T063000Z.md",
+    "docs/cortex/specs/adaptive-autonomy/spec.md",
+    "docs/cortex/specs/adaptive-autonomy/gsd-handoff.md",
+    "docs/cortex/contracts/adaptive-autonomy/contract-001.md"
   ],
   "approvals": {
     "contract": true,
-    "evals": true
+    "evals": false
   },
   "gates": {
     "clarify_complete": true,
