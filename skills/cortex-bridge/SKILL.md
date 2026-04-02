@@ -271,6 +271,11 @@ Base config:
 3. If resolved `gates.discuss_phase` is `false`: add `"skip_discuss_cortex": true` to the `workflow` object.
 4. This keeps the Cortex→GSD dependency direction clean: GSD reads `.planning/config.json`, not `.cortex/` paths.
 
+> **Cross-reference:** `workflow.skip_discuss_cortex` is read by GSD `drive-workflow.md` Section 4 discuss action.
+> When `true`, drive generates Cortex-enriched CONTEXT.md from clarify brief and research dossiers.
+> When `false` or absent, drive uses minimal "Claude's Discretion" CONTEXT.md (backward compatible).
+> GSD never reads `.cortex/autonomy.json` directly — it reads `.planning/config.json` only.
+
 **3f. Generate phase CONTEXT.md files**
 
 For each phase in the generated ROADMAP:
