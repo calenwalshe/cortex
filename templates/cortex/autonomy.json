@@ -1,0 +1,25 @@
+{
+  "_schema_version": "1.0",
+  "_doc": "Cortex autonomy config. Copy to .cortex/autonomy.json for project-level or ~/.claude/cortex-autonomy.json for global. Presets: supervised (all gates active), gates-only (approval gates only), full-auto (mandatory gates only).",
+  "_gates_doc": {
+    "mandatory": "ux_taste_eval, human_action, reclarify — cannot be disabled by any preset or per-gate override",
+    "approval": "contract_approval, spec_approval, eval_approval — active in supervised + gates-only presets",
+    "review": "slug_conflict, eval_proposal, critical_uncertainty, evidence_backing, compliance_verdict, eval_validation, security_verdict — active in supervised preset only"
+  },
+  "preset": "supervised",
+  "gates": {
+    "ux_taste_eval": true,
+    "human_action": true,
+    "reclarify": true,
+    "contract_approval": true,
+    "spec_approval": true,
+    "eval_approval": true,
+    "slug_conflict": true,
+    "eval_proposal": true,
+    "critical_uncertainty": true,
+    "evidence_backing": true,
+    "compliance_verdict": true,
+    "eval_validation": true,
+    "security_verdict": true
+  }
+}

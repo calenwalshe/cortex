@@ -13,6 +13,18 @@ Also trigger when: "security audit", "threat model", "OWASP check", "security re
 - `/cortex-audit --comprehensive` — monthly deep scan (2/10 bar, more findings)
 - `/cortex-audit --diff` — only check branch changes vs base
 - `/cortex-audit --quick` — infrastructure + secrets only (fastest)
+- `--autonomy <preset>` — override the autonomy preset for this invocation only. Valid values: `supervised`, `gates-only`, `full-auto`. Passed to the resolver as the invocation layer (highest precedence in the 4-layer resolution).
+- `--gate <name>=<bool>` — override a specific gate for this invocation only. Example: `--gate security_verdict=false`. Repeatable. Passed to the resolver as invocation-layer gate overrides.
+- `--dry-run` — print the resolved autonomy gate table without executing any command logic, writing files, or modifying state.
+
+### --dry-run Mode
+
+If `--dry-run` is passed:
+1. Resolve autonomy config using `resolveAutonomyWithSources` from `scripts/cortex/resolve-autonomy.js`
+2. Print the resolved gate table showing gate name, value, and source layer for all 13 gates
+3. Print which gates this specific command checks (cortex-audit checks `security_verdict`)
+4. Do NOT execute any command logic, write any files, or modify any state
+5. Exit after printing the table
 
 ## Persona
 
@@ -187,7 +199,7 @@ Once all 7 lenses are documented:
 **Update `docs/cortex/handoffs/current-state.md`:**
 - `recent_artifacts`: append `docs/cortex/audits/{slug}/{timestamp}.md`
 - `blockers`: set if any CRITICAL findings were discovered
-- `next_action`: reflect highest-severity findings or "Audit complete — no critical findings"
+- `next_action`: set based on the `security_verdict` autonomy gate check (see "Autonomy Gate: Security Verdict" section below)
 
 **Update `.cortex/state.json`:**
 - Append audit artifact path to the `artifacts` array.
@@ -196,6 +208,21 @@ Once all 7 lenses are documented:
 ```
 Audit artifact written: docs/cortex/audits/{slug}/{timestamp}.md
 ```
+
+## Autonomy Gate: Security Verdict
+
+**Autonomy gate check (`security_verdict`):**
+After producing the Security Posture Report, resolve the autonomy config to determine if human review of the findings is required:
+1. Read `.cortex/autonomy.json` (project-level) and `~/.claude/cortex-autonomy.json` (global-level) if they exist.
+2. Determine the active preset (default: `supervised` if no config found).
+3. Look up `gates.security_verdict` in the resolved config. If `--autonomy` or `--gate` flags were provided, use them as the invocation layer (highest precedence in the 4-layer resolution). Resolution order: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of config.
+4. If `gates.security_verdict` is `false`: **auto-proceed** — the audit artifact is written and the pipeline continues without pausing for human review of findings.
+   When auto-proceeding (gate is false/skipped), append a decision log entry to `docs/cortex/handoffs/decisions.md` under the `## Autonomy Decisions` section:
+   ```
+   - {ISO8601 timestamp} | gate: security_verdict | value: false (auto-skipped) | preset: {active_preset} | command: /cortex-audit
+   ```
+   Update `next_action` in `docs/cortex/handoffs/current-state.md` to reflect the auto-proceed: include the text "Security audit auto-proceeded (autonomy: {preset})".
+5. If `gates.security_verdict` is `true` (or no autonomy config exists): **require human review** — after writing the audit artifact, output a prompt asking the user to review findings before proceeding. Set `next_action` in `current-state.md` to: "Review security audit at {artifact_path} — CRITICAL/HIGH findings require human acknowledgment before proceeding."
 
 ## Confidence Gate
 

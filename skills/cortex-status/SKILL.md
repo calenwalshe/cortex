@@ -73,7 +73,21 @@ Also trigger when the user says:
 - This prompt must be paste-ready for a human to use after `/clear`
 - The paste-ready prompt must include: current slug, mode, active contract path, and the next action
 
-### Phase 5: Output Terminal Summary
+### Phase 5: Resolve Autonomy Config
+
+1. Check if `.cortex/autonomy.json` exists (project config).
+2. Check if `~/.claude/cortex-autonomy.json` exists (global config).
+3. Resolve autonomy config using the 4-layer resolver logic from `scripts/cortex/resolve-autonomy.js`:
+   - If project config exists, read it as `projectConfig`
+   - If global config exists, read it as `globalConfig`
+   - If neither exists, use defaults (supervised preset)
+4. Record: resolved `preset` name, the full `gates` object (13 gate booleans), and which config layers are active.
+5. Categorize gates into:
+   - **Active gates** (value = true, will prompt human)
+   - **Skipped gates** (value = false, will auto-proceed)
+   - **Mandatory gates** (ux_taste_eval, human_action, reclarify — always active regardless of preset)
+
+### Phase 6: Output Terminal Summary
 
 Output the continuity summary to the terminal (stdout only — this phase produces no additional files):
 
@@ -90,6 +104,13 @@ Gates:
   research_complete: {true|false}
   spec_complete:     {true|false}
   contract_approved: {true|false}
+
+Autonomy:
+  Preset:   {preset_name}
+  Config:   {layers in effect, e.g., "project (.cortex/autonomy.json)" or "defaults only"}
+  Active:   {comma-separated list of gates with value=true}
+  Skipped:  {comma-separated list of gates with value=false}
+  Mandatory: ux_taste_eval, human_action, reclarify (always active)
 
 Artifacts ({N} total):
   {artifact 1}
@@ -112,6 +133,16 @@ Continuity files refreshed:
 ════════════════════════════════════════
 ```
 
+If no autonomy config exists (defaulting to supervised), display:
+```
+Autonomy:
+  Preset:   supervised (default — no config file found)
+  Config:   defaults only
+  Active:   all 13 gates
+  Skipped:  (none)
+  Mandatory: ux_taste_eval, human_action, reclarify (always active)
+```
+
 ## Rules
 
 - **Safe to run at any time**, including mid-session. It is non-destructive.
@@ -121,3 +152,4 @@ Continuity files refreshed:
 - **Does not modify product code or GSD state.** The only writes are to `docs/cortex/handoffs/current-state.md` and `docs/cortex/handoffs/next-prompt.md`.
 - **Designed specifically for use after `/clear` or compaction** when chat context is lost. Running it after context loss is the correct and expected usage pattern.
 - If no state files exist at all, output a clean "not started" summary and instruct the user to run `/cortex-clarify` to begin.
+- **Autonomy display is informational.** It reads the autonomy config but does not modify it. If config files are missing, it displays "supervised (default)" — no error.

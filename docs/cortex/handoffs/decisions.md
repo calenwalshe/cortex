@@ -6,6 +6,11 @@
 
 (No decisions recorded — no work item in progress)
 
+## Autonomy Decisions
+
+<!-- Auto-appended by Cortex skills when a gate is auto-skipped (autonomy preset != supervised) -->
+<!-- Format: - {timestamp} | gate: {name} | value: false (auto-skipped) | preset: {preset} | command: /cortex-{cmd} -->
+
 ## Archive Index
 
 <!-- Each entry records a slug that was archived via /cortex-close -->
