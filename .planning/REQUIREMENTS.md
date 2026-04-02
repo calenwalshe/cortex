@@ -164,8 +164,8 @@
 
 ### Autonomy Config
 
-- [ ] **AUTON-01**: Full-auto preset runs Cortex pipeline without stops except mandatory gates (ux_taste_eval, human_action, reclarify)
-- [ ] **AUTON-02**: Supervised preset matches current behavior — all gates active, backward compatible
+- [x] **AUTON-01**: Full-auto preset runs Cortex pipeline without stops except mandatory gates (ux_taste_eval, human_action, reclarify)
+- [x] **AUTON-02**: Supervised preset matches current behavior — all gates active, backward compatible
 - [x] **AUTON-03**: Per-gate overrides take precedence over preset defaults
 - [x] **AUTON-04**: Mandatory gates (ux_taste_eval, human_action, reclarify) cannot be disabled by any preset or per-gate override
 - [x] **AUTON-07**: Config resolution follows 4-layer precedence: invocation flag > project .cortex/autonomy.json > global ~/.claude/cortex-autonomy.json > preset defaults
@@ -292,8 +292,8 @@
 | ADSYNC-09 | Phase 12: Auto-Doc-Sync | Complete |
 | ADSYNC-10 | Phase 12: Auto-Doc-Sync | Complete |
 | ADSYNC-11 | Phase 12: Auto-Doc-Sync | Complete |
-| AUTON-01 | Phase 14: Gate Patches | Pending |
-| AUTON-02 | Phase 14: Gate Patches | Pending |
+| AUTON-01 | Phase 14: Gate Patches | Complete |
+| AUTON-02 | Phase 14: Gate Patches | Complete |
 | AUTON-03 | Phase 13: Autonomy Config Foundation | Complete |
 | AUTON-04 | Phase 13: Autonomy Config Foundation | Complete |
 | AUTON-05 | Phase 15: Bridge and GSD Integration | Pending |

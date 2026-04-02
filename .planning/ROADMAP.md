@@ -294,8 +294,8 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 14-01-PLAN.md — Patch cortex-clarify, cortex-research, cortex-audit with single-gate autonomy wrappers
-- [ ] 14-02-PLAN.md — Patch cortex-spec (4 gates) and cortex-review (2 gates) with autonomy wrappers
+- [x] 14-01-PLAN.md — Patch cortex-clarify, cortex-research, cortex-audit with single-gate autonomy wrappers
+- [x] 14-02-PLAN.md — Patch cortex-spec (4 gates) and cortex-review (2 gates) with autonomy wrappers
 - [ ] 14-03-PLAN.md — Add --autonomy/--gate invocation flags to all 5 skills + gate conditional test script
 
 ### Phase 15: Bridge and GSD Integration
@@ -337,6 +337,6 @@ Plans:
 | 11. Discovery Loop — Update Existing Skills and Docs | 2/2 | Complete | 2026-04-01 |
 | 12. Auto-Doc-Sync — Pre-Commit LLM Doc Updater | 2/2 | Complete | 2026-04-02 |
 | 13. Autonomy Config Foundation | 1/1 | Complete    | 2026-04-02 |
-| 14. Gate Patches | 0/3 | In progress | - |
+| 14. Gate Patches | 2/3 | In Progress|  |
 | 15. Bridge and GSD Integration | 0/0 | Not started | - |
 | 16. Observability and Verification | 0/0 | Not started | - |
