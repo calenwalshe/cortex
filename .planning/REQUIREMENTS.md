@@ -173,14 +173,14 @@
 
 ### Bridge
 
-- [ ] **AUTON-05**: /cortex-bridge generates valid GSD artifacts (PROJECT.md, ROADMAP.md, REQUIREMENTS.md, STATE.md, config.json, CONTEXT.md) from Cortex outputs without human intervention
-- [ ] **AUTON-06**: Bridge-generated ROADMAP.md success criteria match contract done_criteria exactly
-- [ ] **AUTON-10**: GSD drive discuss action generates CONTEXT.md from Cortex clarify brief (not minimal "Claude's Discretion" template) when Cortex artifacts exist and discuss_phase gate is disabled
+- [x] **AUTON-05**: /cortex-bridge generates valid GSD artifacts (PROJECT.md, ROADMAP.md, REQUIREMENTS.md, STATE.md, config.json, CONTEXT.md) from Cortex outputs without human intervention
+- [x] **AUTON-06**: Bridge-generated ROADMAP.md success criteria match contract done_criteria exactly
+- [x] **AUTON-10**: GSD drive discuss action generates CONTEXT.md from Cortex clarify brief (not minimal "Claude's Discretion" template) when Cortex artifacts exist and discuss_phase gate is disabled
 
 ### Observability
 
-- [ ] **AUTON-08**: --dry-run prints resolved gate values and bridge preview without writing any files or changing state
-- [ ] **AUTON-09**: Every auto-skipped gate logged to docs/cortex/handoffs/decisions.md with timestamp, gate name, and autonomy preset
+- [x] **AUTON-08**: --dry-run prints resolved gate values and bridge preview without writing any files or changing state
+- [x] **AUTON-09**: Every auto-skipped gate logged to docs/cortex/handoffs/decisions.md with timestamp, gate name, and autonomy preset
 - [ ] **AUTON-12**: /cortex-status displays current autonomy level and which gates are active/skipped
 
 ## v2 Requirements
@@ -296,12 +296,12 @@
 | AUTON-02 | Phase 14: Gate Patches | Complete |
 | AUTON-03 | Phase 13: Autonomy Config Foundation | Complete |
 | AUTON-04 | Phase 13: Autonomy Config Foundation | Complete |
-| AUTON-05 | Phase 15: Bridge and GSD Integration | Pending |
-| AUTON-06 | Phase 15: Bridge and GSD Integration | Pending |
+| AUTON-05 | Phase 15: Bridge and GSD Integration | Complete |
+| AUTON-06 | Phase 15: Bridge and GSD Integration | Complete |
 | AUTON-07 | Phase 13: Autonomy Config Foundation | Complete |
-| AUTON-08 | Phase 16: Observability and Verification | Pending |
-| AUTON-09 | Phase 16: Observability and Verification | Pending |
-| AUTON-10 | Phase 15: Bridge and GSD Integration | Pending |
+| AUTON-08 | Phase 16: Observability and Verification | Complete |
+| AUTON-09 | Phase 16: Observability and Verification | Complete |
+| AUTON-10 | Phase 15: Bridge and GSD Integration | Complete |
 | AUTON-11 | Phase 13: Autonomy Config Foundation | Complete |
 | AUTON-12 | Phase 16: Observability and Verification | Pending |
 

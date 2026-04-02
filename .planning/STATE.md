@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: adaptive-autonomy
-status: verifying
-stopped_at: Completed 14-03-PLAN.md
-last_updated: "2026-04-02T20:30:51.085Z"
+status: executing
+stopped_at: Completed 16-01-PLAN.md
+last_updated: "2026-04-02T21:10:56.852Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 16
-  completed_phases: 13
-  total_plans: 30
-  completed_plans: 28
+  completed_phases: 14
+  total_plans: 34
+  completed_plans: 31
 ---
 
 # Project State
@@ -20,13 +20,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** A stateless executor can read a Cortex handoff pack and start implementation without guessing architecture or definition of done.
-**Current focus:** Phase 14 — Gate Patches
+**Current focus:** Phase 16 — Observability and Verification
 
 ## Current Position
 
-Phase: 14 (Gate Patches) — EXECUTING
-Plan: 3 of 3
-Status: Phase complete — ready for verification
+Phase: 16 (Observability and Verification) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
 Last activity: 2026-04-02
 
 Progress: [░░░░░░░░░░░░░░░░░░░░] 0/0 plans; 0/4 phases complete
@@ -55,6 +55,9 @@ Progress: [░░░░░░░░░░░░░░░░░░░░] 0/0 pla
 | Phase 14-gate-patches P02 | 5min | 2 tasks | 2 files |
 | Phase 14-gate-patches P01 | 2min | 3 tasks | 3 files |
 | Phase 14-gate-patches P03 | 4min | 2 tasks | 6 files |
+| Phase 15-bridge-and-gsd-integration P01 | 3 | 2 tasks | 2 files |
+| Phase 15-bridge-and-gsd-integration P02 | 2 | 2 tasks | 2 files |
+| Phase 16-observability-and-verification P01 | 25 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -77,6 +80,13 @@ Recent decisions affecting current work:
 - [Phase 14-gate-patches]: Gate check wrappers inserted before blocking condition so auto-skip bypasses entire evaluation
 - [Phase 14-gate-patches]: next_action in cortex-audit Store Results delegates to autonomy gate section rather than hardcoding a value
 - [Phase 14-gate-patches]: Test script uses PASS=$((PASS+1)) not ((PASS++)) to avoid set -e false-falsy exit
+- [Phase 15-bridge-and-gsd-integration]: AUTON-06: done_criteria items must appear verbatim in ROADMAP success criteria — no paraphrase allowed
+- [Phase 15-bridge-and-gsd-integration]: Bridge syncs discuss_phase autonomy gate to config.json workflow.skip_discuss_cortex — keeps GSD reading config.json, not .cortex/ paths
+- [Phase 15-bridge-and-gsd-integration]: GSD reads .planning/config.json workflow.skip_discuss_cortex — never reads .cortex/autonomy.json directly
+- [Phase 15-bridge-and-gsd-integration]: Cortex-enriched discuss path falls through silently to minimal path when Cortex artifacts missing
+- [Phase 16-01]: resolveAutonomyWithSources uses per-key for..of loops so each gate source can be tracked individually
+- [Phase 16-01]: _dry_run and _sources implemented as JSON envelope flags to preserve stdin-piped JSON interface
+- [Phase 16-01]: AUTON-09 decision log format is bullet list under Autonomy Decisions section (not table rows)
 
 ### Pending Todos
 
@@ -88,6 +98,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-02T20:30:51.078Z
-Stopped at: Completed 14-03-PLAN.md
+Last session: 2026-04-02T21:10:56.845Z
+Stopped at: Completed 16-01-PLAN.md
 Resume file: None

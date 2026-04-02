@@ -46,7 +46,7 @@ Cortex evolves from a layered wrapper with 5 utilities into a lifecycle intellig
 
 - [x] **Phase 13: Autonomy Config Foundation** - Define the autonomy config schema, three presets, config resolution logic, and mandatory gate enforcement (completed 2026-04-02)
 - [x] **Phase 14: Gate Patches** - Patch ~8 Cortex skill files with conditional gate wrappers that read autonomy config (completed 2026-04-02)
-- [ ] **Phase 15: Bridge and GSD Integration** - Build `/cortex-bridge` command and patch GSD drive discuss action to consume Cortex artifacts
+- [x] **Phase 15: Bridge and GSD Integration** - Build `/cortex-bridge` command and patch GSD drive discuss action to consume Cortex artifacts (completed 2026-04-02)
 - [ ] **Phase 16: Observability and Verification** - Add --dry-run mode, autonomy decision logging, /cortex-status autonomy display, and tests
 
 ## Phase Details
@@ -312,8 +312,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 15-01-PLAN.md — Build /cortex-bridge SKILL.md and bridge output validation tests (AUTON-05, AUTON-06)
-- [ ] 15-02-PLAN.md — Patch GSD drive-workflow.md discuss action with Cortex-aware branch + config.json flag sync (AUTON-10)
+- [x] 15-01-PLAN.md — Build /cortex-bridge SKILL.md and bridge output validation tests (AUTON-05, AUTON-06)
+- [x] 15-02-PLAN.md — Patch GSD drive-workflow.md discuss action with Cortex-aware branch + config.json flag sync (AUTON-10)
 
 ### Phase 16: Observability and Verification
 **Goal**: Users can preview autonomy behavior before committing, every auto-decision is logged for audit, and `/cortex-status` shows the current autonomy posture -- making the system transparent and debuggable
@@ -324,6 +324,11 @@ Plans:
   1. `--dry-run` prints the fully resolved gate table (gate name, resolved value, source layer) and a bridge preview without writing any files or changing state
   2. Every auto-skipped gate is logged to `docs/cortex/handoffs/decisions.md` with timestamp, gate name, resolved value, and active autonomy preset
   3. `/cortex-status` displays the current autonomy level (preset name), which gates are active, and which are skipped -- users can see their autonomy posture at a glance
+**Plans**: 2 plans
+
+Plans:
+- [x] 16-01-PLAN.md — Dry-run mode with source-layer tracking + autonomy decision logging (AUTON-08, AUTON-09)
+- [ ] 16-02-PLAN.md — /cortex-status autonomy display + integration test suite (AUTON-12)
 
 ## Progress
 
@@ -343,5 +348,5 @@ Plans:
 | 12. Auto-Doc-Sync — Pre-Commit LLM Doc Updater | 2/2 | Complete | 2026-04-02 |
 | 13. Autonomy Config Foundation | 1/1 | Complete    | 2026-04-02 |
 | 14. Gate Patches | 3/3 | Complete    | 2026-04-02 |
-| 15. Bridge and GSD Integration | 0/2 | Not started | - |
-| 16. Observability and Verification | 0/0 | Not started | - |
+| 15. Bridge and GSD Integration | 2/2 | Complete    | 2026-04-02 |
+| 16. Observability and Verification | 1/2 | In Progress|  |
