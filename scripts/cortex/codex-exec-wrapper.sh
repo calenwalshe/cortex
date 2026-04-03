@@ -136,10 +136,10 @@ ELAPSED_MS=0
 cleanup() {
   # Remove worktree if it exists
   if git worktree list 2>/dev/null | grep -q "$WORKTREE_PATH"; then
-    git worktree remove --force "$WORKTREE_PATH" 2>/dev/null || true
+    git worktree remove --force "$WORKTREE_PATH" >/dev/null 2>&1 || true
   fi
   # Remove branch if it exists
-  git branch -D "$BRANCH_NAME" 2>/dev/null || true
+  git branch -D "$BRANCH_NAME" >/dev/null 2>&1 || true
   # Remove temp dir
   rm -rf "$WORK_DIR"
 }
@@ -149,30 +149,25 @@ trap cleanup EXIT
 output_result() {
   local status="$1" fallback_reason="${2:-null}"
   local result_json="${3:-null}"
-  local in_tok="${4:-$INPUT_TOKENS}" out_tok="${5:-$OUTPUT_TOKENS}"
-  local cache_tok="${6:-$CACHED_TOKENS}" reason_tok="${7:-$REASONING_TOKENS}"
-  local cost="${8:-$COST_USD}" elapsed="${9:-$ELAPSED_MS}"
 
-  if [[ "$fallback_reason" != "null" ]]; then
-    fallback_reason="\"$fallback_reason\""
-  fi
-
-  cat <<RESULT
-{
-  "status": "$status",
-  "task_id": "$TASK_ID",
-  "result": $result_json,
-  "tokens": {
-    "input": $in_tok,
-    "output": $out_tok,
-    "cached": $cache_tok,
-    "reasoning": $reason_tok
-  },
-  "cost_usd": $cost,
-  "elapsed_ms": $elapsed,
-  "fallback_reason": $fallback_reason
-}
-RESULT
+  node -e "
+    const out = {
+      status: process.argv[1],
+      task_id: process.argv[2],
+      result: process.argv[3] === 'null' ? null : JSON.parse(process.argv[3]),
+      tokens: {
+        input: parseInt(process.argv[4]) || 0,
+        output: parseInt(process.argv[5]) || 0,
+        cached: parseInt(process.argv[6]) || 0,
+        reasoning: parseInt(process.argv[7]) || 0
+      },
+      cost_usd: parseFloat(process.argv[8]) || 0,
+      elapsed_ms: parseInt(process.argv[9]) || 0,
+      fallback_reason: process.argv[10] === 'null' ? null : process.argv[10]
+    };
+    console.log(JSON.stringify(out, null, 2));
+  " "$status" "$TASK_ID" "$result_json" "$INPUT_TOKENS" "$OUTPUT_TOKENS" \
+    "$CACHED_TOKENS" "$REASONING_TOKENS" "$COST_USD" "$ELAPSED_MS" "$fallback_reason"
 }
 
 # ── Helper: write to token ledger ────────────────────────────────────────────
@@ -268,7 +263,7 @@ parse_tokens() {
 echo "[codex-wrapper] Creating worktree at $WORKTREE_PATH" >&2
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "HEAD")
 
-if ! git worktree add "$WORKTREE_PATH" -b "$BRANCH_NAME" 2>/dev/null; then
+if ! git worktree add "$WORKTREE_PATH" -b "$BRANCH_NAME" >/dev/null 2>&1; then
   echo "[codex-wrapper] ERROR: Failed to create worktree" >&2
   output_result "fallback" "worktree_create_failed"
   exit 0
@@ -443,10 +438,10 @@ if [[ "$CODEX_EXIT" -eq 124 ]]; then
   WORKTREE_COMMITS=$(git -C "$WORKTREE_PATH" log --oneline "$CURRENT_BRANCH..$BRANCH_NAME" 2>/dev/null | wc -l || echo 0)
   if [[ "$WORKTREE_COMMITS" -gt 0 ]]; then
     echo "[codex-wrapper] Found $WORKTREE_COMMITS commits in worktree, attempting merge" >&2
-    if git merge "$BRANCH_NAME" --no-edit 2>/dev/null; then
+    if git merge "$BRANCH_NAME" --no-edit >/dev/null 2>&1; then
       echo "[codex-wrapper] Partial work merged successfully" >&2
     else
-      git merge --abort 2>/dev/null || true
+      git merge --abort >/dev/null 2>&1 || true
       echo "[codex-wrapper] Merge of partial work failed, discarding" >&2
     fi
   fi
@@ -507,9 +502,9 @@ fi
 # ── Step 8: Merge worktree on success ────────────────────────────────────────
 echo "[codex-wrapper] SUCCESS: Merging $BRANCH_NAME into $CURRENT_BRANCH" >&2
 
-if ! git merge "$BRANCH_NAME" --no-edit 2>/dev/null; then
+if ! git merge "$BRANCH_NAME" --no-edit >/dev/null 2>&1; then
   echo "[codex-wrapper] MERGE CONFLICT: Could not merge $BRANCH_NAME" >&2
-  git merge --abort 2>/dev/null || true
+  git merge --abort >/dev/null 2>&1 || true
   write_ledger "0"
   output_result "fallback" "merge_conflict" "$RESULT_CONTENT"
   exit 0
