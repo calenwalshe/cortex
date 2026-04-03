@@ -15,7 +15,7 @@ Cortex evolves from a layered wrapper with 5 utilities into a lifecycle intellig
 - [x] **Phase 7: Idea Stash** - Deliver `/cortex-stash` with all six subcommands, YAML-fronted per-entry storage, staleness flagging, promote-to-clarify flow, and infrastructure for zero-friction mid-session idea capture (completed 2026-04-01)
 - [x] **Phase 18: Token Ledger Schema** - Create ~/.cortex/token-ledger.db SQLite schema with 4 tables and 8 indexes (completed 2026-04-03)
 - [x] **Phase 19: PostToolUse Token Tracking Hook** - PostToolUse hook that records per-turn token usage to the ledger from session JSONL transcripts (completed 2026-04-03)
-- [ ] **Phase 20: Token Report CLI** - Shell script producing formatted token usage reports from ledger DB with cross-DB power-search joins
+- [x] **Phase 20: Token Report CLI** - CLI query tool with 7 formatted SQL reports against the token ledger (completed 2026-04-03)
 
 ## Phase Details
 
@@ -209,6 +209,23 @@ Plans:
 - [x] 11-01-PLAN.md — Add reclarify_required write + warning to cortex-research/SKILL.md; add three spec-readiness blockers to cortex-spec/SKILL.md Phase 1 (DISC-08, DISC-09)
 - [x] 11-02-PLAN.md — Update CORTEX.md (8-command surface), docs/INTELLIGENCE_FLOW.md (backtracking annotation, gate table), docs/COMMANDS.md (/cortex-experiment entry) (DISC-10, DISC-11, DISC-12)
 
+## Progress
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. Core Docs and Architecture Alignment | 3/3 | Complete    | 2026-03-29 |
+| 2. Artifact Scaffolding and Templates | 0/4 | Complete    | 2026-03-29 |
+| 3. New and Updated Skills | 0/3 | Complete    | 2026-03-29 |
+| 4. Subagents and Hooks | 4/4 | Complete    | 2026-03-29 |
+| 5. Eval Subsystem | 2/2 | Complete    | 2026-03-29 |
+| 6. Installer and Operational Cleanup | 2/2 | Complete    | 2026-03-29 |
+| 7. Idea Stash | 1/1 | Complete    | 2026-04-01 |
+| 8. Discovery Loop — Design Docs and Templates | 1/1 | Complete    | 2026-04-01 |
+| 9. Discovery Loop — Infrastructure Patches | 1/1 | Complete    | 2026-04-01 |
+| 10. Discovery Loop — /cortex-experiment Skill | 1/1 | Complete    | 2026-04-01 |
+| 11. Discovery Loop — Update Existing Skills and Docs | 2/2 | Complete    | 2026-04-01 |
+| 12. Auto-Doc-Sync — Pre-Commit LLM Doc Updater | 2/2 | Complete    | 2026-04-02 |
+
 ### Phase 12: Auto-Doc-Sync — Pre-Commit LLM Doc Updater
 **Goal**: Build a git pre-commit hook that auto-generates documentation updates for COMMANDS.md, HOOKS.md, and CONTINUITY.md whenever their corresponding source files are modified
 **Depends on:** Phase 11
@@ -231,74 +248,3 @@ Plans:
 Plans:
 - [x] 12-01-PLAN.md — Core hook: .auto-doc-sync.json config, hooks/auto-doc-sync-prompt.md template, hooks/auto-doc-sync.sh script, test/auto-doc-sync.test.sh (ADSYNC-01 through ADSYNC-09)
 - [x] 12-02-PLAN.md — Installer integration + documentation: update bin/install.js, runtime-manifest.json, docs/HOOKS.md (ADSYNC-10, ADSYNC-11)
-
-### Phase 18: Token Ledger Schema
-**Goal**: Create the global SQLite database schema at ~/.cortex/token-ledger.db with 4 tables (claude_turns, codex_tasks, sessions, daily_rollup) and 8 indexes for token usage tracking
-**Depends on**: Phase 12
-**Requirements**: TE-03
-**Contract**: docs/cortex/contracts/token-efficiency/contract-001.md
-**Success Criteria** (what must be TRUE):
-  1. `scripts/cortex/create-token-ledger.sh` creates `~/.cortex/token-ledger.db` idempotently with WAL mode
-  2. Database has 4 tables and 8 indexes matching the schema from the research dossier
-  3. `TOKEN_LEDGER_DB` env var overrides the default path for test isolation
-  4. `test/create-token-ledger.test.sh` passes all 23 assertions
-**Research**: Complete (implementation dossier)
-**Plans**: 1 plan
-**Status**: COMPLETE — 2026-04-03
-
-Plans:
-- [x] 18-01-PLAN.md — Schema migration script + 23 integration tests (TE-03)
-
-### Phase 19: PostToolUse Token Tracking Hook
-**Goal**: A PostToolUse hook records every assistant turn's token usage from session JSONL transcripts into the token ledger database, enabling per-session and per-phase cost analysis
-**Depends on**: Phase 18
-**Requirements**: TE-04, TE-05
-**Contract**: docs/cortex/contracts/token-efficiency/contract-001.md
-**Success Criteria** (what must be TRUE):
-  1. `hooks/token-ledger.js` fires on every PostToolUse, tail-reads the session JSONL transcript (last 8KB), extracts the last assistant turn's usage, and writes to `claude_turns` + `sessions` + `daily_rollup`
-  2. Deduplication by `message_id` prevents double-counting — same message recorded at most once
-  3. Cost computed via `scripts/cortex/pricing.json` with fallback for unknown models
-  4. Hook adds <5ms logic latency per invocation (TE-05)
-  5. Hook exits 0 on any error — never blocks tool execution
-  6. Compaction detected via `remaining_pct` jump >30 points, sets `sessions.compacted = 1`
-**Research**: Complete (implementation dossier Section B)
-**Plans**: 1 plan
-
-Plans:
-- [x] 19-01-PLAN.md — Create token-ledger.js hook + pricing.json + manifest registration + integration tests (TE-04, TE-05)
-
-### Phase 20: Token Report CLI
-**Goal**: A shell script produces formatted token usage reports (daily cost, phase cost, session ranking, cache hit ratio, context burndown) from the token ledger, with optional cross-DB power-search joins
-**Depends on**: Phase 19
-**Requirements**: TE-06
-**Contract**: docs/cortex/contracts/token-efficiency/contract-001.md
-**Success Criteria** (what must be TRUE):
-  1. `scripts/cortex/token-report.sh` accepts 7 subcommands (summary, --today, --phase, --sessions, --cache, --burndown, --costs)
-  2. Cross-DB ATTACH join with `~/.power-search/usage.db` works when that DB exists; gracefully skips when absent
-  3. Missing ledger DB prints informative message and exits 0
-  4. `test/token-report.test.sh` passes all assertions with seeded test data
-**Research**: Complete (implementation dossier)
-**Plans**: 1 plan
-
-Plans:
-- [ ] 20-01-PLAN.md — Create token-report.sh (7 report subcommands) + integration tests (TE-06)
-
-## Progress
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Core Docs and Architecture Alignment | 3/3 | Complete    | 2026-03-29 |
-| 2. Artifact Scaffolding and Templates | 0/4 | Complete    | 2026-03-29 |
-| 3. New and Updated Skills | 0/3 | Complete    | 2026-03-29 |
-| 4. Subagents and Hooks | 4/4 | Complete    | 2026-03-29 |
-| 5. Eval Subsystem | 2/2 | Complete    | 2026-03-29 |
-| 6. Installer and Operational Cleanup | 2/2 | Complete    | 2026-03-29 |
-| 7. Idea Stash | 1/1 | Complete    | 2026-04-01 |
-| 8. Discovery Loop — Design Docs and Templates | 1/1 | Complete    | 2026-04-01 |
-| 9. Discovery Loop — Infrastructure Patches | 1/1 | Complete    | 2026-04-01 |
-| 10. Discovery Loop — /cortex-experiment Skill | 1/1 | Complete    | 2026-04-01 |
-| 11. Discovery Loop — Update Existing Skills and Docs | 2/2 | Complete    | 2026-04-01 |
-| 12. Auto-Doc-Sync — Pre-Commit LLM Doc Updater | 2/2 | Complete    | 2026-04-02 |
-| 18. Token Ledger Schema | 1/1 | Complete    | 2026-04-03 |
-| 19. PostToolUse Token Tracking Hook | 1/1 | Complete    | 2026-04-03 |
-| 20. Token Report CLI | 0/1 | Planning    | - |

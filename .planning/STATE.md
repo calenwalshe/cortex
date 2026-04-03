@@ -1,16 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: milestone
-status: token-ledger.db schema created with 4 tables, 8 indexes, WAL mode; 23/23 tests pass
-stopped_at: Phase 18-01 complete — token ledger schema migration script + 23 integration tests
-last_updated: "2026-04-03T02:57:06.709Z"
-last_activity: 2026-04-03
+milestone: v1.5
+milestone_name: token-efficiency
+status: executing
+stopped_at: Phase 20 Plan 01 complete — token-report.sh CLI with 7 SQL reports, 15/15 tests pass
+last_updated: "2026-04-03T03:21:47Z"
+last_activity: 2026-04-03 — Phase 20 (token-report-cli) plan 01 executed; 3 commits, 2 files, 15 tests pass
 progress:
-  total_phases: 12
-  completed_phases: 12
-  total_plans: 26
-  completed_plans: 26
+  total_phases: 8
+  completed_phases: 2
+  total_plans: 2
+  completed_plans: 2
+  percent: 25
 ---
 
 # Project State
@@ -20,21 +21,20 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** A stateless executor can read a Cortex handoff pack and start implementation without guessing architecture or definition of done.
-**Current focus:** Phase 18 — Token Ledger Schema (v1.4 adaptive-autonomy)
+**Current focus:** Phase 20 — Token Report CLI
 
 ## Current Position
 
-Phase: 18
-Plan: Not started
-Status: token-ledger.db schema created with 4 tables, 8 indexes, WAL mode; 23/23 tests pass
-Last activity: 2026-04-03
+Phase: 20 — Token Report CLI (Plan 01 COMPLETE)
+Plan: 20-01 complete — token-report.sh CLI with 7 SQL reports
+Status: TE-06 requirement satisfied; 15/15 tests pass
+Last activity: 2026-04-03 — Phase 20 plan 01 executed (token-report.sh + tests)
 
-Progress: [█████████████████████] 27/27 plans; 13/13 phases complete
+Progress: [█████████████████████] 26/26 plans; 12/12 phases complete
 
 ## Performance Metrics
 
 **Velocity:**
-
 - Total plans completed: 0
 - Average duration: -
 - Total execution time: 0 hours
@@ -46,7 +46,6 @@ Progress: [█████████████████████] 27/2
 | - | - | - | - |
 
 **Recent Trend:**
-
 - Last 5 plans: n/a
 - Trend: n/a
 
@@ -67,7 +66,6 @@ Progress: [█████████████████████] 27/2
 | Phase 05-eval-subsystem P01 | 2min | 2 tasks | 1 files |
 | Phase 06-installer-and-operational-cleanup P01 | 12min | 2 tasks | 1 files |
 | Phase 06-installer-and-operational-cleanup P02 | 8min | 2 tasks | 2 files |
-| Phase 18-token-ledger-schema P01 | 4min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -140,10 +138,6 @@ Recent decisions affecting current work:
 - [Phase 09-discovery-loop-infrastructure-patches]: Backward-compat defaults for flat open-questions.md entries documented inline (type: knowledge, severity: noncritical, resolution_path: research, status: open)
 - [Phase 10-discovery-loop-cortex-experiment-skill]: experiment_complete: true written by close for ALL four decisions — the gate is satisfied regardless of decision taken
 - [Phase 10-discovery-loop-cortex-experiment-skill]: /cortex-experiment run is read-only — no state.json writes, no artifact written; guidance-only reminder
-- [Phase 18-token-ledger-schema]: Global DB at ~/.cortex/token-ledger.db — single query for cross-project totals, no .gitignore pollution
-- [Phase 18-token-ledger-schema]: WAL mode enabled at creation time for concurrent hook writes
-- [Phase 18-token-ledger-schema]: TOKEN_LEDGER_DB env var override for test isolation
-- [Phase 18-token-ledger-schema]: bash + sqlite3 CLI for migration script (simpler than Node.js, no deps beyond sqlite3)
 
 ### Pending Todos
 
@@ -155,8 +149,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-03
-Stopped at: Phase 18-01 complete — token ledger schema migration script + 23 integration tests
+Last session: 2026-04-01
+Stopped at: Phase 11 complete — milestone v1.2 cortex-discovery-loop complete
 Resume file: None
 
 ## Drive Log
