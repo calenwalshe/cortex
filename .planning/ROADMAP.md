@@ -14,7 +14,7 @@ Cortex evolves from a layered wrapper with 5 utilities into a lifecycle intellig
 - [x] **Phase 6: Installer and Operational Cleanup** - Deliver a clean, canonical installer that deploys skills, agents, and hooks with no credential debt (completed 2026-03-29)
 - [x] **Phase 7: Idea Stash** - Deliver `/cortex-stash` with all six subcommands, YAML-fronted per-entry storage, staleness flagging, promote-to-clarify flow, and infrastructure for zero-friction mid-session idea capture (completed 2026-04-01)
 - [x] **Phase 18: Token Ledger Schema** - Create ~/.cortex/token-ledger.db SQLite schema with 4 tables and 8 indexes (completed 2026-04-03)
-- [ ] **Phase 19: PostToolUse Token Tracking Hook** - PostToolUse hook that records per-turn token usage to the ledger from session JSONL transcripts
+- [x] **Phase 19: PostToolUse Token Tracking Hook** - PostToolUse hook that records per-turn token usage to the ledger from session JSONL transcripts (completed 2026-04-03)
 
 ## Phase Details
 
@@ -264,7 +264,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 19-01-PLAN.md — Create token-ledger.js hook + pricing.json + manifest registration + integration tests (TE-04, TE-05)
+- [x] 19-01-PLAN.md — Create token-ledger.js hook + pricing.json + manifest registration + integration tests (TE-04, TE-05)
 
 ## Progress
 
@@ -283,4 +283,4 @@ Plans:
 | 11. Discovery Loop — Update Existing Skills and Docs | 2/2 | Complete    | 2026-04-01 |
 | 12. Auto-Doc-Sync — Pre-Commit LLM Doc Updater | 2/2 | Complete    | 2026-04-02 |
 | 18. Token Ledger Schema | 1/1 | Complete    | 2026-04-03 |
-| 19. PostToolUse Token Tracking Hook | 0/1 | In Progress | |
+| 19. PostToolUse Token Tracking Hook | 1/1 | Complete    | 2026-04-03 |
