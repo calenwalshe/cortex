@@ -222,6 +222,7 @@ Plans:
 | 10. Discovery Loop — /cortex-experiment Skill | 1/1 | Complete    | 2026-04-01 |
 | 11. Discovery Loop — Update Existing Skills and Docs | 2/2 | Complete    | 2026-04-01 |
 | 12. Auto-Doc-Sync — Pre-Commit LLM Doc Updater | 2/2 | Complete    | 2026-04-02 |
+| 24. GSD Execute-Plan Integration | 1/1 | Complete    | 2026-04-02 |
 
 ### Phase 12: Auto-Doc-Sync — Pre-Commit LLM Doc Updater
 **Goal**: Build a git pre-commit hook that auto-generates documentation updates for COMMANDS.md, HOOKS.md, and CONTINUITY.md whenever their corresponding source files are modified
@@ -245,3 +246,20 @@ Plans:
 Plans:
 - [x] 12-01-PLAN.md — Core hook: .auto-doc-sync.json config, hooks/auto-doc-sync-prompt.md template, hooks/auto-doc-sync.sh script, test/auto-doc-sync.test.sh (ADSYNC-01 through ADSYNC-09)
 - [x] 12-02-PLAN.md — Installer integration + documentation: update bin/install.js, runtime-manifest.json, docs/HOOKS.md (ADSYNC-10, ADSYNC-11)
+
+### Phase 24: GSD Execute-Plan Integration
+**Goal**: GSD execute-plan.md routes codex-safe tasks to Codex and claude-required tasks to Claude executor, with a config toggle to disable Codex entirely
+**Depends on:** Phase 12
+**Requirements**: TE-11
+**Success Criteria** (what must be TRUE):
+  1. execute-plan.md contains Step 4.5 with task-router.js invocation
+  2. execute-plan.md contains Step 5a with codex-exec-wrapper.sh invocation
+  3. execute-plan.md Step 5b preserves existing Claude executor logic with completed_tasks context
+  4. codex.enabled: false check gates Steps 4.5 and 5a (bypass to 5b)
+  5. Config documentation exists for codex section
+**Plans**: 1 plan
+
+**Status**: COMPLETE -- 2026-04-02
+
+Plans:
+- [x] 24-01-PLAN.md -- Add Codex task routing (Steps 4.5/5a/5b) to execute-plan.md + config docs (TE-11)
