@@ -15,7 +15,7 @@
  */
 
 // ── Mandatory gates — cannot be disabled by any config or override ─────────────
-const MANDATORY_GATES = ['ux_taste_eval', 'human_action', 'reclarify'];
+const MANDATORY_GATES = ['ux_taste_eval', 'human_action', 'reclarify', 'context_capacity'];
 
 // ── Preset defaults ─────────────────────────────────────────────────────────────
 // Each preset maps gate name → boolean default value.
@@ -27,6 +27,7 @@ const PRESET_DEFAULTS = {
     ux_taste_eval:        true,
     human_action:         true,
     reclarify:            true,
+    context_capacity:     true,
     contract_approval:    true,
     spec_approval:        true,
     eval_approval:        true,
@@ -42,6 +43,7 @@ const PRESET_DEFAULTS = {
     ux_taste_eval:        true,
     human_action:         true,
     reclarify:            true,
+    context_capacity:     true,
     contract_approval:    true,
     spec_approval:        true,
     eval_approval:        true,
@@ -57,6 +59,7 @@ const PRESET_DEFAULTS = {
     ux_taste_eval:        true,
     human_action:         true,
     reclarify:            true,
+    context_capacity:     true,
     contract_approval:    false,
     spec_approval:        false,
     eval_approval:        false,

@@ -74,6 +74,10 @@
     {
       "file": "token-ledger.js",
       "wiring": "global"
+    },
+    {
+      "file": "cortex-context-capacity.sh",
+      "wiring": "global"
     }
   ],
   "hook_events": [
@@ -125,6 +129,11 @@
       "event": "PostToolUse",
       "hook_file": "token-ledger.js",
       "async": true
+    },
+    {
+      "event": "PostToolUse",
+      "hook_file": "cortex-context-capacity.sh",
+      "timeout": 5
     }
   ]
 }
