@@ -233,23 +233,31 @@ Before checking eval proposal approval status, resolve the autonomy config:
 
 If the `eval_proposal` gate is active (per autonomy check above) AND `approval_required: true` AND `Approval Status:` is NOT `approved`:
 
-  Output the following and STOP — do not write eval-plan.md:
+  Read the eval proposal. Extract: included dimension count, excluded dimension count, list of approval_required dimensions. Render a gate brief:
 
   ```
-  BLOCKED: Eval Plan Cannot Be Written
   ════════════════════════════════════════
-  The eval proposal at docs/cortex/evals/{slug}/eval-proposal.md
-  has approval_required: true but Approval Status: {current_status}.
+  GATE: Eval Proposal Approval
+  ════════════════════════════════════════
 
-  Required action:
-    1. Review the proposal at docs/cortex/evals/{slug}/eval-proposal.md
-    2. Edit the file: change "Approval Status: pending" → "Approval Status: approved"
-       (or "Approval Status: rejected" if you want to revise the proposal)
-    3. Re-run: /cortex-research --write-plan
+  Would approve eval proposal for {slug} with {included_count} dimensions.
+    - Approval-required dimensions: {list of dimension names where approval_required: true}
+    - Auto-verifiable dimensions: {count where approval_required: false}
 
-  The contract will remain in spec state until this approval is recorded.
+  Details: docs/cortex/evals/{slug}/eval-proposal.md
   ════════════════════════════════════════
   ```
+
+  Then present an AskUserQuestion:
+  - **header:** "Eval Proposal"
+  - **question:** "Approve this eval proposal?"
+  - **options:**
+    - "Approve" — update the file: change `Approval Status: pending` → `Approval Status: approved`, then proceed to write eval-plan.md
+    - "Reject" — update the file: change `Approval Status: pending` → `Approval Status: rejected`, stop execution
+    - "Show details" — print the full eval proposal content, then re-prompt
+
+  If "Approve": continue to the eval plan writing logic below.
+  If "Reject": stop with `Eval proposal rejected. Revise with /cortex-research --phase evals, then re-run /cortex-research --write-plan.`
 
 If `Approval Status:` is `rejected`:
 

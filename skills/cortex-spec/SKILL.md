@@ -191,7 +191,36 @@ When auto-proceeding (gate is false/skipped), append a decision log entry to `do
 - {ISO8601 timestamp} | gate: contract_approval | value: false (auto-skipped) | preset: {active_preset} | command: /cortex-spec
 ```
 Update `next_action` to skip the manual approval step.
-If `gates.contract_approval` is `true` (or no autonomy config exists): set `approval_status` to `pending` as currently specified (existing behavior preserved).
+If `gates.contract_approval` is `true` (or no autonomy config exists): present a gate brief and interactive approval prompt.
+
+**Gate brief (contract_approval):**
+
+Read the contract just written. Extract: contract ID, done criteria count, write roots count, deliverable count. Render the brief using `templates/cortex/gate-brief.md` structure:
+
+```
+════════════════════════════════════════
+GATE: Contract Approval
+════════════════════════════════════════
+
+Would approve contract {contract_id} for execution.
+  - {done_criteria_count} done criteria
+  - {deliverable_count} deliverables
+  - {write_roots_count} write roots
+
+Details: docs/cortex/contracts/{slug}/contract-001.md
+════════════════════════════════════════
+```
+
+Then present an AskUserQuestion:
+- **header:** "Contract"
+- **question:** "Approve this contract for execution?"
+- **options:**
+  - "Approve" — set `approval_status` to `approved` in both state files, proceed normally
+  - "Reject" — set `approval_status` to `rejected`, stop execution
+  - "Show details" — print the full contract file content, then re-prompt
+
+If "Approve": update state and proceed (same as auto-approve path).
+If "Reject": stop. User must address feedback and re-run `/cortex-spec`.
 
 ## Rules
 

@@ -222,7 +222,34 @@ After producing the Security Posture Report, resolve the autonomy config to dete
    - {ISO8601 timestamp} | gate: security_verdict | value: false (auto-skipped) | preset: {active_preset} | command: /cortex-audit
    ```
    Update `next_action` in `docs/cortex/handoffs/current-state.md` to reflect the auto-proceed: include the text "Security audit auto-proceeded (autonomy: {preset})".
-5. If `gates.security_verdict` is `true` (or no autonomy config exists): **require human review** — after writing the audit artifact, output a prompt asking the user to review findings before proceeding. Set `next_action` in `current-state.md` to: "Review security audit at {artifact_path} — CRITICAL/HIGH findings require human acknowledgment before proceeding."
+5. If `gates.security_verdict` is `true` (or no autonomy config exists): **require human review** — present a gate brief with finding severity counts and an interactive prompt.
+
+   Count findings by severity from the audit artifact (CRITICAL, HIGH, MEDIUM, LOW, INFO). Render:
+
+   ```
+   ════════════════════════════════════════
+   GATE: Security Verdict
+   ════════════════════════════════════════
+
+   Would proceed after security audit of {slug}.
+     - {critical_count} critical findings
+     - {high_count} high findings
+     - {medium_count} medium findings
+     - {low_count} low / {info_count} info findings
+
+   Details: {artifact_path}
+   ════════════════════════════════════════
+   ```
+
+   Then present an AskUserQuestion:
+   - **header:** "Security"
+   - **question:** "Security audit complete. Review findings and proceed?"
+   - **options:**
+     - "Proceed" — acknowledge findings, continue pipeline
+     - "Stop" — halt to investigate before continuing
+     - "Show details" — print the full audit artifact, then re-prompt
+
+   Set `next_action` in `current-state.md` based on user choice.
 
 ## Confidence Gate
 

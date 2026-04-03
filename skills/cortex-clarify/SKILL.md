@@ -53,7 +53,31 @@ Before evaluating slug conflict, resolve the autonomy config:
    ```
 5. If `gates.slug_conflict` is `true` (or no autonomy config exists): evaluate the slug conflict check as described below (existing behavior preserved).
 
-- If `slug` field is already set to a **different** active slug AND the `slug_conflict` gate is active (per autonomy check above): warn the user and ask to confirm before overwriting the active context.
+- If `slug` field is already set to a **different** active slug AND the `slug_conflict` gate is active (per autonomy check above): render a gate brief and ask to confirm.
+
+  Read `.cortex/state.json` to get the current slug, mode, and approval_status. Render:
+
+  ```
+  ════════════════════════════════════════
+  GATE: Slug Conflict
+  ════════════════════════════════════════
+
+  Would switch active slug from "{current_slug}" ({current_mode}) to "{new_slug}".
+    - Current: {current_slug} (mode: {current_mode}, status: {current_approval_status})
+    - New: {new_slug} (will start in clarify mode)
+    - Existing artifacts for {current_slug} remain on disk
+
+  Details: .cortex/state.json
+  ════════════════════════════════════════
+  ```
+
+  Then present an AskUserQuestion:
+  - **header:** "Slug"
+  - **question:** "Switch to new slug? Current work context will be overwritten."
+  - **options:**
+    - "Confirm" — proceed with the new slug
+    - "Cancel" — keep current slug, abort clarify
+    - "Show details" — print current state.json, then re-prompt
 - If the file does not exist, proceed without warning.
 - If `slug` matches the derived slug, proceed without warning.
 

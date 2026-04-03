@@ -199,11 +199,36 @@ When auto-proceeding (gate is false/skipped), append a decision log entry to `do
 - {ISO8601 timestamp} | gate: compliance_verdict | value: false (auto-skipped) | preset: {active_preset} | command: /cortex-review
 ```
 The review artifact is written regardless.
-If `gates.compliance_verdict` is `true` (or no autonomy config exists): state an overall compliance verdict as currently specified. A NON-COMPLIANT verdict blocks the pipeline (existing behavior preserved):
+If `gates.compliance_verdict` is `true` (or no autonomy config exists): compute the verdict and present a gate brief.
+
+Count findings by type: PASS, FAIL, PARTIAL, BLOCK. Render:
 
 ```
+════════════════════════════════════════
+GATE: Compliance Verdict
+════════════════════════════════════════
+
+Would mark contract as {COMPLIANT|NON-COMPLIANT|PARTIALLY COMPLIANT}.
+  - {pass_count} criteria passed
+  - {fail_count} criteria failed
+  - {partial_count} partially met
+  - {block_count} blocking issues
+
+Details: {review_artifact_path}
+════════════════════════════════════════
+
 CONTRACT COMPLIANCE: COMPLIANT | NON-COMPLIANT | PARTIALLY COMPLIANT
 ```
+
+If NON-COMPLIANT, present an AskUserQuestion:
+- **header:** "Compliance"
+- **question:** "Contract is non-compliant. How to proceed?"
+- **options:**
+  - "Stop" — halt pipeline to fix issues
+  - "Proceed anyway" — acknowledge and continue (verdict is logged)
+  - "Show details" — print full finding list, then re-prompt
+
+If COMPLIANT or PARTIALLY COMPLIANT: no blocking prompt, continue.
 
 **If no active contract was found:**
 ```
