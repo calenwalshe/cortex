@@ -70,6 +70,10 @@
     {
       "file": "auto-doc-sync.sh",
       "wiring": "manual"
+    },
+    {
+      "file": "token-ledger.js",
+      "wiring": "global"
     }
   ],
   "hook_events": [
@@ -116,6 +120,11 @@
       "event": "TeammateIdle",
       "hook_file": "cortex-teammate-idle.sh",
       "timeout": 5
+    },
+    {
+      "event": "PostToolUse",
+      "hook_file": "token-ledger.js",
+      "async": true
     }
   ]
 }
