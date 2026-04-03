@@ -113,7 +113,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
-| 17. cortex-research Refactor | 1/1 | Complete   | 2026-04-03 |
+| 17. cortex-research Refactor | 1/1 | Complete    | 2026-04-03 |
 | 18. Token Ledger Schema | 0/0 | Not started | - |
 | 19. PostToolUse Hook | 0/0 | Not started | - |
 | 20. Token Report CLI | 0/0 | Not started | - |
