@@ -76,7 +76,11 @@
 
 <!-- List of validation commands or checks to run -->
 <!-- Each gets a checkbox — all must pass -->
-<!-- Format: - [ ] {validation check or command} -->
+<!-- Annotate each validator with [external] or [judgment]: -->
+<!--   [external] — deterministic, mechanically verifiable (grep, test, lint). Eligible for auto-repair. -->
+<!--   [judgment] — requires human judgment or taste evaluation. NOT eligible for auto-repair. -->
+<!-- Format: - [ ] [external] {validation command} -->
+<!-- Format: - [ ] [judgment] {validation description requiring human review} -->
 
 ---
 
@@ -95,6 +99,15 @@
 
 - [ ] Contract approval <!-- Human has reviewed and approved this contract's scope and criteria -->
 - [ ] Evals approval <!-- Human has reviewed and approved the associated eval plan -->
+
+---
+
+## Completion Promise
+
+<!-- The executing agent MUST emit this signal when all done criteria are satisfied: -->
+<!-- CORTEX_PROMISE: {CONTRACT_ID} COMPLETE -->
+<!-- The cortex-task-completed.sh hook checks for this signal. -->
+<!-- If the signal is not emitted, the contract is not considered complete even if all validators pass. -->
 
 ---
 

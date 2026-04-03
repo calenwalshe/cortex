@@ -28,6 +28,20 @@ print(json.dumps({
   exit 0
 fi
 
+# Check for CORTEX_PROMISE completion signal
+# The executor must emit "CORTEX_PROMISE: <contract-id> COMPLETE" to signal done
+CONTRACT_ID=$(jq -r '.slug // ""' "$STATE_JSON" 2>/dev/null || echo "")
+if [[ -n "$CONTRACT_ID" ]]; then
+  # Check recent git log for the promise signal
+  PROMISE_FOUND=$(git log --oneline -20 --grep="CORTEX_PROMISE.*COMPLETE" 2>/dev/null | head -1 || echo "")
+  # Also check if the signal was written to a known location
+  PROMISE_FILE="${CLAUDE_PROJECT_DIR}/.cortex/promise-${CONTRACT_ID}.signal"
+  if [[ -z "$PROMISE_FOUND" ]] && [[ ! -f "$PROMISE_FILE" ]]; then
+    # Promise not found — warn but don't block (signal may come via different channel)
+    echo "[cortex-task-completed] Warning: CORTEX_PROMISE signal not detected for ${CONTRACT_ID}" >&2
+  fi
+fi
+
 # Check for any FAIL lines in eval-status.md
 if grep -qiE "^.*\|.*FAIL" "$EVAL_STATUS" 2>/dev/null; then
   FAILING=$(grep -iE "^.*\|.*FAIL" "$EVAL_STATUS" | head -5)
