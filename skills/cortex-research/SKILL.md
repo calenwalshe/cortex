@@ -331,14 +331,14 @@ See `docs/DISCOVERY_LOOP.md` §1 (research → clarify backtrack transition) for
 - `--team` is opt-in only. Agent team mode is never default behavior.
 - Output is always a repo-local artifact. Chat-only responses do not count.
 
-## Available APIs
+## Search Backend
 
-| API | Env Var | Use For |
-|-----|---------|---------|
-| Tavily | `TAVILY_API_KEY` | Search (primary) |
-| Jina Reader | None needed | URL extraction (free) |
-| Firecrawl | `FIRECRAWL_API_KEY` | Web scraping |
-| Crawl4AI | None needed | Full site crawling |
-| Perplexity | `PPLX_API_KEY` | Quick deep research |
-| Gemini | `GEMINI_API_KEY` | Cross-reference, YouTube, second opinion |
-| OpenAI | `OPENAI_API_KEY` | gpt-researcher backend |
+All search, extraction, and generation calls route through the **power-search** library (`/search` skill). This provides:
+- Unified `search(query, intent=Intent.X)` interface for all providers
+- Automatic provider fallback chains (e.g., jina -> firecrawl for READ_URL)
+- Cost tracking per query in `~/.power-search/usage.db`
+- Budget enforcement via optional `daily_budget` config
+
+See: `/home/agent/projects/claude-power-search/SKILL.md` for full API reference.
+
+Exception: `--depth deep` uses gpt-researcher directly (requires `OPENAI_API_KEY`), with post-hoc cost logging via `usage.record()`.
