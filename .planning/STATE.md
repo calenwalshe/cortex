@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** A stateless executor can read a Cortex handoff pack and start implementation without guessing architecture or definition of done.
-**Current focus:** Phase 12 — Auto-Doc-Sync — Pre-Commit LLM Doc Updater
+**Current focus:** Phase 18 — Token Ledger Schema (v1.4 adaptive-autonomy)
 
 ## Current Position
 
-Phase: 12 — Auto-Doc-Sync — Pre-Commit LLM Doc Updater (COMPLETE)
-Plan: 12-02 complete — all plans executed
-Status: All ADSYNC-01 through ADSYNC-11 requirements satisfied; 7/7 validators pass; 8/8 tests pass
-Last activity: 2026-04-02 — Phase 12 executed (12-01: config + prompt + hook + tests; 12-02: installer + docs)
+Phase: 18 — Token Ledger Schema (COMPLETE)
+Plan: 18-01 complete — all plans executed
+Status: token-ledger.db schema created with 4 tables, 8 indexes, WAL mode; 23/23 tests pass
+Last activity: 2026-04-03 — Phase 18 executed (18-01: schema migration script + integration tests)
 
-Progress: [█████████████████████] 26/26 plans; 12/12 phases complete
+Progress: [█████████████████████] 27/27 plans; 13/13 phases complete
 
 ## Performance Metrics
 
@@ -66,6 +66,7 @@ Progress: [█████████████████████] 26/2
 | Phase 05-eval-subsystem P01 | 2min | 2 tasks | 1 files |
 | Phase 06-installer-and-operational-cleanup P01 | 12min | 2 tasks | 1 files |
 | Phase 06-installer-and-operational-cleanup P02 | 8min | 2 tasks | 2 files |
+| Phase 18-token-ledger-schema P01 | 4min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -138,6 +139,10 @@ Recent decisions affecting current work:
 - [Phase 09-discovery-loop-infrastructure-patches]: Backward-compat defaults for flat open-questions.md entries documented inline (type: knowledge, severity: noncritical, resolution_path: research, status: open)
 - [Phase 10-discovery-loop-cortex-experiment-skill]: experiment_complete: true written by close for ALL four decisions — the gate is satisfied regardless of decision taken
 - [Phase 10-discovery-loop-cortex-experiment-skill]: /cortex-experiment run is read-only — no state.json writes, no artifact written; guidance-only reminder
+- [Phase 18-token-ledger-schema]: Global DB at ~/.cortex/token-ledger.db — single query for cross-project totals, no .gitignore pollution
+- [Phase 18-token-ledger-schema]: WAL mode enabled at creation time for concurrent hook writes
+- [Phase 18-token-ledger-schema]: TOKEN_LEDGER_DB env var override for test isolation
+- [Phase 18-token-ledger-schema]: bash + sqlite3 CLI for migration script (simpler than Node.js, no deps beyond sqlite3)
 
 ### Pending Todos
 
@@ -149,8 +154,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-01
-Stopped at: Phase 11 complete — milestone v1.2 cortex-discovery-loop complete
+Last session: 2026-04-03
+Stopped at: Phase 18-01 complete — token ledger schema migration script + 23 integration tests
 Resume file: None
 
 ## Drive Log

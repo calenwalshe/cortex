@@ -222,6 +222,7 @@ Plans:
 | 10. Discovery Loop — /cortex-experiment Skill | 1/1 | Complete    | 2026-04-01 |
 | 11. Discovery Loop — Update Existing Skills and Docs | 2/2 | Complete    | 2026-04-01 |
 | 12. Auto-Doc-Sync — Pre-Commit LLM Doc Updater | 2/2 | Complete    | 2026-04-02 |
+| 18. Token Ledger Schema | 1/1 | Complete    | 2026-04-03 |
 
 ### Phase 12: Auto-Doc-Sync — Pre-Commit LLM Doc Updater
 **Goal**: Build a git pre-commit hook that auto-generates documentation updates for COMMANDS.md, HOOKS.md, and CONTINUITY.md whenever their corresponding source files are modified
