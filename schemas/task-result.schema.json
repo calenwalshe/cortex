@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cortex.local/schemas/task-result.schema.json",
+  "title": "Codex Task Result",
+  "description": "Structured result from a Codex execution task. Produced by Codex after processing a task capsule, consumed by the GSD executor to determine next steps.",
+  "type": "object",
+  "required": [
+    "status",
+    "files_changed",
+    "tests_passed",
+    "deviations",
+    "commit_hash",
+    "error_message",
+    "checkpoint_detail"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["complete", "failed", "checkpoint"],
+      "description": "Task outcome. 'complete' = task done and committed. 'failed' = unrecoverable error, no commit. 'checkpoint' = Rule 4 triggered, architectural decision needed."
+    },
+    "files_changed": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Relative paths of all files created or modified by this task. Empty array if no files changed (e.g., on failure before any writes)."
+    },
+    "tests_passed": {
+      "type": "boolean",
+      "description": "Result of running the verify command from the task definition. true if exit code 0, false otherwise."
+    },
+    "test_output_summary": {
+      "type": ["string", "null"],
+      "description": "Brief summary of test/verify output (e.g., '12 tests passed', 'FAIL: expected 3, got 5'). Null if no tests were run."
+    },
+    "deviations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^\\[Rule [1-4]"
+      },
+      "description": "Deviation entries in '[Rule N - Type] description' format. Empty array if task executed exactly as specified."
+    },
+    "commit_hash": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{7,40}$",
+      "description": "Short git commit hash (7+ hex chars) from the task commit. Null if no commit was made (failed before committing)."
+    },
+    "error_message": {
+      "type": ["string", "null"],
+      "description": "Human-readable error description when status is 'failed'. Null on success or checkpoint."
+    },
+    "checkpoint_detail": {
+      "type": ["string", "null"],
+      "description": "Description of the architectural decision needed when status is 'checkpoint' (Rule 4). Null on success or failure."
+    }
+  },
+  "additionalProperties": false,
+  "if": {
+    "properties": { "status": { "const": "complete" } }
+  },
+  "then": {
+    "properties": {
+      "commit_hash": { "type": "string" },
+      "error_message": { "const": null },
+      "checkpoint_detail": { "const": null }
+    }
+  },
+  "examples": [
+    {
+      "status": "complete",
+      "files_changed": ["src/api/auth.ts", "test/auth.test.ts"],
+      "tests_passed": true,
+      "test_output_summary": "All 5 tests passed",
+      "deviations": [],
+      "commit_hash": "a1b2c3d",
+      "error_message": null,
+      "checkpoint_detail": null
+    },
+    {
+      "status": "failed",
+      "files_changed": ["src/api/auth.ts"],
+      "tests_passed": false,
+      "test_output_summary": "FAIL: expected JWT token, got undefined",
+      "deviations": ["[Rule 1 - Bug] Fixed null check on token parse"],
+      "commit_hash": null,
+      "error_message": "Tests fail after 3 fix attempts — token validation requires upstream schema change",
+      "checkpoint_detail": null
+    },
+    {
+      "status": "checkpoint",
+      "files_changed": [],
+      "tests_passed": false,
+      "test_output_summary": null,
+      "deviations": [],
+      "commit_hash": null,
+      "error_message": null,
+      "checkpoint_detail": "Task requires new database table for session storage — architectural decision needed"
+    }
+  ]
+}

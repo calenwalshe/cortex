@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.5
-milestone_name: token-efficiency
-status: executing
-stopped_at: Phase 20 Plan 01 complete — token-report.sh CLI with 7 SQL reports, 15/15 tests pass
-last_updated: "2026-04-03T03:21:47Z"
-last_activity: 2026-04-03 — Phase 20 (token-report-cli) plan 01 executed; 3 commits, 2 files, 15 tests pass
+milestone: v1.4
+milestone_name: adaptive-autonomy
+status: in-progress
+stopped_at: Phase 22 complete — TE-08 context capsule schema delivered
+last_updated: "2026-04-03T03:50:00.000Z"
+last_activity: 2026-04-03 — Phase 22 (context-capsule-schema) executed; 2 tasks, 2 files created
 progress:
-  total_phases: 8
-  completed_phases: 2
-  total_plans: 2
-  completed_plans: 2
-  percent: 25
+  total_phases: 13
+  completed_phases: 13
+  total_plans: 27
+  completed_plans: 27
+  percent: 100
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** A stateless executor can read a Cortex handoff pack and start implementation without guessing architecture or definition of done.
-**Current focus:** Phase 20 — Token Report CLI
+**Current focus:** Phase 22 — Context Capsule Schema (COMPLETE)
 
 ## Current Position
 
-Phase: 20 — Token Report CLI (Plan 01 COMPLETE)
-Plan: 20-01 complete — token-report.sh CLI with 7 SQL reports
-Status: TE-06 requirement satisfied; 15/15 tests pass
-Last activity: 2026-04-03 — Phase 20 plan 01 executed (token-report.sh + tests)
+Phase: 22 — Context Capsule Schema (COMPLETE)
+Plan: 22-01 complete — all plans executed
+Status: TE-08 satisfied; task-capsule.md template + task-result.schema.json delivered
+Last activity: 2026-04-03 — Phase 22 executed (22-01: capsule template + result schema)
 
-Progress: [█████████████████████] 26/26 plans; 12/12 phases complete
+Progress: [█████████████████████] 27/27 plans; 13/13 phases complete
 
 ## Performance Metrics
 
