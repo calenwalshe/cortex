@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cortex.local/schemas/memory-fact.schema.json",
+  "title": "Cortex Memory Fact",
+  "description": "Schema for atomic facts extracted during compaction events. Each fact is one line in .cortex/facts.jsonl. Designed for future embedding/retrieval consumption.",
+  "type": "object",
+  "required": ["id", "type", "slug", "text", "source", "extracted_at"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^fact-[0-9T]+Z-[a-f0-9]{8}$",
+      "description": "Unique fact identifier: fact-{timestamp}-{content_hash_8chars}"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["decision", "preference", "constraint", "pattern", "blocker", "context_pointer"],
+      "description": "Fact category. decision: choice with rationale. preference: behavioral pattern. constraint: hard limit. pattern: approach that worked/failed. blocker: active/resolved blocker. context_pointer: reference to where info lives."
+    },
+    "slug": {
+      "type": "string",
+      "description": "Active Cortex slug when this fact was extracted"
+    },
+    "text": {
+      "type": "string",
+      "description": "The atomic fact content — one discrete piece of information"
+    },
+    "source": {
+      "type": "string",
+      "description": "File path or source identifier where this fact was found"
+    },
+    "extracted_at": {
+      "type": "string",
+      "pattern": "^[0-9]{8}T[0-9]{6}Z$",
+      "description": "Compact ISO 8601 UTC timestamp of extraction"
+    },
+    "session_context": {
+      "type": "string",
+      "description": "Optional context about the session state when extracted"
+    }
+  }
+}

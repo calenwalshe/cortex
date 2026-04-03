@@ -28,7 +28,7 @@
       "wiring": "global"
     },
     {
-      "file": "cortex-postcompact.sh",
+      "file": "cortex-postcompact.js",
       "wiring": "global"
     },
     {
@@ -91,7 +91,7 @@
     },
     {
       "event": "PostCompact",
-      "hook_file": "cortex-postcompact.sh"
+      "hook_file": "cortex-postcompact.js"
     },
     {
       "event": "Stop",
