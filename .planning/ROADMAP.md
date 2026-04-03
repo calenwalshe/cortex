@@ -32,7 +32,7 @@ See `.planning/milestones/v1.4-ROADMAP.md` for full details.
 **Plans**: 1 plan
 
 Plans:
-- [ ] 17-01-PLAN.md — Replace raw API calls with power-search search() and update documentation sections
+- [x] 17-01-PLAN.md — Replace raw API calls with power-search search() and update documentation sections
 
 ### Phase 18: Token Ledger Schema
 
@@ -113,7 +113,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
-| 17. cortex-research Refactor | 0/1 | Planning | - |
+| 17. cortex-research Refactor | 1/1 | Complete   | 2026-04-03 |
 | 18. Token Ledger Schema | 0/0 | Not started | - |
 | 19. PostToolUse Hook | 0/0 | Not started | - |
 | 20. Token Report CLI | 0/0 | Not started | - |

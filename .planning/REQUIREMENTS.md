@@ -5,8 +5,8 @@
 
 ## Token Efficiency Requirements
 
-- [ ] **TE-01**: cortex-research routes all search/extract/synthesis calls through power-search `search()` API
-- [ ] **TE-02**: cortex-research `--depth deep` backward compatibility preserved via gpt-researcher
+- [x] **TE-01**: cortex-research routes all search/extract/synthesis calls through power-search `search()` API
+- [x] **TE-02**: cortex-research `--depth deep` backward compatibility preserved via gpt-researcher
 - [ ] **TE-03**: Token ledger SQLite database with 4 tables (claude_turns, codex_tasks, sessions, daily_rollup) and indexes
 - [ ] **TE-04**: PostToolUse hook extracts per-turn token usage from session JSONL transcripts and writes to ledger
 - [ ] **TE-05**: Token tracking hook adds <5ms latency per invocation
