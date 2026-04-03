@@ -108,6 +108,21 @@ grep -r "functionName" --include="*.{ts,js,py,rb}" .
 ```
 If unused → suggest removal, not improvement.
 
+### 4b. Omission Lens
+
+When an active contract is loaded, explicitly check for what SHOULD be present but ISN'T:
+
+1. Read each done criterion from the contract.
+2. For each criterion, verify that the diff or codebase contains code that satisfies it.
+3. Report missing implementations as:
+   ```
+   [OMISSION] contract done_criteria #{N} — "{criterion text}" — no matching implementation found
+   ```
+4. Check deliverables list: is every listed deliverable present on disk?
+5. Check write roots: were any files written OUTSIDE the allowed write roots?
+
+Omissions are as important as errors — a review that only checks what's there misses half the picture.
+
 ### 5. Output Format
 
 ```
@@ -311,6 +326,45 @@ Run this check when an active contract is loaded and its `eval_plan` field point
   ────────────────────────────────────────────────
   All checked dimensions: PASS
   ```
+
+### Convergence Detector
+
+Run this check when an active contract is loaded and the contract is in `repair` mode (or when reviewing repair contracts).
+
+1. Scan `docs/cortex/contracts/{slug}/` for all contract files matching `contract-*.md`.
+2. For each repair contract (contract-002.md and above), extract:
+   - The `## Failed Approaches` section (if present)
+   - The `## Validators` section results
+   - The failing done criteria
+3. Compare the failure signatures of the 3 most recent repair contracts:
+   - Extract the set of failing validators/criteria from each
+   - Compute similarity: count of shared failing items / total unique failing items
+4. **If 3+ consecutive repair contracts share >80% similar failure signatures:**
+   - Generate `docs/cortex/reviews/{slug}/convergence-stall-{timestamp}.md`:
+     ```markdown
+     # Convergence Stall Detected: {slug}
+
+     **Timestamp:** {timestamp}
+     **Contracts analyzed:** {list of contract filenames}
+     **Similarity score:** {N}% across {M} consecutive repairs
+
+     ## Repeated Failure Pattern
+
+     The following failures appear in {M}+ consecutive repair contracts:
+     {list of shared failing validators/criteria}
+
+     ## Recommendation
+
+     The repair loop is not converging. Consider:
+     1. Re-running /cortex-clarify to reframe the problem
+     2. Changing the implementation approach entirely
+     3. Reducing scope to the subset that IS passing
+     4. Escalating to human review of the architectural approach
+     ```
+   - Append `[BLOCK] convergence-stall — 3+ repair cycles with >80% similar failures detected. See convergence-stall-{timestamp}.md` to the review output.
+   - Set `reclarify_required: true` in `.cortex/state.json`.
+
+5. **If fewer than 3 repair contracts exist, or similarity is <80%:** No convergence stall — skip silently.
 
 ## Store Results
 
