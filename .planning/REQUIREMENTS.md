@@ -160,6 +160,12 @@
 - [ ] **ADSYNC-10**: `bin/install.js --dry-run` includes the auto-doc-sync hook; installer wires it into settings and copies config
 - [ ] **ADSYNC-11**: `docs/HOOKS.md` contains a `### auto-doc-sync` entry with all required subsections (trigger, inputs, outputs, side effects, state.json interaction)
 
+## v1.4 Requirements — Adaptive Autonomy
+
+### Token Efficiency
+
+- [x] **TE-08**: Context capsule template (`templates/cortex/task-capsule.md`) and result JSON Schema (`schemas/task-result.schema.json`) enable structured Codex execution handoff — capsule has 6 sections (Identity, Task Definition, Deviation Rules, Commit Instructions, File Context, Result Format); schema has 8 properties with conditional validation
+
 ## v2 Requirements
 
 ### Extended Capabilities
@@ -259,6 +265,7 @@
 | DISC-06 | Phase 9: Discovery Loop — Infrastructure Patches | Complete |
 | DISC-07 | Phase 10: Discovery Loop — /cortex-experiment Skill | Complete |
 
+| TE-08 | Phase 22: Context Capsule Schema | Complete |
 | ADSYNC-01 | Phase 12: Auto-Doc-Sync | Complete |
 | ADSYNC-02 | Phase 12: Auto-Doc-Sync | Complete |
 | ADSYNC-03 | Phase 12: Auto-Doc-Sync | Complete |

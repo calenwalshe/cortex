@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.3
-milestone_name: auto-doc-sync
-status: complete
-stopped_at: Phase 12 complete — all ADSYNC requirements satisfied, all validators pass
-last_updated: "2026-04-02T01:30:00.000Z"
-last_activity: 2026-04-02 — Phase 12 (auto-doc-sync) executed; 6 commits, 7/7 validators pass, 8/8 tests pass
+milestone: v1.4
+milestone_name: adaptive-autonomy
+status: in-progress
+stopped_at: Phase 22 complete — TE-08 context capsule schema delivered
+last_updated: "2026-04-03T03:50:00.000Z"
+last_activity: 2026-04-03 — Phase 22 (context-capsule-schema) executed; 2 tasks, 2 files created
 progress:
-  total_phases: 12
-  completed_phases: 12
-  total_plans: 26
-  completed_plans: 26
+  total_phases: 13
+  completed_phases: 13
+  total_plans: 27
+  completed_plans: 27
   percent: 100
 ---
 
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** A stateless executor can read a Cortex handoff pack and start implementation without guessing architecture or definition of done.
-**Current focus:** Phase 12 — Auto-Doc-Sync — Pre-Commit LLM Doc Updater
+**Current focus:** Phase 22 — Context Capsule Schema (COMPLETE)
 
 ## Current Position
 
-Phase: 12 — Auto-Doc-Sync — Pre-Commit LLM Doc Updater (COMPLETE)
-Plan: 12-02 complete — all plans executed
-Status: All ADSYNC-01 through ADSYNC-11 requirements satisfied; 7/7 validators pass; 8/8 tests pass
-Last activity: 2026-04-02 — Phase 12 executed (12-01: config + prompt + hook + tests; 12-02: installer + docs)
+Phase: 22 — Context Capsule Schema (COMPLETE)
+Plan: 22-01 complete — all plans executed
+Status: TE-08 satisfied; task-capsule.md template + task-result.schema.json delivered
+Last activity: 2026-04-03 — Phase 22 executed (22-01: capsule template + result schema)
 
-Progress: [█████████████████████] 26/26 plans; 12/12 phases complete
+Progress: [█████████████████████] 27/27 plans; 13/13 phases complete
 
 ## Performance Metrics
 

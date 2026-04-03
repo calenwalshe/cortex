@@ -206,6 +206,20 @@ Plans:
 - [x] 11-01-PLAN.md — Add reclarify_required write + warning to cortex-research/SKILL.md; add three spec-readiness blockers to cortex-spec/SKILL.md Phase 1 (DISC-08, DISC-09)
 - [x] 11-02-PLAN.md — Update CORTEX.md (8-command surface), docs/INTELLIGENCE_FLOW.md (backtracking annotation, gate table), docs/COMMANDS.md (/cortex-experiment entry) (DISC-10, DISC-11, DISC-12)
 
+### Phase 22: Context Capsule Schema
+**Goal**: The context capsule template and JSON result schema exist and can be used to generate valid Codex execution inputs and parse structured Codex outputs
+**Depends on**: Phase 21
+**Requirements**: TE-08
+**Success Criteria** (what must be TRUE):
+  1. `templates/cortex/task-capsule.md` exists with all sections (Identity, Task Definition, Deviation Rules, Commit Instructions, File Context, Result Format)
+  2. `schemas/task-result.schema.json` exists and is valid JSON Schema with status, files_changed, tests_passed, deviations, commit_hash, error_message, checkpoint_detail
+**Research**: None (design complete in implementation research dossier Section C)
+**Plans**: 1 plan
+**Status**: COMPLETE — 2026-04-03
+
+Plans:
+- [x] 22-01-PLAN.md — Create task-capsule.md template (6 sections) + task-result.schema.json (8 properties, conditional validation)
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
@@ -222,6 +236,7 @@ Plans:
 | 10. Discovery Loop — /cortex-experiment Skill | 1/1 | Complete    | 2026-04-01 |
 | 11. Discovery Loop — Update Existing Skills and Docs | 2/2 | Complete    | 2026-04-01 |
 | 12. Auto-Doc-Sync — Pre-Commit LLM Doc Updater | 2/2 | Complete    | 2026-04-02 |
+| 22. Context Capsule Schema | 1/1 | Complete    | 2026-04-03 |
 
 ### Phase 12: Auto-Doc-Sync — Pre-Commit LLM Doc Updater
 **Goal**: Build a git pre-commit hook that auto-generates documentation updates for COMMANDS.md, HOOKS.md, and CONTINUITY.md whenever their corresponding source files are modified
