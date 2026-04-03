@@ -1,6 +1,6 @@
 # Cortex Research — Deep Multi-Source, Multi-LLM Research
 
-Systematic research pipeline using Tavily (search), Jina Reader (extraction), Firecrawl (crawling), Crawl4AI (site crawling), Perplexity (deep research), Gemini (cross-reference), and OpenAI (gpt-researcher backend). Produces structured dossiers written to the target project repo under `docs/cortex/`.
+Systematic research pipeline routing all API calls through power-search's unified `search()` interface. Supports multiple providers (Tavily, Jina, Perplexity, Gemini, Firecrawl) with automatic cost tracking and fallback chains. Uses gpt-researcher for deep investigations. Produces structured dossiers written to the target project repo under `docs/cortex/`.
 
 ## User-invocable
 When the user types `/cortex-research`, run this skill.
@@ -51,26 +51,28 @@ If `--dry-run` is passed:
 ### Phase 2: Execute Research
 
 #### Quick Path (`--depth quick` or simple question)
-```bash
-curl -s https://api.perplexity.ai/chat/completions \
-  -H "Authorization: Bearer $PPLX_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "{\"model\":\"sonar-pro\",\"messages\":[{\"role\":\"user\",\"content\":\"$QUERY\"}],\"max_tokens\":2000}"
+```python
+from power_search import search
+from power_search.base import Intent
+
+result = search(query, intent=Intent.RESEARCH, provider="perplexity", max_tokens=2000)
 ```
 
 #### Standard Path (default)
 
 **Step 1: Multi-source search (parallel)**
 ```python
-# Tavily advanced search
-from tavily import TavilyClient
-client = TavilyClient()
-results = client.search(query, search_depth="advanced", max_results=7, include_raw_content=True)
+from power_search import search
+from power_search.base import Intent
+
+# Multi-source search
+results = search(query, intent=Intent.SEARCH, provider="tavily", depth="advanced", max_results=7)
 ```
 
-```bash
-# Jina Reader on top results
-curl -s "https://r.jina.ai/<url>" -H "Accept: text/markdown"
+```python
+# Extract top 3 source URLs
+for url in top_urls[:3]:
+    content = search(url, intent=Intent.READ_URL)
 ```
 
 **Step 2: Analyze and identify gaps**
@@ -78,14 +80,19 @@ Read all sources. What's consistent? What conflicts? What's missing?
 Generate follow-up queries for gaps.
 
 **Step 3: Fill gaps (iterate)**
-Run 1-2 more Tavily searches on follow-up queries. Extract with Jina.
+```python
+# Follow-up searches (max 2 rounds)
+for follow_up_query in gap_queries[:2]:
+    more = search(follow_up_query, intent=Intent.SEARCH, provider="tavily", max_results=3)
+    for url in top_urls:
+        content = search(url, intent=Intent.READ_URL)
+```
 
 **Step 4: Cross-reference with Gemini**
 Send consolidated findings to Gemini for a second-opinion analysis:
-```bash
-curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$GEMINI_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "{\"contents\":[{\"parts\":[{\"text\":\"Cross-reference and fact-check these research findings: $FINDINGS\"}]}]}"
+```python
+# Cross-reference with Gemini (GENERATE, not GROUNDED_SEARCH — analyzing gathered findings)
+cross_ref = search(consolidated_findings, intent=Intent.GENERATE, provider="gemini")
 ```
 
 **Step 5: Synthesize into dossier**
@@ -104,36 +111,46 @@ report = asyncio.run(research())
 ```
 Uses OpenAI API + Tavily automatically.
 
+```python
+# Post-hoc cost tracking (gpt-researcher manages its own API calls)
+from power_search.tracker import usage
+import time
+
+start = time.monotonic()
+report = asyncio.run(research())
+elapsed = int((time.monotonic() - start) * 1000)
+
+usage.record(
+    provider="gpt_researcher",
+    intent="research",
+    query=query,
+    cost=0.0,  # gpt-researcher doesn't expose per-call cost; logged for tracking
+    elapsed_ms=elapsed
+)
+```
+
 #### YouTube Path (YouTube URL detected)
 ```python
-import google.generativeai as genai
-import os
+from power_search import search
+from power_search.base import Intent
 
-genai.configure(api_key=os.environ['GEMINI_API_KEY'])
-model = genai.GenerativeModel('gemini-2.5-flash')
-
-response = model.generate_content([
-    f"Provide a detailed transcript and summary of this video: {url}"
-])
+result = search(url, intent=Intent.YOUTUBE_VIDEO, mode="summary")
 ```
 
 #### URL Path (non-YouTube URL detected)
-```bash
-# Extract with Jina Reader
-curl -s "https://r.jina.ai/$URL" -H "Accept: text/markdown"
+```python
+from power_search import search
+from power_search.base import Intent
+
+result = search(url, intent=Intent.READ_URL)
 ```
 
 For full site crawling:
 ```python
-from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
-import asyncio
+from power_search import search
+from power_search.base import Intent
 
-async def crawl():
-    async with AsyncWebCrawler() as crawler:
-        result = await crawler.arun(url=url, config=CrawlerRunConfig())
-        return result.markdown
-
-content = asyncio.run(crawl())
+result = search(url, intent=Intent.CRAWL_SITE)
 ```
 
 ### Phase 3: Store Results
