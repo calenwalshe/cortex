@@ -240,7 +240,7 @@ WHERE 1=1
 GROUP BY model
 ORDER BY SUM(cost_usd) DESC;
 SQL
-  -- Cross-source: power-search costs if available
+  # Cross-source: power-search costs if available
   if [[ -f "$PS_DB" ]]; then
     echo ""
     echo "── Power-Search Costs ──"
