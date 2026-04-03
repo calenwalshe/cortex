@@ -160,11 +160,11 @@
 - [ ] **ADSYNC-10**: `bin/install.js --dry-run` includes the auto-doc-sync hook; installer wires it into settings and copies config
 - [ ] **ADSYNC-11**: `docs/HOOKS.md` contains a `### auto-doc-sync` entry with all required subsections (trigger, inputs, outputs, side effects, state.json interaction)
 
-## v1.4 Requirements — Adaptive Autonomy
+## v1.4 Requirements — Token Efficiency
 
-### Token Efficiency
+### Adaptive Autonomy (Codex Routing)
 
-- [x] **TE-08**: Context capsule template (`templates/cortex/task-capsule.md`) and result JSON Schema (`schemas/task-result.schema.json`) enable structured Codex execution handoff — capsule has 6 sections (Identity, Task Definition, Deviation Rules, Commit Instructions, File Context, Result Format); schema has 8 properties with conditional validation
+- [ ] **TE-11**: `codex.enabled: false` (or absent) in `.planning/config.json` bypasses Codex task routing entirely — execute-plan.md skips Steps 4.5 and 5a, routing all tasks to the Claude executor (Step 5b) as before
 
 ## v2 Requirements
 
@@ -265,7 +265,6 @@
 | DISC-06 | Phase 9: Discovery Loop — Infrastructure Patches | Complete |
 | DISC-07 | Phase 10: Discovery Loop — /cortex-experiment Skill | Complete |
 
-| TE-08 | Phase 22: Context Capsule Schema | Complete |
 | ADSYNC-01 | Phase 12: Auto-Doc-Sync | Complete |
 | ADSYNC-02 | Phase 12: Auto-Doc-Sync | Complete |
 | ADSYNC-03 | Phase 12: Auto-Doc-Sync | Complete |
@@ -277,14 +276,16 @@
 | ADSYNC-09 | Phase 12: Auto-Doc-Sync | Complete |
 | ADSYNC-10 | Phase 12: Auto-Doc-Sync | Complete |
 | ADSYNC-11 | Phase 12: Auto-Doc-Sync | Complete |
+| TE-11 | Phase 24: GSD Execute-Plan Integration | Pending |
 
 **Coverage:**
 - v1 requirements: 55 total — all mapped (phases 1–6)
 - v1.1 requirements: 13 total — all mapped (phase 7)
 - v1.2 requirements: 7 total — all mapped (phases 8–10)
 - v1.3 requirements: 11 total — all mapped (phase 12)
+- v1.4 requirements: 1 total — all mapped (phase 24)
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-29*
-*Last updated: 2026-04-01 — DISC-07 added; Phase 10 Discovery Loop /cortex-experiment Skill*
+*Last updated: 2026-04-02 — TE-11 added; Phase 24 GSD Execute-Plan Integration*

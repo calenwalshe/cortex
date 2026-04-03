@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: adaptive-autonomy
 status: in-progress
-stopped_at: Phase 22 complete — TE-08 context capsule schema delivered
-last_updated: "2026-04-03T03:50:00.000Z"
-last_activity: 2026-04-03 — Phase 22 (context-capsule-schema) executed; 2 tasks, 2 files created
+stopped_at: Phase 24-01 complete — execute-plan.md Codex routing added
+last_updated: "2026-04-02T23:10:00.000Z"
+last_activity: 2026-04-02 — Phase 24 (gsd-execute-plan-integration) plan 01 executed; 3 tasks, 3 commits
 progress:
   total_phases: 13
-  completed_phases: 13
+  completed_phases: 12
   total_plans: 27
   completed_plans: 27
   percent: 100
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** A stateless executor can read a Cortex handoff pack and start implementation without guessing architecture or definition of done.
-**Current focus:** Phase 22 — Context Capsule Schema (COMPLETE)
+**Current focus:** Phase 24 — GSD Execute-Plan Integration (Codex routing)
 
 ## Current Position
 
-Phase: 22 — Context Capsule Schema (COMPLETE)
-Plan: 22-01 complete — all plans executed
-Status: TE-08 satisfied; task-capsule.md template + task-result.schema.json delivered
-Last activity: 2026-04-03 — Phase 22 executed (22-01: capsule template + result schema)
+Phase: 24 — GSD Execute-Plan Integration (COMPLETE)
+Plan: 24-01 complete — execute-plan.md modified, config docs written
+Status: TE-11 satisfied; Steps 4.5/5a/5b in execute-plan.md; config reference documented
+Last activity: 2026-04-02 — Phase 24-01 executed (3 tasks, 3 commits)
 
 Progress: [█████████████████████] 27/27 plans; 13/13 phases complete
 

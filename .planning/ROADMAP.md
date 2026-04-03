@@ -13,9 +13,6 @@ Cortex evolves from a layered wrapper with 5 utilities into a lifecycle intellig
 - [x] **Phase 5: Eval Subsystem** - Wire the eval lifecycle from research proposal through human approval to gated execution and repair (completed 2026-03-29)
 - [x] **Phase 6: Installer and Operational Cleanup** - Deliver a clean, canonical installer that deploys skills, agents, and hooks with no credential debt (completed 2026-03-29)
 - [x] **Phase 7: Idea Stash** - Deliver `/cortex-stash` with all six subcommands, YAML-fronted per-entry storage, staleness flagging, promote-to-clarify flow, and infrastructure for zero-friction mid-session idea capture (completed 2026-04-01)
-- [x] **Phase 18: Token Ledger Schema** - Create ~/.cortex/token-ledger.db SQLite schema with 4 tables and 8 indexes (completed 2026-04-03)
-- [x] **Phase 19: PostToolUse Token Tracking Hook** - PostToolUse hook that records per-turn token usage to the ledger from session JSONL transcripts (completed 2026-04-03)
-- [x] **Phase 20: Token Report CLI** - CLI query tool with 7 formatted SQL reports against the token ledger (completed 2026-04-03)
 
 ## Phase Details
 
@@ -209,20 +206,6 @@ Plans:
 - [x] 11-01-PLAN.md — Add reclarify_required write + warning to cortex-research/SKILL.md; add three spec-readiness blockers to cortex-spec/SKILL.md Phase 1 (DISC-08, DISC-09)
 - [x] 11-02-PLAN.md — Update CORTEX.md (8-command surface), docs/INTELLIGENCE_FLOW.md (backtracking annotation, gate table), docs/COMMANDS.md (/cortex-experiment entry) (DISC-10, DISC-11, DISC-12)
 
-### Phase 22: Context Capsule Schema
-**Goal**: The context capsule template and JSON result schema exist and can be used to generate valid Codex execution inputs and parse structured Codex outputs
-**Depends on**: Phase 21
-**Requirements**: TE-08
-**Success Criteria** (what must be TRUE):
-  1. `templates/cortex/task-capsule.md` exists with all sections (Identity, Task Definition, Deviation Rules, Commit Instructions, File Context, Result Format)
-  2. `schemas/task-result.schema.json` exists and is valid JSON Schema with status, files_changed, tests_passed, deviations, commit_hash, error_message, checkpoint_detail
-**Research**: None (design complete in implementation research dossier Section C)
-**Plans**: 1 plan
-**Status**: COMPLETE — 2026-04-03
-
-Plans:
-- [x] 22-01-PLAN.md — Create task-capsule.md template (6 sections) + task-result.schema.json (8 properties, conditional validation)
-
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
@@ -239,7 +222,7 @@ Plans:
 | 10. Discovery Loop — /cortex-experiment Skill | 1/1 | Complete    | 2026-04-01 |
 | 11. Discovery Loop — Update Existing Skills and Docs | 2/2 | Complete    | 2026-04-01 |
 | 12. Auto-Doc-Sync — Pre-Commit LLM Doc Updater | 2/2 | Complete    | 2026-04-02 |
-| 22. Context Capsule Schema | 1/1 | Complete    | 2026-04-03 |
+| 24. GSD Execute-Plan Integration | 1/1 | Complete    | 2026-04-02 |
 
 ### Phase 12: Auto-Doc-Sync — Pre-Commit LLM Doc Updater
 **Goal**: Build a git pre-commit hook that auto-generates documentation updates for COMMANDS.md, HOOKS.md, and CONTINUITY.md whenever their corresponding source files are modified
@@ -263,3 +246,20 @@ Plans:
 Plans:
 - [x] 12-01-PLAN.md — Core hook: .auto-doc-sync.json config, hooks/auto-doc-sync-prompt.md template, hooks/auto-doc-sync.sh script, test/auto-doc-sync.test.sh (ADSYNC-01 through ADSYNC-09)
 - [x] 12-02-PLAN.md — Installer integration + documentation: update bin/install.js, runtime-manifest.json, docs/HOOKS.md (ADSYNC-10, ADSYNC-11)
+
+### Phase 24: GSD Execute-Plan Integration
+**Goal**: GSD execute-plan.md routes codex-safe tasks to Codex and claude-required tasks to Claude executor, with a config toggle to disable Codex entirely
+**Depends on:** Phase 12
+**Requirements**: TE-11
+**Success Criteria** (what must be TRUE):
+  1. execute-plan.md contains Step 4.5 with task-router.js invocation
+  2. execute-plan.md contains Step 5a with codex-exec-wrapper.sh invocation
+  3. execute-plan.md Step 5b preserves existing Claude executor logic with completed_tasks context
+  4. codex.enabled: false check gates Steps 4.5 and 5a (bypass to 5b)
+  5. Config documentation exists for codex section
+**Plans**: 1 plan
+
+**Status**: COMPLETE -- 2026-04-02
+
+Plans:
+- [x] 24-01-PLAN.md -- Add Codex task routing (Steps 4.5/5a/5b) to execute-plan.md + config docs (TE-11)
