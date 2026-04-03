@@ -6,6 +6,14 @@
 **Slug:** {SLUG} <!-- lowercase-hyphenated identifier derived from the idea text -->
 **Timestamp:** {TIMESTAMP} <!-- ISO 8601 UTC timestamp when this brief was created -->
 **Status:** {STATUS} <!-- draft | approved -->
+**Complexity:** {COMPLEXITY} <!-- trivial | standard | complex — guides pipeline depth -->
+
+<!-- Complexity tiers:
+     trivial:  Simple, well-understood change. Skips research phase, gets thin spec (fewer sections).
+     standard: Normal complexity. Full pipeline (clarify → research → spec → contract → execute).
+     complex:  High complexity or risk. Extended validators, deeper research required.
+     Complexity is a suggestion, not a hard gate. Research and spec skills can override if they
+     detect the work is more complex than labeled. -->
 
 ---
 
