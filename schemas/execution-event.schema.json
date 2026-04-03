@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cortex.local/schemas/execution-event.schema.json",
+  "title": "Cortex Execution Event",
+  "description": "Schema for structured execution events logged by codex-exec-wrapper.sh. Each event is one line in a JSONL log file.",
+  "type": "object",
+  "required": ["event_type", "timestamp", "task_id", "phase", "plan"],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "enum": ["task_started", "file_edited", "test_run", "task_completed", "task_failed", "circuit_breaker", "budget_exceeded"],
+      "description": "The type of execution event"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp when the event occurred"
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Task identifier within the plan (e.g., '1', '2a')"
+    },
+    "phase": {
+      "type": "string",
+      "description": "GSD phase identifier (e.g., '01', '02')"
+    },
+    "plan": {
+      "type": "string",
+      "description": "Plan identifier (e.g., 'A', 'B')"
+    },
+    "details": {
+      "type": "object",
+      "description": "Event-specific details",
+      "properties": {
+        "file_path": {
+          "type": "string",
+          "description": "For file_edited events: path of the edited file"
+        },
+        "test_command": {
+          "type": "string",
+          "description": "For test_run events: the test command executed"
+        },
+        "test_passed": {
+          "type": "boolean",
+          "description": "For test_run events: whether the test passed"
+        },
+        "exit_code": {
+          "type": "integer",
+          "description": "For task_completed/task_failed events: process exit code"
+        },
+        "fallback_reason": {
+          "type": "string",
+          "description": "For task_failed events: reason for failure (timeout, crash, test_failure, etc.)"
+        },
+        "step_count": {
+          "type": "integer",
+          "description": "For task_completed/task_failed events: number of steps taken"
+        },
+        "max_steps": {
+          "type": "integer",
+          "description": "For budget_exceeded events: the budget that was exceeded"
+        },
+        "consecutive_failures": {
+          "type": "integer",
+          "description": "For circuit_breaker events: number of consecutive failures"
+        }
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "description": "Token usage for this event (if applicable)",
+      "properties": {
+        "input": { "type": "integer" },
+        "output": { "type": "integer" },
+        "cached": { "type": "integer" },
+        "reasoning": { "type": "integer" }
+      }
+    },
+    "cost_usd": {
+      "type": "number",
+      "description": "Cost in USD for this event (if applicable)"
+    },
+    "elapsed_ms": {
+      "type": "integer",
+      "description": "Duration in milliseconds (if applicable)"
+    }
+  }
+}

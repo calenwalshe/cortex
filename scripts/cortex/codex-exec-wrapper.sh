@@ -34,6 +34,10 @@ CIRCUIT_BREAKER_FILE="/tmp/gsd-codex-circuit-breaker-$(basename "$PWD")"
 # Iteration budget: max steps per task (derived from file count * multiplier)
 MAX_STEPS_MULTIPLIER="${CODEX_MAX_STEPS_MULTIPLIER:-10}"
 
+# Event log: JSONL structured execution events
+EVENT_LOG_DIR="${CORTEX_ROOT}/.cortex/events"
+mkdir -p "$EVENT_LOG_DIR" 2>/dev/null || true
+
 # Codex model for pricing (o4-mini default)
 CODEX_MODEL="${CODEX_MODEL:-o4-mini}"
 CODEX_INPUT_PRICE="0.0000011"   # $1.10/1M
@@ -207,6 +211,26 @@ write_ledger() {
     ${exit_code},
     ${ELAPSED_MS}
   );" 2>/dev/null || echo "[codex-wrapper] Warning: Failed to write to token ledger" >&2
+}
+
+# ── Helper: log execution event to JSONL ─────────────────────────────────────
+log_event() {
+  local event_type="$1"
+  local details="${2:-{}}"
+  local event_file="${EVENT_LOG_DIR}/${PHASE}-${PLAN}.jsonl"
+  local ts
+  ts=$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo "unknown")
+  node -e "
+    const evt = {
+      event_type: process.argv[1],
+      timestamp: process.argv[2],
+      task_id: process.argv[3],
+      phase: process.argv[4],
+      plan: process.argv[5],
+      details: JSON.parse(process.argv[6] || '{}')
+    };
+    console.log(JSON.stringify(evt));
+  " "$event_type" "$ts" "$TASK_ID" "$PHASE" "$PLAN" "$details" >> "$event_file" 2>/dev/null || true
 }
 
 # ── Helper: extract result JSON from JSONL ───────────────────────────────────
@@ -403,6 +427,7 @@ fi
 if [[ "$CONSECUTIVE_FAILURES" -ge "$CIRCUIT_BREAKER_THRESHOLD" ]]; then
   echo "[codex-wrapper] CIRCUIT BREAKER: $CONSECUTIVE_FAILURES consecutive failures (threshold: $CIRCUIT_BREAKER_THRESHOLD)" >&2
   echo "[codex-wrapper] Codex dispatch stopped. Reset with: rm $CIRCUIT_BREAKER_FILE" >&2
+  log_event "circuit_breaker" "{\"consecutive_failures\":$CONSECUTIVE_FAILURES}"
   output_result "fallback" "circuit_breaker"
   exit 0
 fi
@@ -413,6 +438,7 @@ MAX_STEPS=$(( FILE_COUNT * MAX_STEPS_MULTIPLIER ))
 echo "[codex-wrapper] Iteration budget: max_steps=$MAX_STEPS (files=$FILE_COUNT * multiplier=$MAX_STEPS_MULTIPLIER)" >&2
 
 # ── Step 3: Invoke Codex ─────────────────────────────────────────────────────
+log_event "task_started" "{\"file_count\":$FILE_COUNT,\"timeout\":$TIMEOUT,\"max_steps\":$MAX_STEPS}"
 START_MS=$(date +%s%3N 2>/dev/null || echo "$(date +%s)000")
 CODEX_EXIT=0
 
@@ -482,6 +508,7 @@ if [[ -f "$JSONL_FILE" ]] && [[ -s "$JSONL_FILE" ]]; then
 
   if [[ "$STEP_COUNT" -ge "$MAX_STEPS" ]]; then
     echo "[codex-wrapper] ITERATION BUDGET EXCEEDED: $STEP_COUNT steps >= max_steps=$MAX_STEPS" >&2
+    log_event "budget_exceeded" "{\"step_count\":$STEP_COUNT,\"max_steps\":$MAX_STEPS}"
     record_failure
     write_ledger "1"
     output_result "fallback" "iteration_budget_exceeded"
@@ -553,6 +580,7 @@ fi
 # Tests failed
 if [[ "$RESULT_STATUS" == "failed" || "$RESULT_TESTS" == "false" ]]; then
   echo "[codex-wrapper] TEST FAILURE: tests_passed=$RESULT_TESTS status=$RESULT_STATUS" >&2
+  log_event "task_failed" "{\"fallback_reason\":\"test_failure\",\"exit_code\":1}"
   record_failure
   write_ledger "1"
   output_result "fallback" "test_failure" "$RESULT_CONTENT"
@@ -574,6 +602,9 @@ echo "[codex-wrapper] Merge successful" >&2
 
 # Reset circuit breaker on success
 rm -f "$CIRCUIT_BREAKER_FILE"
+
+# Log task completion event
+log_event "task_completed" "{\"exit_code\":0,\"step_count\":${STEP_COUNT:-0},\"elapsed_ms\":$ELAPSED_MS}"
 
 # ── Step 9: Write to token ledger ────────────────────────────────────────────
 write_ledger "0"
