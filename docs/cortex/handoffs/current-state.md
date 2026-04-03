@@ -1,20 +1,21 @@
 # Current State
 
-**slug:** adaptive-autonomy
+**slug:** token-efficiency
 
 **mode:** execute
 
 **approval_status:** approved
 
-**active_contract_path:** docs/cortex/contracts/adaptive-autonomy/contract-001.md
+**active_contract_path:** docs/cortex/contracts/token-efficiency/contract-001.md
 
 **recent_artifacts:**
-- docs/cortex/clarify/adaptive-autonomy/20260402T060000Z-clarify-brief.md
-- docs/cortex/research/adaptive-autonomy/concept-20260402T061500Z.md
-- docs/cortex/research/adaptive-autonomy/implementation-20260402T063000Z.md
-- docs/cortex/specs/adaptive-autonomy/spec.md
-- docs/cortex/specs/adaptive-autonomy/gsd-handoff.md
-- docs/cortex/contracts/adaptive-autonomy/contract-001.md
+- docs/cortex/clarify/token-efficiency/20260402T214336Z-clarify-brief.md
+- docs/cortex/research/token-efficiency/concept-20260402T222718Z.md
+- docs/cortex/research/token-efficiency/concept-codex-handoff-20260402T225257Z.md
+- docs/cortex/research/token-efficiency/implementation-20260402T225932Z.md
+- docs/cortex/specs/token-efficiency/spec.md
+- docs/cortex/specs/token-efficiency/gsd-handoff.md
+- docs/cortex/contracts/token-efficiency/contract-001.md
 
 **open_questions:**
 - (see docs/cortex/handoffs/open-questions.md)

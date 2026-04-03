@@ -139,7 +139,8 @@ count = 0
 for event, entries in hooks.items():
     for entry in entries:
         for h in entry.get('hooks', []):
-            if 'cortex-' in h.get('command', ''):
+            cmd = h.get('command', '')
+            if 'cortex-' in cmd or 'token-ledger' in cmd:
                 count += 1
 print(f'{count}:{expected}')
 " 2>/dev/null || echo "0")
@@ -157,7 +158,8 @@ count = 0
 for event, entries in hooks.items():
     for entry in entries:
         for h in entry.get('hooks', []):
-            if 'cortex-' in h.get('command', ''):
+            cmd = h.get('command', '')
+            if 'cortex-' in cmd or 'token-ledger' in cmd:
                 count += 1
 print(f'{count}:{expected}')
 " 2>/dev/null || echo "0")
