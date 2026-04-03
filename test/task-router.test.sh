@@ -283,6 +283,46 @@ echo "Stderr traceability"
 stderr=$(node "$ROUTER" "$tmp_dir/multi.md" 2>&1 1>/dev/null) || true
 echo "$stderr" | grep -q '\[task-router\]' && pass "stderr has traceability lines" || fail "stderr should have [task-router] lines"
 
+# ── Real PLAN.md integration: 20-01 (all codex-safe) ─────────────────────────
+echo "Real plan integration"
+REAL_PLAN="/home/agent/projects/cortex/.planning/phases/20-token-report-cli/20-01-PLAN.md"
+if [[ -f "$REAL_PLAN" ]]; then
+  result=$(node "$ROUTER" "$REAL_PLAN" 2>/dev/null) || { fail "real plan 20-01 (script error)"; }
+  echo "$result" | node -e "
+    const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));
+    if(d.length!==3){process.stderr.write('expected 3 tasks, got '+d.length+'\n');process.exit(1);}
+    if(!d.every(t=>t.classification==='codex-safe')){process.stderr.write('not all codex-safe\n');process.exit(1);}
+    process.exit(0);
+  " 2>/dev/null && pass "real 20-01: 3 tasks all codex-safe" || fail "real 20-01: expected 3 codex-safe tasks"
+
+  # Validate JSON parseable by downstream
+  echo "$result" | node -e "JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'))" 2>/dev/null \
+    && pass "real 20-01: output is parseable JSON" || fail "real 20-01: JSON parse failed"
+else
+  echo "  SKIP: 20-01-PLAN.md not found at $REAL_PLAN"
+fi
+
+# ── Real PLAN.md integration: 08-01 (older format, fallback) ─────────────────
+REAL_PLAN_08="$REPO_ROOT/.planning/phases/08-discovery-loop-design-docs-and-templates/08-01-PLAN.md"
+if [[ -f "$REAL_PLAN_08" ]]; then
+  result=$(node "$ROUTER" "$REAL_PLAN_08" 2>/dev/null) || { fail "real plan 08-01 (script error)"; }
+  echo "$result" | node -e "
+    const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));
+    if(d.length<1){process.exit(1);}
+    // Older format uses different XML tags — tasks should classify as claude-required (fallback)
+    if(!d.every(t=>t.classification==='claude-required')){process.exit(1);}
+    process.exit(0);
+  " 2>/dev/null && pass "real 08-01: older format tasks → claude-required" || fail "real 08-01: expected claude-required"
+else
+  echo "  SKIP: 08-01-PLAN.md not found at $REAL_PLAN_08"
+fi
+
+# ── Script conventions ──────────────────────────────────────────────────────
+echo "Script conventions"
+head -1 "$ROUTER" | grep -q "#!/usr/bin/env node" && pass "correct shebang" || fail "wrong shebang"
+grep -q "'use strict'" "$ROUTER" && pass "strict mode" || fail "missing strict mode"
+test -x "$ROUTER" && pass "script is executable" || fail "script not executable"
+
 # ── Summary ──────────────────────────────────────────────────────────────────
 echo ""
 echo "Results: $PASS passed, $FAIL failed out of $TOTAL tests"
