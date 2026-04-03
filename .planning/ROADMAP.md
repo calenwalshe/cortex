@@ -13,6 +13,9 @@ Cortex evolves from a layered wrapper with 5 utilities into a lifecycle intellig
 - [x] **Phase 5: Eval Subsystem** - Wire the eval lifecycle from research proposal through human approval to gated execution and repair (completed 2026-03-29)
 - [x] **Phase 6: Installer and Operational Cleanup** - Deliver a clean, canonical installer that deploys skills, agents, and hooks with no credential debt (completed 2026-03-29)
 - [x] **Phase 7: Idea Stash** - Deliver `/cortex-stash` with all six subcommands, YAML-fronted per-entry storage, staleness flagging, promote-to-clarify flow, and infrastructure for zero-friction mid-session idea capture (completed 2026-04-01)
+- [x] **Phase 18: Token Ledger Schema** - Create ~/.cortex/token-ledger.db SQLite schema with 4 tables and 8 indexes (completed 2026-04-03)
+- [x] **Phase 19: PostToolUse Token Tracking Hook** - PostToolUse hook that records per-turn token usage to the ledger from session JSONL transcripts (completed 2026-04-03)
+- [x] **Phase 20: Token Report CLI** - CLI query tool with 7 formatted SQL reports against the token ledger (completed 2026-04-03)
 
 ## Phase Details
 
