@@ -77,7 +77,61 @@ Plan path: $ARGUMENTS
    ⚡ Executing {phase_number}-{plan_number}: {objective one-liner}
    ```
 
-5. **Spawn gsd-executor subagent**
+4.5. **Classify tasks for Codex routing (optional)**
+
+   Read `.planning/config.json`. Check for `codex.enabled`.
+
+   **If `codex.enabled` is `false` or absent:** Skip this step and Step 5a entirely. Go straight to Step 5b. This preserves existing behavior — all tasks route to the Claude executor.
+
+   **If `codex.enabled` is `true`:**
+
+   a. Parse plan tasks from PLAN.md (extract `<task>` elements with id, name, type, files)
+
+   b. Run `task-router.js` to classify each task:
+   ```bash
+   node scripts/cortex/task-router.js --plan {plan_path} --config .planning/config.json
+   ```
+
+   Output is JSON:
+   ```json
+   {
+     "codex_tasks": [{ "id": 1, "name": "...", "reason": "..." }],
+     "claude_tasks": [{ "id": 2, "name": "...", "reason": "..." }]
+   }
+   ```
+
+   c. Store `codex_tasks[]` and `claude_tasks[]` for Steps 5a and 5b.
+
+   **Routing criteria** (implemented in task-router.js):
+   - Tasks with `type="checkpoint:*"` always route to Claude
+   - Tasks touching more than `codex.max_file_count` (default 8) files route to Claude
+   - Tasks with `tdd="true"` route to Claude (Codex lacks test-run-fix loop)
+   - Remaining `type="auto"` tasks route to Codex
+
+5a. **Execute Codex tasks (if any)**
+
+   Skip if `codex_tasks[]` is empty or if `codex` CLI is not available (`which codex` fails).
+
+   For each task in `codex_tasks[]`:
+   ```bash
+   scripts/cortex/codex-exec-wrapper.sh \
+     --plan {plan_path} \
+     --task-id {task_id} \
+     --timeout {codex.timeout_seconds || 300}
+   ```
+
+   Collect results per task:
+   - On success: record commit hash and mark task complete
+   - On failure: if `codex.fallback_on_failure` is `true` (default), move task to `claude_tasks[]` for Step 5b; otherwise mark task failed
+
+   Build `<completed_tasks>` context from successful Codex results:
+   ```
+   | Task | Name | Commit | Executor |
+   |------|------|--------|----------|
+   | 1 | {name} | {hash} | codex |
+   ```
+
+5b. **Spawn gsd-executor subagent**
 
    ```
    Task(
@@ -85,11 +139,17 @@ Plan path: $ARGUMENTS
 
 Plan: @{plan_path}
 Project state: @.planning/STATE.md
-Config: @.planning/config.json (if exists)",
+Config: @.planning/config.json (if exists)
+
+<completed_tasks>
+{completed_tasks_table from Step 5a, if any}
+</completed_tasks>",
      subagent_type="gsd-executor",
      description="Execute {phase}-{plan}"
    )
    ```
+
+   When `<completed_tasks>` is present, the executor skips those tasks and resumes from the first incomplete task. When absent (codex.enabled=false or no Codex tasks), the executor runs all tasks as before.
 
    The `gsd-executor` subagent has all execution logic baked in:
    - Deviation rules (auto-fix bugs, critical gaps, blockers; ask for architectural)
