@@ -98,6 +98,31 @@
 
 ---
 
+## Failed Approaches
+
+<!-- Carried forward from prior repair contracts. Each entry records an approach that was tried and why it failed. -->
+<!-- For initial contracts (contract-001.md), this section is empty. -->
+<!-- For repair contracts (contract-002.md+), this section MUST be populated from prior contract history. -->
+<!-- Format: -->
+<!-- ### Attempt N (contract-NNN.md) -->
+<!-- **Approach:** {what was tried} -->
+<!-- **Result:** {what happened} -->
+<!-- **Root cause:** {why it failed} -->
+
+{FAILED_APPROACHES}
+
+---
+
+## Why Previous Approach Failed
+
+<!-- REQUIRED for repair contracts (contract-002.md+). cortex-spec blocks repair contract creation without this section. -->
+<!-- For initial contracts (contract-001.md), this section should contain "N/A — initial contract". -->
+<!-- The repairing agent must explain why the previous approach failed before proposing a new one. -->
+
+{WHY_PREVIOUS_FAILED}
+
+---
+
 ## Rollback Hints
 
 {ROLLBACK_HINTS}
