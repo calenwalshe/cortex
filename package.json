@@ -1,7 +1,7 @@
 {
   "name": "@calenwalshe/cortex",
   "version": "1.0.0",
-  "description": "Cortex \u2014 unified Claude Code operating framework (GSD + Superpowers + GStack)",
+  "description": "Cortex — unified Claude Code operating framework (GSD + Superpowers + GStack)",
   "bin": {
     "cortex": "./bin/install.js"
   },
@@ -20,5 +20,8 @@
     "test": "bash test/installer.test.sh && bash test/autonomy-config.test.sh && bash test/observability.test.sh && python3 -m unittest discover -s test -p \"test_*.py\"",
     "verify:fast": "bash scripts/verify-fast.sh",
     "verify:full": "bash scripts/verify-fast.sh && python3 -m unittest discover -s test -p \"test_*.py\" && grep -rn 'https://.*:.*@' bin/ hooks/ .claude/ scripts/ --include='*.sh' --include='*.js' || true"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.8.0"
   }
 }

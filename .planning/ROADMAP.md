@@ -15,6 +15,7 @@ Cortex evolves from a layered wrapper with 5 utilities into a lifecycle intellig
 - [x] **Phase 7: Idea Stash** - Deliver `/cortex-stash` with all six subcommands, YAML-fronted per-entry storage, staleness flagging, promote-to-clarify flow, and infrastructure for zero-friction mid-session idea capture (completed 2026-04-01)
 - [x] **Phase 18: Token Ledger Schema** - Create ~/.cortex/token-ledger.db SQLite schema with 4 tables and 8 indexes (completed 2026-04-03)
 - [x] **Phase 19: PostToolUse Token Tracking Hook** - PostToolUse hook that records per-turn token usage to the ledger from session JSONL transcripts (completed 2026-04-03)
+- [ ] **Phase 20: Token Report CLI** - Shell script producing formatted token usage reports from ledger DB with cross-DB power-search joins
 
 ## Phase Details
 
@@ -266,6 +267,22 @@ Plans:
 Plans:
 - [x] 19-01-PLAN.md — Create token-ledger.js hook + pricing.json + manifest registration + integration tests (TE-04, TE-05)
 
+### Phase 20: Token Report CLI
+**Goal**: A shell script produces formatted token usage reports (daily cost, phase cost, session ranking, cache hit ratio, context burndown) from the token ledger, with optional cross-DB power-search joins
+**Depends on**: Phase 19
+**Requirements**: TE-06
+**Contract**: docs/cortex/contracts/token-efficiency/contract-001.md
+**Success Criteria** (what must be TRUE):
+  1. `scripts/cortex/token-report.sh` accepts 7 subcommands (summary, --today, --phase, --sessions, --cache, --burndown, --costs)
+  2. Cross-DB ATTACH join with `~/.power-search/usage.db` works when that DB exists; gracefully skips when absent
+  3. Missing ledger DB prints informative message and exits 0
+  4. `test/token-report.test.sh` passes all assertions with seeded test data
+**Research**: Complete (implementation dossier)
+**Plans**: 1 plan
+
+Plans:
+- [ ] 20-01-PLAN.md — Create token-report.sh (7 report subcommands) + integration tests (TE-06)
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
@@ -284,3 +301,4 @@ Plans:
 | 12. Auto-Doc-Sync — Pre-Commit LLM Doc Updater | 2/2 | Complete    | 2026-04-02 |
 | 18. Token Ledger Schema | 1/1 | Complete    | 2026-04-03 |
 | 19. PostToolUse Token Tracking Hook | 1/1 | Complete    | 2026-04-03 |
+| 20. Token Report CLI | 0/1 | Planning    | - |
