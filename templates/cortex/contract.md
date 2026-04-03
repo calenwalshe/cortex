@@ -10,6 +10,7 @@
 **Phase:** {PHASE} <!-- concept | implementation | evals | repair -->
 **Created:** {TIMESTAMP} <!-- ISO 8601 UTC timestamp when this contract was created -->
 **Status:** {STATUS} <!-- draft | approved | closed -->
+**Repair Budget:** {REPAIR_BUDGET} <!-- max_repair_contracts: 3 (default), cooldown_between_repairs: 1 (phases) -->
 
 ---
 
@@ -104,3 +105,14 @@
 <!-- Steps to reverse this contract's changes if needed -->
 <!-- Each step on its own line starting with "- " -->
 <!-- Be specific: file paths to delete, commands to run, state to restore -->
+
+---
+
+## Repair Budget
+
+<!-- Limits on repair contract creation for this slug -->
+<!-- max_repair_contracts: maximum number of repair contracts allowed (default: 3) -->
+<!-- cooldown_between_repairs: minimum phases between repair attempts (default: 1) -->
+
+**max_repair_contracts:** {MAX_REPAIR_CONTRACTS} <!-- default: 3 -->
+**cooldown_between_repairs:** {COOLDOWN} <!-- default: 1 -->
