@@ -27,6 +27,13 @@ CORTEX_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 CAPSULE_TEMPLATE="$CORTEX_ROOT/templates/cortex/task-capsule.md"
 DB_PATH="${TOKEN_LEDGER_DB:-$HOME/.cortex/token-ledger.db}"
 
+# Circuit breaker: stop Codex dispatch after N consecutive failures
+CIRCUIT_BREAKER_THRESHOLD="${CODEX_CIRCUIT_BREAKER:-3}"
+CIRCUIT_BREAKER_FILE="/tmp/gsd-codex-circuit-breaker-$(basename "$PWD")"
+
+# Iteration budget: max steps per task (derived from file count * multiplier)
+MAX_STEPS_MULTIPLIER="${CODEX_MAX_STEPS_MULTIPLIER:-10}"
+
 # Codex model for pricing (o4-mini default)
 CODEX_MODEL="${CODEX_MODEL:-o4-mini}"
 CODEX_INPUT_PRICE="0.0000011"   # $1.10/1M
@@ -387,6 +394,24 @@ fi
 CAPSULE_SIZE=$(wc -c < "$CAPSULE_FILE")
 echo "[codex-wrapper] Capsule generated: ${CAPSULE_SIZE} bytes" >&2
 
+# ── Circuit Breaker Check ────────────────────────────────────────────────────
+CONSECUTIVE_FAILURES=0
+if [[ -f "$CIRCUIT_BREAKER_FILE" ]]; then
+  CONSECUTIVE_FAILURES=$(cat "$CIRCUIT_BREAKER_FILE" 2>/dev/null || echo "0")
+fi
+
+if [[ "$CONSECUTIVE_FAILURES" -ge "$CIRCUIT_BREAKER_THRESHOLD" ]]; then
+  echo "[codex-wrapper] CIRCUIT BREAKER: $CONSECUTIVE_FAILURES consecutive failures (threshold: $CIRCUIT_BREAKER_THRESHOLD)" >&2
+  echo "[codex-wrapper] Codex dispatch stopped. Reset with: rm $CIRCUIT_BREAKER_FILE" >&2
+  output_result "fallback" "circuit_breaker"
+  exit 0
+fi
+
+# ── Iteration Budget ────────────────────────────────────────────────────────
+MAX_STEPS=$(( FILE_COUNT * MAX_STEPS_MULTIPLIER ))
+[[ "$MAX_STEPS" -lt 20 ]] && MAX_STEPS=20  # minimum floor
+echo "[codex-wrapper] Iteration budget: max_steps=$MAX_STEPS (files=$FILE_COUNT * multiplier=$MAX_STEPS_MULTIPLIER)" >&2
+
 # ── Step 3: Invoke Codex ─────────────────────────────────────────────────────
 START_MS=$(date +%s%3N 2>/dev/null || echo "$(date +%s)000")
 CODEX_EXIT=0
@@ -432,6 +457,38 @@ echo "[codex-wrapper] Tokens: in=$INPUT_TOKENS out=$OUTPUT_TOKENS cached=$CACHED
 
 # ── Step 5: Handle failure cases ─────────────────────────────────────────────
 
+# ── Circuit Breaker: helper to record failure ───────────────────────────────
+record_failure() {
+  local count
+  count=$(cat "$CIRCUIT_BREAKER_FILE" 2>/dev/null || echo "0")
+  echo $(( count + 1 )) > "$CIRCUIT_BREAKER_FILE"
+  echo "[codex-wrapper] Circuit breaker: $(( count + 1 ))/$CIRCUIT_BREAKER_THRESHOLD consecutive failures" >&2
+}
+
+# ── Iteration Budget: check step count from JSONL ───────────────────────────
+if [[ -f "$JSONL_FILE" ]] && [[ -s "$JSONL_FILE" ]]; then
+  STEP_COUNT=$(node -e "
+    const fs = require('fs');
+    const lines = fs.readFileSync(process.argv[1], 'utf8').trim().split('\\n');
+    let steps = 0;
+    for (const line of lines) {
+      try {
+        const obj = JSON.parse(line);
+        if (obj.type === 'turn.completed') steps++;
+      } catch(e) {}
+    }
+    console.log(steps);
+  " "$JSONL_FILE" 2>/dev/null || echo "0")
+
+  if [[ "$STEP_COUNT" -ge "$MAX_STEPS" ]]; then
+    echo "[codex-wrapper] ITERATION BUDGET EXCEEDED: $STEP_COUNT steps >= max_steps=$MAX_STEPS" >&2
+    record_failure
+    write_ledger "1"
+    output_result "fallback" "iteration_budget_exceeded"
+    exit 0
+  fi
+fi
+
 # Timeout (exit 124)
 if [[ "$CODEX_EXIT" -eq 124 ]]; then
   echo "[codex-wrapper] TIMEOUT after ${TIMEOUT}s" >&2
@@ -445,6 +502,7 @@ if [[ "$CODEX_EXIT" -eq 124 ]]; then
       echo "[codex-wrapper] Merge of partial work failed, discarding" >&2
     fi
   fi
+  record_failure
   write_ledger "$CODEX_EXIT"
   output_result "fallback" "timeout"
   exit 0
@@ -457,6 +515,7 @@ if [[ "$CODEX_EXIT" -ne 0 ]]; then
     echo "[codex-wrapper] stderr:" >&2
     head -20 "$WORK_DIR/stderr.log" >&2
   fi
+  record_failure
   write_ledger "$CODEX_EXIT"
   output_result "fallback" "crash"
   exit 0
@@ -494,6 +553,7 @@ fi
 # Tests failed
 if [[ "$RESULT_STATUS" == "failed" || "$RESULT_TESTS" == "false" ]]; then
   echo "[codex-wrapper] TEST FAILURE: tests_passed=$RESULT_TESTS status=$RESULT_STATUS" >&2
+  record_failure
   write_ledger "1"
   output_result "fallback" "test_failure" "$RESULT_CONTENT"
   exit 0
@@ -511,6 +571,9 @@ if ! git merge "$BRANCH_NAME" --no-edit >/dev/null 2>&1; then
 fi
 
 echo "[codex-wrapper] Merge successful" >&2
+
+# Reset circuit breaker on success
+rm -f "$CIRCUIT_BREAKER_FILE"
 
 # ── Step 9: Write to token ledger ────────────────────────────────────────────
 write_ledger "0"
