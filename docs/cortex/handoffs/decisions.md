@@ -15,6 +15,7 @@
 - 2026-04-03T22:55:00Z | gate: critical_uncertainty | value: false (auto-skipped) | preset: full-auto | command: /cortex-spec
 - 2026-04-03T22:55:00Z | gate: evidence_backing | value: false (auto-skipped) | preset: full-auto | command: /cortex-spec
 - 2026-04-03T22:55:00Z | gate: contract_approval | value: false (auto-skipped) | preset: full-auto | command: /cortex-spec
+- 2026-04-03T23:30:00Z | gate: slug_conflict | value: false (auto-skipped) | preset: full-auto | command: /cortex-clarify
 
 ## Archive Index
 

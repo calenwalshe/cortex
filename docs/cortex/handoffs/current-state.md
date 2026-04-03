@@ -1,24 +1,25 @@
 # Current State
 
-**slug:** memory-extraction
+**slug:** semantic-retrieval
 
-**mode:** spec
+**mode:** clarify
 
-**approval_status:** approved
+**approval_status:** pending
 
-**active_contract_path:** docs/cortex/contracts/memory-extraction/contract-001.md
+**active_contract_path:** (none)
 
 **recent_artifacts:**
-- docs/cortex/clarify/memory-extraction/20260403T224500Z-clarify-brief.md
-- docs/cortex/research/memory-extraction/concept-20260403T225000Z.md
-- docs/cortex/specs/memory-extraction/spec.md
-- docs/cortex/specs/memory-extraction/gsd-handoff.md
-- docs/cortex/contracts/memory-extraction/contract-001.md
+- docs/cortex/clarify/semantic-retrieval/20260403T233000Z-clarify-brief.md
 
 **open_questions:**
-- (all resolved in research dossier)
+- Storage format for embeddings (npy vs SQLite vs JSONL+base64)
+- Model choice (MiniLM-L6-v2 vs mpnet-base-v2 vs ollama)
+- Cold start problem for hooks
+- Query interface design (Python CLI vs Node wrapper)
+- Embedding staleness tracking
+- Retrieval consumer surface (which hooks/skills)
 
 **blockers:**
-- eval_plan is pending — run /cortex-research --phase evals then --write-plan
+- (none)
 
-**next_action:** Contract auto-approved (full-auto). Run /cortex-research --phase evals to produce eval plan, then proceed to execution.
+**next_action:** Run /cortex-research --phase concept to begin concept research
