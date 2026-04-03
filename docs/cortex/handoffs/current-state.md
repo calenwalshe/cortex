@@ -1,26 +1,24 @@
 # Current State
 
-**slug:** pattern-harvest
+**slug:** memory-extraction
 
-**mode:** execute
+**mode:** spec
 
 **approval_status:** approved
 
-**active_contract_path:** docs/cortex/contracts/pattern-harvest/contract-001.md
+**active_contract_path:** docs/cortex/contracts/memory-extraction/contract-001.md
 
 **recent_artifacts:**
-- docs/cortex/clarify/pattern-harvest/20260403T212805Z-clarify-brief.md
-- docs/cortex/research/pattern-harvest/concept-20260403T213444Z.md
-- docs/cortex/specs/pattern-harvest/spec.md
-- docs/cortex/specs/pattern-harvest/gsd-handoff.md
-- docs/cortex/contracts/pattern-harvest/contract-001.md
-- docs/cortex/evals/pattern-harvest/eval-proposal.md
-- docs/cortex/evals/pattern-harvest/eval-plan.md
+- docs/cortex/clarify/memory-extraction/20260403T224500Z-clarify-brief.md
+- docs/cortex/research/memory-extraction/concept-20260403T225000Z.md
+- docs/cortex/specs/memory-extraction/spec.md
+- docs/cortex/specs/memory-extraction/gsd-handoff.md
+- docs/cortex/contracts/memory-extraction/contract-001.md
 
 **open_questions:**
-- (see docs/cortex/handoffs/open-questions.md)
+- (all resolved in research dossier)
 
 **blockers:**
-- (none)
+- eval_plan is pending — run /cortex-research --phase evals then --write-plan
 
-**next_action:** Run /cortex-status for full reconstruction
+**next_action:** Contract auto-approved (full-auto). Run /cortex-research --phase evals to produce eval plan, then proceed to execution.

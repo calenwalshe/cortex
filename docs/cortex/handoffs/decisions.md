@@ -11,6 +11,11 @@
 <!-- Auto-appended by Cortex skills when a gate is auto-skipped (autonomy preset != supervised) -->
 <!-- Format: - {timestamp} | gate: {name} | value: false (auto-skipped) | preset: {preset} | command: /cortex-{cmd} -->
 
+- 2026-04-03T22:45:00Z | gate: slug_conflict | value: false (auto-skipped) | preset: full-auto | command: /cortex-clarify
+- 2026-04-03T22:55:00Z | gate: critical_uncertainty | value: false (auto-skipped) | preset: full-auto | command: /cortex-spec
+- 2026-04-03T22:55:00Z | gate: evidence_backing | value: false (auto-skipped) | preset: full-auto | command: /cortex-spec
+- 2026-04-03T22:55:00Z | gate: contract_approval | value: false (auto-skipped) | preset: full-auto | command: /cortex-spec
+
 ## Archive Index
 
 <!-- Each entry records a slug that was archived via /cortex-close -->
