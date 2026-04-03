@@ -1,6 +1,6 @@
 # Cortex Stash — Idea Capture
 
-Zero-friction capture of tangential ideas during active Cortex work. Stores ideas as per-entry files in `.cortex/stash/` so they survive `/clear`, slug transitions, and project completions. Promotes into `/cortex-clarify` when the time is right.
+Zero-friction capture of tangential ideas during active Cortex work. Stores ideas in a **global** `~/.cortex/stash/` directory so they survive `/clear`, slug transitions, project switches, and working directory changes. Promotes into `/cortex-clarify` when the time is right.
 
 ## User-invocable
 
@@ -31,7 +31,7 @@ If called with no subcommand, default to `list`.
 
 ### Stash file location and naming
 
-All entries live in `.cortex/stash/` relative to the project root (the directory containing `.cortex/`). Create the directory if it does not exist.
+All entries live in `~/.cortex/stash/` (global, not per-project). Create the directory if it does not exist. This ensures all stash entries are visible regardless of which project directory you're working in.
 
 File name pattern: `{id}-{label}.md`
 - `id` — compact UTC timestamp: `YYYYMMDDTHHMMSSz` (e.g. `20260330T143000Z`)
@@ -45,6 +45,7 @@ Use the template at `~/projects/cortex/templates/cortex/stash-entry.md` for the 
 ---
 id: "20260330T143000Z"
 captured: "2026-03-30T14:30:00Z"   # ISO 8601
+project: "cortex"                    # basename of the project directory where idea was captured
 context: "one sentence: what was happening when this idea surfaced"
 disposition: explore                 # always 'explore' at capture; updated at triage
 ---
@@ -59,8 +60,9 @@ Body: the idea text, one or more sentences.
 **With `--context "..."`:**
 1. Generate `id` from current UTC time.
 2. Derive `label` from first 5 words of idea text, kebab-cased.
-3. Write `.cortex/stash/{id}-{label}.md` using the template.
-4. Confirm: `Stashed as {id}-{label}.md — run /cortex-stash review to triage later.`
+3. Derive `project` from the basename of the current working directory (e.g. `cortex`, `org_infra`).
+4. Write `~/.cortex/stash/{id}-{label}.md` using the template.
+5. Confirm: `Stashed as {id}-{label}.md — run /cortex-stash review to triage later.`
 
 **Without `--context` and without `--no-context`:**
 1. Before writing, ask: `Context (one sentence — what were you working on when this came up)?`
@@ -75,14 +77,14 @@ Body: the idea text, one or more sentences.
 
 ### `/cortex-stash list`
 
-Scan `.cortex/stash/` for all `.md` files. For each entry:
-1. Parse YAML front matter to get `id`, `captured`, `context`, `disposition`.
+Scan `~/.cortex/stash/` for all `.md` files. For each entry:
+1. Parse YAML front matter to get `id`, `captured`, `project`, `context`, `disposition`.
 2. Compute age in days from `captured` to today.
 3. Read first line of body as the idea summary.
 
 Output format (one line per entry):
 ```
-{id}  [{age}d{STALE flag}]  {first line of idea, truncated to 60 chars}
+{id}  [{age}d{STALE flag}]  [{project}]  {first line of idea, truncated to 60 chars}
       context: {context, truncated to 80 chars}
 ```
 
@@ -125,7 +127,7 @@ If no entries: `Stash is empty.`
     Run the command above before /clear — it will not be recoverable after this session ends.
 ```
 
-4. Delete the entry file using the Bash tool: `rm .cortex/stash/{filename}`
+4. Delete the entry file using the Bash tool: `rm ~/.cortex/stash/{filename}`
 5. Do NOT output a second confirmation after deletion — the warning above is sufficient.
 
 If not found: `No stash entry matching '{id}'.`
@@ -137,7 +139,7 @@ If not found: `No stash entry matching '{id}'.`
 1. Find the file matching `id`.
 2. Print the full entry content as a preview.
 3. Ask: `Discard this entry? (yes/no)`
-4. If yes: delete the file with `rm .cortex/stash/{filename}`. Confirm: `Discarded {id}.`
+4. If yes: delete the file with `rm ~/.cortex/stash/{filename}`. Confirm: `Discarded {id}.`
 5. If no: `Cancelled — entry kept.`
 
 If not found: `No stash entry matching '{id}'.`
