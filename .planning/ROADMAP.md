@@ -29,7 +29,10 @@ See `.planning/milestones/v1.4-ROADMAP.md` for full details.
   1. `cortex-research --phase concept` produces a dossier AND `~/.power-search/usage.db` shows new query entries with cost > 0
   2. `cortex-research --depth deep` still works via gpt-researcher (backward compat)
 **Research**: Unlikely
-**Plans**: 0 plans
+**Plans**: 1 plan
+
+Plans:
+- [ ] 17-01-PLAN.md — Replace raw API calls with power-search search() and update documentation sections
 
 ### Phase 18: Token Ledger Schema
 
@@ -110,7 +113,7 @@ See `.planning/milestones/v1.4-ROADMAP.md` for full details.
 
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
-| 17. cortex-research Refactor | 0/0 | Not started | - |
+| 17. cortex-research Refactor | 0/1 | Planning | - |
 | 18. Token Ledger Schema | 0/0 | Not started | - |
 | 19. PostToolUse Hook | 0/0 | Not started | - |
 | 20. Token Report CLI | 0/0 | Not started | - |
