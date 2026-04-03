@@ -2,7 +2,7 @@
 
 **slug:** semantic-retrieval
 
-**mode:** clarify
+**mode:** research
 
 **approval_status:** pending
 
@@ -10,16 +10,12 @@
 
 **recent_artifacts:**
 - docs/cortex/clarify/semantic-retrieval/20260403T233000Z-clarify-brief.md
+- docs/cortex/research/semantic-retrieval/concept-20260403T234000Z.md
 
 **open_questions:**
-- Storage format for embeddings (npy vs SQLite vs JSONL+base64)
-- Model choice (MiniLM-L6-v2 vs mpnet-base-v2 vs ollama)
-- Cold start problem for hooks
-- Query interface design (Python CLI vs Node wrapper)
-- Embedding staleness tracking
-- Retrieval consumer surface (which hooks/skills)
+- (see docs/cortex/handoffs/open-questions.md)
 
 **blockers:**
 - (none)
 
-**next_action:** Run /cortex-research --phase concept to begin concept research
+**next_action:** Run /cortex-status for full reconstruction

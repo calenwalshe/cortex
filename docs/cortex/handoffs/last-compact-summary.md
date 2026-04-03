@@ -1,20 +1,10 @@
-# Last Compact Summary
+# Last Compact Summary: 20260403T232505Z
 
-<!-- No compaction has run yet for this project -->
+**Compaction occurred at:** 20260403T232505Z
+**Active slug:** memory-extraction
+**Mode at compaction:** execute
+**Active contract:** docs/cortex/contracts/memory-extraction/contract-001.md
 
-**slug:** (none)
+**Pre-compaction snapshot:** /home/agent/projects/cortex/.cortex/compaction/precompact-20260403T232449Z.md
 
-**compact_timestamp:** (not set)
-
-**what_was_accomplished:** (no compaction has run yet)
-
-**artifacts_written:**
-- (none)
-
-**decisions_made:**
-- (none)
-
-**open_items:**
-- (none)
-
-**next_action:** Run /cortex-clarify to begin a new work item
+Run /cortex-status to reconstruct full working state.

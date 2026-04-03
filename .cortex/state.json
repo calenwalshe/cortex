@@ -1,25 +1,20 @@
 {
-  "slug": "pattern-harvest",
-  "mode": "execute",
-  "approval_status": "approved",
-  "active_contract": "docs/cortex/contracts/pattern-harvest/contract-001.md",
+  "slug": "semantic-retrieval",
+  "mode": "research",
+  "approval_status": "pending",
+  "active_contract": null,
   "artifacts": [
-    "docs/cortex/clarify/pattern-harvest/20260403T212805Z-clarify-brief.md",
-    "docs/cortex/research/pattern-harvest/concept-20260403T213444Z.md",
-    "docs/cortex/specs/pattern-harvest/spec.md",
-    "docs/cortex/specs/pattern-harvest/gsd-handoff.md",
-    "docs/cortex/contracts/pattern-harvest/contract-001.md",
-    "docs/cortex/evals/pattern-harvest/eval-proposal.md",
-    "docs/cortex/evals/pattern-harvest/eval-plan.md"
+    "docs/cortex/clarify/semantic-retrieval/20260403T233000Z-clarify-brief.md",
+    "docs/cortex/research/semantic-retrieval/concept-20260403T234000Z.md"
   ],
   "approvals": {
-    "contract": true,
-    "evals": true
+    "contract": false,
+    "evals": false
   },
   "gates": {
     "clarify_complete": true,
     "research_complete": true,
-    "spec_complete": true,
-    "contract_approved": true
+    "spec_complete": false,
+    "contract_approved": false
   }
 }
