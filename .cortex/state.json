@@ -1,11 +1,14 @@
 {
   "slug": "semantic-retrieval",
-  "mode": "research",
-  "approval_status": "pending",
-  "active_contract": null,
+  "mode": "spec",
+  "approval_status": "approved",
+  "active_contract": "docs/cortex/contracts/semantic-retrieval/contract-001.md",
   "artifacts": [
     "docs/cortex/clarify/semantic-retrieval/20260403T233000Z-clarify-brief.md",
-    "docs/cortex/research/semantic-retrieval/concept-20260403T234000Z.md"
+    "docs/cortex/research/semantic-retrieval/concept-20260403T234000Z.md",
+    "docs/cortex/specs/semantic-retrieval/spec.md",
+    "docs/cortex/specs/semantic-retrieval/gsd-handoff.md",
+    "docs/cortex/contracts/semantic-retrieval/contract-001.md"
   ],
   "approvals": {
     "contract": false,
@@ -14,7 +17,7 @@
   "gates": {
     "clarify_complete": true,
     "research_complete": true,
-    "spec_complete": false,
-    "contract_approved": false
+    "spec_complete": true,
+    "contract_approved": true
   }
 }
