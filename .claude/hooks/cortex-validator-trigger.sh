@@ -7,6 +7,8 @@
 # This hook is for side effects only.
 
 set -uo pipefail
+. "$(dirname "$0")/cortex-supervisor-log.sh"
+supervisor_log "cortex-validator-trigger"
 
 CORTEX_STATE="${CLAUDE_PROJECT_DIR}/.cortex/state.json"
 DIRTY_FILES="${CLAUDE_PROJECT_DIR}/.cortex/dirty-files.json"

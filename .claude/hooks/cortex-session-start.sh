@@ -4,6 +4,8 @@
 # Fires on: startup, resume, clear, compact
 
 set -uo pipefail
+. "$(dirname "$0")/cortex-supervisor-log.sh"
+supervisor_log "cortex-session-start"
 
 CURRENT_STATE="${CLAUDE_PROJECT_DIR}/docs/cortex/handoffs/current-state.md"
 

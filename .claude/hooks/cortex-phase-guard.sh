@@ -7,6 +7,8 @@
 # Soft-fails (exit 0 allow) if state.json missing or unreadable.
 
 set -uo pipefail
+. "$(dirname "$0")/cortex-supervisor-log.sh"
+supervisor_log "cortex-phase-guard"
 
 CORTEX_STATE="${CLAUDE_PROJECT_DIR}/.cortex/state.json"
 INPUT=$(cat)

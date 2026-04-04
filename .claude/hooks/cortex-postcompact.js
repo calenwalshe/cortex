@@ -258,7 +258,23 @@ function appendFacts(facts) {
   return newFacts.length;
 }
 
+// ── supervisor logging ──────────────────────────────────────────────────────
+
+function supervisorLog(event, extra) {
+  try {
+    const logPath = path.join(CORTEX_DIR, 'supervisor.jsonl');
+    const state = readJson(STATE_JSON_PATH);
+    const entry = JSON.stringify({
+      ts: timestamp(), event, hook: 'cortex-postcompact',
+      slug: state.slug || '', mode: state.mode || '', ...extra,
+    });
+    fs.appendFileSync(logPath, entry + '\n');
+  } catch {}
+}
+
 // ── main ─────────────────────────────────────────────────────────────────────
+
+supervisorLog('hook_fire');
 
 try {
   const ts = timestamp();
@@ -278,6 +294,7 @@ try {
   }
 } catch (e) {
   // Never block compaction — exit 0 on any error
+  supervisorLog('hook_error', { error: e.message });
   process.stderr.write(`[cortex-postcompact] Error (non-fatal): ${e.message}\n`);
 }
 

@@ -4,6 +4,8 @@
 # Reads eval-status.md to check pass/fail state per validator
 
 set -uo pipefail
+. "$(dirname "$0")/cortex-supervisor-log.sh"
+supervisor_log "cortex-task-completed"
 
 STATE_JSON="${CLAUDE_PROJECT_DIR}/.cortex/state.json"
 EVAL_STATUS="${CLAUDE_PROJECT_DIR}/docs/cortex/handoffs/eval-status.md"

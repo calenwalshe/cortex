@@ -3,6 +3,8 @@
 # PostCompact hook — write compact summary and refresh next-prompt.md
 
 set -uo pipefail
+. "$(dirname "$0")/cortex-supervisor-log.sh"
+supervisor_log "cortex-postcompact"
 
 CORTEX_DIR="${CLAUDE_PROJECT_DIR}/.cortex"
 COMPACTION_DIR="$CORTEX_DIR/compaction"

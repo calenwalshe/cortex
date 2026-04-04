@@ -5,6 +5,8 @@
 # so it does not delay the response. It soft-fails silently on any error.
 
 set -uo pipefail
+. "$(dirname "$0")/cortex-supervisor-log.sh"
+supervisor_log "cortex-session-end"
 
 STATE_JSON="${CLAUDE_PROJECT_DIR}/.cortex/state.json"
 CURRENT_STATE="${CLAUDE_PROJECT_DIR}/docs/cortex/handoffs/current-state.md"

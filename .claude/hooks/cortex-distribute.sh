@@ -3,6 +3,8 @@
 # Reads stdin JSON, matches path patterns, delegates to Python distributor.
 # Always exits 0 — never blocks Claude.
 set -euo pipefail
+. "$(dirname "$0")/cortex-supervisor-log.sh"
+supervisor_log "cortex-distribute"
 
 DISTRIBUTE_PY="$HOME/.claude/hooks/cortex-distribute.py"
 LOG="$HOME/.claude/hooks/logs/cortex-distribute.log"

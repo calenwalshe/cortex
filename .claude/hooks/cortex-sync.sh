@@ -9,6 +9,8 @@
 # 3. Removed set -e — uses per-command soft-fail with || exit 0
 
 set -uo pipefail
+. "$(dirname "$0")/cortex-supervisor-log.sh"
+supervisor_log "cortex-sync"
 # NOTE: Not using -e — individual commands soft-fail to prevent hook crashes
 
 CORTEX_SKILLS_DIR="$HOME/.claude/skills"

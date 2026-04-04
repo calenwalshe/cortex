@@ -4,6 +4,8 @@
 # Used by: cortex-specifier, cortex-scribe, cortex-eval-designer
 
 set -uo pipefail
+. "$(dirname "$0")/cortex-supervisor-log.sh"
+supervisor_log "cortex-write-guard"
 # NOTE: No -e flag — hook must soft-fail, not crash
 
 INPUT=$(cat)

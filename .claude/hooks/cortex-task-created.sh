@@ -4,6 +4,8 @@
 # Required: objective, deliverable, validator reference, contract link
 
 set -uo pipefail
+. "$(dirname "$0")/cortex-supervisor-log.sh"
+supervisor_log "cortex-task-created"
 
 INPUT=$(cat)
 

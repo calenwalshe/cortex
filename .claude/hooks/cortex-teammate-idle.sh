@@ -3,6 +3,8 @@
 # TeammateIdle hook — feeds actionable next step to idle agent team members
 
 set -uo pipefail
+. "$(dirname "$0")/cortex-supervisor-log.sh"
+supervisor_log "cortex-teammate-idle"
 
 CURRENT_STATE="${CLAUDE_PROJECT_DIR}/docs/cortex/handoffs/current-state.md"
 STATE_JSON="${CLAUDE_PROJECT_DIR}/.cortex/state.json"

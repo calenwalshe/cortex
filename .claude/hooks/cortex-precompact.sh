@@ -4,6 +4,8 @@
 # Captures metadata + session intelligence from Cortex artifacts for fact extraction.
 
 set -uo pipefail
+. "$(dirname "$0")/cortex-supervisor-log.sh"
+supervisor_log "cortex-precompact"
 
 CORTEX_DIR="${CLAUDE_PROJECT_DIR}/.cortex"
 COMPACTION_DIR="$CORTEX_DIR/compaction"
