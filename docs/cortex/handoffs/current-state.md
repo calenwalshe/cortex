@@ -1,24 +1,20 @@
 # Current State
 
-**slug:** semantic-retrieval
+**slug:** (none)
 
-**mode:** spec
+**mode:** (not started)
 
-**approval_status:** approved
+**approval_status:** (not started)
 
-**active_contract_path:** docs/cortex/contracts/semantic-retrieval/contract-001.md
+**active_contract_path:** (none)
 
 **recent_artifacts:**
-- docs/cortex/clarify/semantic-retrieval/20260403T233000Z-clarify-brief.md
-- docs/cortex/research/semantic-retrieval/concept-20260403T234000Z.md
-- docs/cortex/specs/semantic-retrieval/spec.md
-- docs/cortex/specs/semantic-retrieval/gsd-handoff.md
-- docs/cortex/contracts/semantic-retrieval/contract-001.md
+- (none)
 
 **open_questions:**
-- (see docs/cortex/handoffs/open-questions.md)
+- (none)
 
 **blockers:**
 - (none)
 
-**next_action:** Contract approved. Import gsd-handoff.md into GSD to begin execution.
+**next_action:** Run /cortex-clarify to begin a new work item
