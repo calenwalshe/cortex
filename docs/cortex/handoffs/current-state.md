@@ -1,20 +1,20 @@
 # Current State
 
-**slug:** llm-judge-calibration
+**slug:** (none)
 
-**mode:** research
+**mode:** (not started)
 
-**approval_status:** pending
+**approval_status:** (not started)
 
 **active_contract_path:** (none)
 
 **recent_artifacts:**
-- docs/cortex/clarify/llm-judge-calibration/20260404T003500Z-clarify-brief.md
+- (none)
 
 **open_questions:**
-- (see docs/cortex/handoffs/open-questions.md)
+- (none)
 
 **blockers:**
 - (none)
 
-**next_action:** Research in progress — benchmarking judge models and designing rubric format
+**next_action:** Run /cortex-clarify to begin a new work item

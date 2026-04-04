@@ -24,3 +24,4 @@
 
 - 2026-04-01T18:06:49Z | cortex-discovery-loop | closed | contract: docs/cortex/contracts/cortex-discovery-loop/contract-001.md | eval-plan: (none)
 - 2026-04-04T00:30:00Z | semantic-retrieval | closed | contract: docs/cortex/contracts/semantic-retrieval/contract-001.md | eval-plan: (none)
+- 2026-04-04T01:00:00Z | llm-judge-calibration | closed | contract: docs/cortex/contracts/llm-judge-calibration/contract-001.md | eval-plan: (none)
