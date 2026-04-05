@@ -26,7 +26,7 @@ Also trigger when the user says:
 If `--dry-run` is passed:
 1. Resolve autonomy config using `resolveAutonomyWithSources` from `scripts/cortex/resolve-autonomy.js`
 2. Print the resolved gate table showing gate name, value, and source layer for all 13 gates
-3. Print which gates this specific command checks (cortex-spec checks `reclarify`, `critical_uncertainty`, `evidence_backing`, `contract_approval`)
+3. Print which gates this specific command checks (cortex-spec checks `reclarify`, `critical_uncertainty`, `evidence_backing`, `necessity`, `contract_approval`)
 4. Do NOT execute any command logic, write any files, or modify any state
 5. Exit after printing the table
 
@@ -39,12 +39,13 @@ Before evaluating prerequisite gates, resolve the autonomy config once for this 
 1. Read `.cortex/autonomy.json` (project-level) and `~/.claude/cortex-autonomy.json` (global-level) if they exist.
 2. Determine the active preset (default: `supervised` if no config found).
 3. Resolve all gate values using 4-layer precedence. If `--autonomy` or `--gate` flags were provided, use them as the invocation layer (highest precedence in the 4-layer resolution). Resolution order: invocation flags > project config > global config > preset defaults. Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always forced true regardless of any config.
-4. The resolved gate values are used in steps 6, 7, and 8 below, and in Phase 5.
+4. The resolved gate values are used in steps 6, 7, 8, and 9 below, and in Phase 5.
 
 The following gates apply to this skill:
 - `reclarify` — **MANDATORY** (always true, cannot be disabled). Controls step 6.
 - `critical_uncertainty` — Controls step 7. False in `full-auto` preset.
 - `evidence_backing` — Controls step 8. False in `full-auto` preset.
+- `necessity` — Controls step 9. False in `full-auto` preset.
 - `contract_approval` — Controls Phase 5 approval gate. False in `full-auto` preset.
 
 1. Read `.cortex/state.json` to get the active slug.
@@ -103,6 +104,64 @@ The following gates apply to this skill:
      BLOCKED: [N] core assumption(s) have no evidence backing.
      Run /cortex-research or /cortex-experiment to gather supporting evidence.
      ```
+
+9. **Gate: `necessity` (autonomy-conditional)**
+   If `gates.necessity` is `false` (per autonomy resolution above): skip this check — auto-proceed.
+   When auto-proceeding (gate is false/skipped), append a decision log entry to `docs/cortex/handoffs/decisions.md` under the `## Autonomy Decisions` section:
+   ```
+   - {ISO8601 timestamp} | gate: necessity | value: false (auto-skipped) | preset: {active_preset} | command: /cortex-spec
+   ```
+   If `gates.necessity` is `true` (or no autonomy config exists): evaluate as follows:
+
+   **Necessity Attack:** Read the clarify brief and all research dossiers for the active slug. Construct a necessity check by asking these five diagnostic questions about the proposed work:
+   1. Who actually has this problem? Is it the human user, or is the system solving its own problem?
+   2. Does the existing system already handle this adequately, even if imperfectly?
+   3. Would a human notice if this didn't exist?
+   4. Is this a "solution looking for a problem"?
+   5. Could the same value be achieved with a simpler approach that doesn't require a new tool?
+
+   Based on the answers, determine one of four verdicts:
+   - **BUILD** — Real problem, viable solution, proceed to spec.
+   - **NARROW** — Scope is too broad. A smaller version would deliver the same value.
+   - **DEFER** — Not enough evidence. More research needed before committing.
+   - **REJECT** — This solves a problem that doesn't exist, or the existing system already handles it.
+
+   Each verdict must include a confidence score (0.0–1.0), reasoning (2–3 sentences), and supporting evidence points.
+
+   **Blocking behavior:**
+   - **REJECT** with confidence >= 0.7: block with:
+     ```
+     BLOCKED: Necessity check returned REJECT (confidence: {N}).
+     {reasoning}
+     Evidence:
+     {evidence points}
+     Override with --gate necessity=false if you disagree.
+     ```
+   - **NARROW** with confidence >= 0.7: block with:
+     ```
+     BLOCKED: Necessity check returned NARROW (confidence: {N}).
+     {reasoning}
+     Suggestion: Reduce scope before speccing.
+     Override with --gate necessity=false if you disagree.
+     ```
+   - **DEFER**: always block (regardless of confidence):
+     ```
+     BLOCKED: Necessity check returned DEFER.
+     {reasoning}
+     Run /cortex-research to gather more evidence before speccing.
+     ```
+   - **BUILD**: proceed.
+   - Any verdict with confidence < 0.7: **warn but do not block**:
+     ```
+     WARNING: Necessity check returned {verdict} with low confidence ({N}).
+     {reasoning}
+     Proceeding — review the reasoning above before continuing.
+     ```
+
+   Log the verdict to `docs/cortex/handoffs/decisions.md` under `## Autonomy Decisions`:
+   ```
+   - {ISO8601 timestamp} | gate: necessity | verdict: {BUILD|NARROW|DEFER|REJECT} | confidence: {N} | slug: {slug} | command: /cortex-spec
+   ```
 
 See `docs/DISCOVERY_LOOP.md` §4 for full spec-readiness gate semantics.
 
