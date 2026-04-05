@@ -25,19 +25,24 @@ Cortex adds an intelligence layer that sits between idea and execution. GSD stil
 
 No layer owns what another layer owns. GSD does not adjudicate on spec quality. Cortex does not manage phases. Discipline rules apply during implementation, not during planning.
 
-### The 7-Command Surface
+### The 12-Command Surface
 
-Cortex adds 7 commands to your Claude Code workflow:
+Cortex adds 12 commands to your Claude Code workflow:
 
 | Command | What it does |
 |---------|-------------|
 | `/cortex-clarify` | Converts a fuzzy idea into a written clarify brief — goal, non-goals, constraints, assumptions, open questions, next research steps |
 | `/cortex-research` | Runs research in one of three phases: `concept`, `implementation`, or `evals`. Supports `--depth quick|standard|deep`, `--team`, and `--write-plan` for eval plan generation after approval checks. |
 | `/cortex-spec` | Compresses clarify brief + research dossier into a GSD-ready handoff pack, spec.md, and first execution contract |
+| `/cortex-bridge` | Generates a complete GSD `.planning/` scaffold from Cortex artifacts (one-time handoff rendering) |
 | `/cortex-investigate` | Writes investigation artifacts to `docs/cortex/investigations/` in the target repo; can hand off into a GSD repair contract |
 | `/cortex-review` | Writes review artifacts to `docs/cortex/reviews/` including a contract compliance lens |
 | `/cortex-audit` | Writes audit artifacts to `docs/cortex/audits/` with required lenses: auth, data, secrets, unsafe tools, input validation, deps, misuse |
+| `/cortex-experiment` | Opens a bounded hypothesis test, runs it, and closes with a decision (promote/iterate/re-clarify/abandon) |
 | `/cortex-status` | Reconstructs current state from repo-local artifacts and updates the continuity handoff files — the recovery command after `/clear` or compaction |
+| `/cortex-close` | Archives a completed slug: copies artifacts to cold path, records close in decisions.md, resets state |
+| `/cortex-stash` | Captures an idea for later without starting the full pipeline |
+| `/cortex-fit` | Composition-stage compatibility check for cross-artifact coherence |
 
 Commands run in spine order for new work: clarify → research → spec → [GSD execute] → validate → repair → assure → done. Investigate, review, and audit can run at any time.
 
@@ -57,6 +62,12 @@ node ~/projects/cortex/bin/install.js --profile=full
 
 # Bootstrap runtime artifacts in your target project repo
 node ~/projects/cortex/bin/install.js --project /path/to/your/project
+
+# Dry run (show what would be installed without writing anything)
+node ~/projects/cortex/bin/install.js --dry-run
+
+# Verbose output (show every symlink and wiring step)
+node ~/projects/cortex/bin/install.js --verbose
 ```
 
 ### Install Profiles

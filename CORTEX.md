@@ -1,7 +1,7 @@
 # Cortex
 
 > A lifecycle intelligence system that sits above GSD. Cortex converts fuzzy ideas
-> into GSD-ready execution contracts via 8 commands and a sequential spine. GSD
+> into GSD-ready execution contracts via 12 commands and a sequential spine. GSD
 > remains the workflow owner; Cortex adds the intelligence layer — clarifying,
 > researching, speccing, validating, repairing, and assuring so that execution is
 > always grounded in a clear definition of done.
@@ -15,18 +15,22 @@
 | 3. Discipline | Superpowers extracts | During implementation | "Am I writing this correctly?" |
 | 4. Thinking | GStack extracts | Always on | "Am I reasoning honestly?" |
 
-## 8-Command Surface
+## 12-Command Surface
 
 | Command | Purpose | Output Artifact |
 |---------|---------|----------------|
 | `/cortex-clarify` | Convert a fuzzy idea into a written problem frame with goal, non-goals, constraints, assumptions, and open questions | `docs/cortex/clarify/<slug>/<timestamp>-clarify-brief.md` |
 | `/cortex-research` | Run concept, implementation, or eval research with configurable depth, optional team mode, and optional eval-plan write step (`--write-plan`) | `docs/cortex/research/<slug>/<phase>-<timestamp>.md` (concept/implementation) or `docs/cortex/evals/<slug>/eval-proposal.md` / `eval-plan.md` |
 | `/cortex-spec` | Compress clarify + research into a GSD-ready handoff pack, spec.md, and first execution contract | `docs/cortex/specs/<slug>/spec.md`, `gsd-handoff.md`; `docs/cortex/contracts/<slug>/contract-001.md` |
+| `/cortex-bridge` | Generate a complete GSD `.planning/` scaffold from Cortex artifacts (one-time handoff rendering) | `.planning/PROJECT.md`, `ROADMAP.md`, `REQUIREMENTS.md`, `STATE.md`, `config.json`, phase directories |
 | `/cortex-investigate` | Write investigation artifacts and optionally hand off into a GSD repair contract | `docs/cortex/investigations/<slug>/` |
 | `/cortex-review` | Review implementation against contract compliance and quality lenses | `docs/cortex/reviews/<slug>/` |
 | `/cortex-audit` | Write security/correctness audit with required lenses (auth, data, secrets, unsafe tools, input validation, deps, misuse) | `docs/cortex/audits/<slug>/` |
-| `/cortex-status` | Reconstruct current state from repo-local artifacts; update continuity handoff files | `.cortex/state.json`, `docs/cortex/` continuity files |
 | `/cortex-experiment` | Open a bounded hypothesis test, run it, and close with a decision (promote/iterate/re-clarify/abandon) | `docs/cortex/experiments/<slug>/learning-contract-{id}.md` (open), `experiment-result-{id}.md` (close) |
+| `/cortex-status` | Reconstruct current state from repo-local artifacts; update continuity handoff files | `.cortex/state.json`, `docs/cortex/` continuity files |
+| `/cortex-close` | Archive a completed slug: copy artifacts to cold path, record close, reset state | `docs/cortex/archive/<slug>/` |
+| `/cortex-stash` | Capture an idea for later without starting the full pipeline | `~/.cortex/stash/<timestamp>-<slug>.md` |
+| `/cortex-fit` | Composition-stage compatibility check for cross-artifact coherence | `docs/cortex/fit/<slug>/fit-report.md` |
 
 ## Artifact Roots
 
@@ -47,7 +51,7 @@ Both artifact roots live in the **target project repo** — the repository where
 | GSD | `.planning/`, `STATE.md`, phases, milestones, roadmaps, execution |
 | Cortex | `docs/cortex/` and `.cortex/` in the target repo, intelligence artifacts, continuity state |
 
-**Hard constraint: Cortex never writes to `.planning/`. GSD owns all workflow state.**
+**Hard constraint: Cortex skills do not write to `.planning/` during the intelligence lifecycle (clarify, research, spec, execute, validate, repair, assure).** The one exception is `/cortex-bridge`, which generates a GSD `.planning/` scaffold from Cortex artifacts as an explicit one-time handoff. GSD owns `.planning/` after the bridge runs.
 
 ## Sequential Spine
 
@@ -56,7 +60,7 @@ The full lifecycle from idea to done follows a fixed spine:
 1. **clarify** — the idea is framed as a problem: goal, non-goals, constraints, assumptions, open questions.
 2. **research** — concept, implementation, and/or eval research produces a dossier.
 3. **spec** — clarify + research compress into a `spec.md`, `gsd-handoff.md`, and a `contract-001.md`. The spec must be approved before execution begins.
-4. **[GSD execute]** — execution is handed to GSD. GSD reads `gsd-handoff.md` as its work-order and owns the phase/plan lifecycle. Cortex does not touch `.planning/` during this stage.
+4. **[GSD execute]** — execution is handed to GSD via `/cortex-bridge` (which generates the `.planning/` scaffold). GSD reads this as its work-order and owns the phase/plan lifecycle from this point. Cortex does not touch `.planning/` during execution.
 5. **validate** — after GSD completes, Cortex picks up by running validators defined in the contract. Artifacts are checked against done criteria.
 6. **repair** — if validators fail, a repair contract opens. Repair feeds back to validate (not back to clarify).
 7. **assure** — all validators pass; eval suite runs; human approval is obtained if required.
@@ -98,9 +102,9 @@ Chat history is ephemeral. All Cortex state lives in repo-local artifacts under 
 1. **GSD owns all state.** No other layer writes to `.planning/` or `STATE.md`.
 2. **Discipline rules are behavioral, not orchestrational.** They say "write tests first" not "now run this workflow."
 3. **Thinking rules are always-on but passive.** They shape HOW Claude reasons without dictating WHAT to do.
-4. **Skill namespace:** All Cortex skills use `/cortex-*` prefix (8 commands total). No collision with `/gsd:*` or any upstream skill namespace.
+4. **Skill namespace:** All Cortex skills use `/cortex-*` prefix (12 commands total). No collision with `/gsd:*` or any upstream skill namespace.
 5. **No duplicate review loops.** GSD's verify-work IS the review gate. Discipline and thinking layers enhance that gate's quality.
-6. **Cortex never writes to `.planning/`** — GSD owns all workflow state.
+6. **Cortex does not write to `.planning/` during intelligence phases** — the one exception is `/cortex-bridge`, which generates the GSD scaffold as a one-time handoff. GSD owns `.planning/` after the bridge runs.
 
 ## File Structure
 
@@ -131,7 +135,7 @@ cortex/
 ├── .claude/
 │   ├── agents/                 # Installed: 4 agents (cortex-specifier, cortex-critic,
 │   │                           # cortex-scribe, cortex-eval-designer)
-│   ├── hooks/                  # Installed: 12 hook scripts
+│   ├── hooks/                  # Installed: 17 hook scripts
 │   └── settings.json           # Global hook wiring across 9 Claude Code events
 ├── bin/                        # Scripts
 │   ├── install.sh

@@ -12,6 +12,10 @@
     { "name": "cortex-spec",        "profiles": ["core", "full"] },
     { "name": "cortex-status",      "profiles": ["core", "full"] },
     { "name": "cortex-bridge",      "profiles": ["core", "full"] },
+    { "name": "cortex-close",       "profiles": ["core", "full"] },
+    { "name": "cortex-experiment",  "profiles": ["core", "full"] },
+    { "name": "cortex-fit",         "profiles": ["core", "full"] },
+    { "name": "cortex-stash",       "profiles": ["core", "full"] },
     { "name": "power-search",       "profiles": ["full"] },
     { "name": "google",             "profiles": ["full"] },
     { "name": "cli",                "profiles": ["full"] }
@@ -78,6 +82,18 @@
     {
       "file": "cortex-context-capacity.sh",
       "wiring": "global"
+    },
+    {
+      "file": "cortex-distribute.sh",
+      "wiring": "manual"
+    },
+    {
+      "file": "cortex-distribute.py",
+      "wiring": "manual"
+    },
+    {
+      "file": "nlm-refresh.py",
+      "wiring": "manual"
     }
   ],
   "hook_events": [
