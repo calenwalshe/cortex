@@ -38,6 +38,13 @@ If `--dry-run` is passed:
      > No clarify brief found for active slug. Run `/cortex-clarify` first.
 3. If `<topic>` argument is provided, use it as the research focus for this pass.
    If no `<topic>` is provided, use the clarify brief's Open Questions and Next Research Steps as the research agenda.
+4. Read the `Complexity:` field from the clarify brief.
+   - **If `complexity: trivial`:** Skip the research phase entirely. Output:
+     > Complexity: trivial — research phase skipped. Proceed to /cortex-spec.
+     Update `.cortex/state.json`: set `gates.research_complete = true`. Exit without writing a dossier.
+   - **If `complexity: complex`:** Force `--depth deep` regardless of the `--depth` flag passed by the user.
+   - **If `complexity: standard` or not set:** Use the `--depth` flag as provided (default: `standard`).
+   Note: This is a suggestion, not a hard gate. If the clarify brief says `trivial` but the open questions indicate significant unknowns, override to `standard` and note the override in the dossier.
 
 ### Phase 1: Determine Research Depth
 

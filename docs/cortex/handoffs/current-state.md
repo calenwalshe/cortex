@@ -2,9 +2,9 @@
 
 **slug:** (none)
 
-**mode:** (not started)
+**mode:** done
 
-**approval_status:** (not started)
+**approval_status:** pending
 
 **active_contract_path:** (none)
 
@@ -12,9 +12,9 @@
 - (none)
 
 **open_questions:**
-- (none)
+- (see docs/cortex/handoffs/open-questions.md)
 
 **blockers:**
 - (none)
 
-**next_action:** Run /cortex-clarify to begin a new work item
+**next_action:** Run /cortex-status for full reconstruction
