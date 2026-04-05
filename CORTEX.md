@@ -1,7 +1,7 @@
 # Cortex
 
 > A lifecycle intelligence system that sits above GSD. Cortex converts fuzzy ideas
-> into GSD-ready execution contracts via 12 commands and a sequential spine. GSD
+> into GSD-ready execution contracts via 13 commands and a sequential spine. GSD
 > remains the workflow owner; Cortex adds the intelligence layer — clarifying,
 > researching, speccing, validating, repairing, and assuring so that execution is
 > always grounded in a clear definition of done.
@@ -15,7 +15,7 @@
 | 3. Discipline | Superpowers extracts | During implementation | "Am I writing this correctly?" |
 | 4. Thinking | GStack extracts | Always on | "Am I reasoning honestly?" |
 
-## 12-Command Surface
+## 13-Command Surface
 
 | Command | Purpose | Output Artifact |
 |---------|---------|----------------|
@@ -31,6 +31,7 @@
 | `/cortex-close` | Archive a completed slug: copy artifacts to cold path, record close, reset state | `docs/cortex/archive/<slug>/` |
 | `/cortex-stash` | Capture an idea for later without starting the full pipeline | `~/.cortex/stash/<timestamp>-<slug>.md` |
 | `/cortex-fit` | Composition-stage compatibility check for cross-artifact coherence | `docs/cortex/fit/<slug>/fit-report.md` |
+| `/cortex-drive` | Autonomous lifecycle controller — drives a slug from clarify through done with adaptive decisions at each transition | Decision log in `docs/cortex/handoffs/decisions.md` |
 
 ## Artifact Roots
 
@@ -102,7 +103,7 @@ Chat history is ephemeral. All Cortex state lives in repo-local artifacts under 
 1. **GSD owns all state.** No other layer writes to `.planning/` or `STATE.md`.
 2. **Discipline rules are behavioral, not orchestrational.** They say "write tests first" not "now run this workflow."
 3. **Thinking rules are always-on but passive.** They shape HOW Claude reasons without dictating WHAT to do.
-4. **Skill namespace:** All Cortex skills use `/cortex-*` prefix (12 commands total). No collision with `/gsd:*` or any upstream skill namespace.
+4. **Skill namespace:** All Cortex skills use `/cortex-*` prefix (13 commands total). No collision with `/gsd:*` or any upstream skill namespace.
 5. **No duplicate review loops.** GSD's verify-work IS the review gate. Discipline and thinking layers enhance that gate's quality.
 6. **Cortex does not write to `.planning/` during intelligence phases** — the one exception is `/cortex-bridge`, which generates the GSD scaffold as a one-time handoff. GSD owns `.planning/` after the bridge runs.
 

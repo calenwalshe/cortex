@@ -25,9 +25,9 @@ Cortex adds an intelligence layer that sits between idea and execution. GSD stil
 
 No layer owns what another layer owns. GSD does not adjudicate on spec quality. Cortex does not manage phases. Discipline rules apply during implementation, not during planning.
 
-### The 12-Command Surface
+### The 13-Command Surface
 
-Cortex adds 12 commands to your Claude Code workflow:
+Cortex adds 13 commands to your Claude Code workflow:
 
 | Command | What it does |
 |---------|-------------|
@@ -43,6 +43,7 @@ Cortex adds 12 commands to your Claude Code workflow:
 | `/cortex-close` | Archives a completed slug: copies artifacts to cold path, records close in decisions.md, resets state |
 | `/cortex-stash` | Captures an idea for later without starting the full pipeline |
 | `/cortex-fit` | Composition-stage compatibility check for cross-artifact coherence |
+| `/cortex-drive` | Autonomous lifecycle controller — drives a slug from clarify through done with adaptive decisions |
 
 Commands run in spine order for new work: clarify → research → spec → [GSD execute] → validate → repair → assure → done. Investigate, review, and audit can run at any time.
 

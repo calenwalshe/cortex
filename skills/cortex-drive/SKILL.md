@@ -1,0 +1,134 @@
+# Cortex Drive — Autonomous Lifecycle Controller
+
+Drives the Cortex lifecycle spine (clarify → research → spec → bridge → execute → validate → done) autonomously, making adaptive decisions at each transition. Reads state from disk, dispatches skills, respects autonomy gates, stops when mandatory gates or safety conditions require it.
+
+## User-invocable
+
+When the user types `/cortex-drive`, run this skill.
+
+Also trigger when the user says:
+- "drive this to completion"
+- "run autonomously"
+- "auto-build"
+- "keep going until done"
+
+## Arguments
+
+- `/cortex-drive` — drive the current active slug to completion
+- `/cortex-drive <idea>` — start from scratch: clarify the idea, then drive to completion
+- `--autonomy <preset>` — override autonomy preset (supervised/gates-only/full-auto)
+- `--to <mode>` — stop after reaching this mode (e.g., `--to spec` stops after spec is written)
+- `--dry-run` — show the decision table evaluation without executing
+
+## Instructions
+
+### Phase 1: Initialize
+
+1. Read `.cortex/state.json` to get current slug, mode, gates, and active contract.
+2. If an `<idea>` argument was provided and no active slug exists, run `/cortex-clarify <idea>` first.
+3. If no slug and no idea: check for backlog items in `~/.cortex/stash/` and `docs/cortex/research/autonomous-builder-ideas.md`. If items exist, present the top 3 ranked by leverage and ask which to start. If no items: print "Nothing to drive. Provide an idea or populate the stash." and stop.
+4. Resolve autonomy config (same as /cortex-spec: 4-layer resolution).
+5. Set `RETRY_COUNT = 0`, `ACTIONS_TAKEN = []`.
+
+### Phase 2: The Drive Loop
+
+Re-read state from disk at the start of EVERY iteration. Never carry state in memory across iterations.
+
+```
+LOOP:
+  1. Read .cortex/state.json (fresh)
+  2. Evaluate decision table (Phase 3) → next_action
+  3. If next_action == "done" → break
+  4. If next_action == "stop_human" → present reason, break
+  5. If next_action == "stop_safety" → present reason, break
+  6. If --to flag set and current mode >= target mode → break
+  7. Log decision to decisions.md
+  8. Append to ACTIONS_TAKEN
+  9. Dispatch action (Phase 4)
+  10. RETRY_COUNT = 0 (reset on successful action)
+  11. Go to LOOP
+```
+
+### Phase 3: Decision Table
+
+Evaluate conditions in this exact order (first match wins):
+
+| # | Condition | Action | Needs LLM? |
+|---|-----------|--------|------------|
+| 1 | `slug == null` AND backlog has items | Rank backlog, pick top → `/cortex-clarify` | Yes (ranking) |
+| 2 | `mode == "clarify"` AND `gates.clarify_complete == true` | `/cortex-research --phase concept` | No |
+| 3 | `mode == "research"` AND research dossier exists AND open questions remain that are implementation-specific | `/cortex-research --phase implementation` | Yes (judgment) |
+| 4 | `mode == "research"` AND `gates.research_complete == true` | `/cortex-spec` (includes necessity gate) | No |
+| 5 | `mode == "spec"` AND `gates.spec_complete == true` AND `approval_status == "approved"` | `/cortex-bridge` | No |
+| 6 | `mode == "spec"` AND `approval_status == "pending"` AND `gates.contract_approval == false` | Auto-approve, then `/cortex-bridge` | No |
+| 7 | `mode == "spec"` AND `approval_status == "pending"` AND `gates.contract_approval == true` | Stop: "Contract needs human approval" | No |
+| 8 | `.planning/STATE.md` exists AND GSD phases incomplete | `/gsd:drive` | No (GSD handles) |
+| 9 | GSD execution complete AND active contract has validators | Run validators (external: bash, judgment: cortex-judge) | No |
+| 10 | All validators pass | `/cortex-close` | No |
+| 11 | Validators fail AND repair budget > 0 | Create repair contract → re-execute | No |
+| 12 | Validators fail AND repair budget exhausted | Stop: "Repair budget exhausted, escalating to human" | No |
+| 13 | `mode == "done"` AND `slug == null` | Done | No |
+
+**For row 3 (research escalation):** Read the concept research dossier. Check if any open question in the dossier or clarify brief is specifically about implementation details (APIs, data formats, integration points, performance requirements). If yes and no implementation dossier exists, run implementation research. If all questions are resolved, skip to row 4.
+
+**For row 1 (backlog ranking):** Read stash files and ideas doc. Rank by: leverage (compounding value), urgency (is something broken?), dependencies (unblocks other work). Present top pick with reasoning.
+
+### Phase 4: Dispatch
+
+Dispatch actions via Skill() call. After each dispatch:
+- Re-read `.cortex/state.json` from disk
+- Verify the expected state change occurred
+- If state didn't change as expected: increment RETRY_COUNT
+- If RETRY_COUNT >= 2: stop with "Circuit breaker: same action failed twice consecutively. Escalating."
+
+### Phase 5: Safety Checks (evaluated every iteration)
+
+Before dispatching, check these conditions. If any are true, stop immediately:
+
+| Check | Condition | Action |
+|-------|-----------|--------|
+| Mandatory gate | Any mandatory gate fires during dispatch | Stop, present gate brief |
+| Error compounding | RETRY_COUNT >= 2 | Stop: "Circuit breaker triggered" |
+| Context capacity | Context usage > 85% (if detectable) | Stop: "Context checkpoint — save and continue in new session" |
+| Budget | If cost tracking available and exceeds threshold | Stop: "Budget threshold reached" |
+
+### Phase 6: Completion Summary
+
+After the loop exits (done, stop, or error), print:
+
+```
+═══════════════════════════════════════
+CORTEX DRIVE — {COMPLETE|STOPPED|ERROR}
+═══════════════════════════════════════
+Slug:     {slug}
+Actions:  {count}
+Duration: {elapsed}
+
+Actions taken:
+  1. {action} — {outcome}
+  2. {action} — {outcome}
+  ...
+
+{If stopped: reason}
+{If complete: "Slug archived. State reset."}
+{If error: "Manual intervention needed: {details}"}
+═══════════════════════════════════════
+```
+
+## Decision Logging
+
+Every action logged to `docs/cortex/handoffs/decisions.md` under `## Autonomy Decisions`:
+
+```
+- {ISO8601} | drive: {action} | row: {N} | slug: {slug} | mode: {mode} | reasoning: {brief}
+```
+
+## Rules
+
+- **Always re-read state from disk.** Never carry state in memory across loop iterations. This is the #1 lesson from gsd:drive and production agent systems.
+- **Checkpoint every transition.** Log to decisions.md BEFORE dispatching, not after. If the dispatch crashes, the log shows what was attempted.
+- **Circuit breaker on consecutive failures.** Same action failing twice = stop. Don't compound errors.
+- **Cortex drives, GSD executes.** The policy loop calls `/gsd:drive` for execution — it does NOT directly invoke GSD plan/execute/verify skills. GSD owns its own inner loop.
+- **The loop is the controller, skills are the workers.** The loop never does work itself — it only reads state and dispatches skills.
+- **Respect mandatory gates.** ux_taste_eval, human_action, and reclarify are always HITL stops regardless of autonomy preset.
+- **The necessity gate is the "should this exist?" check.** The loop trusts it. If necessity returns REJECT, the loop stops — it doesn't override or retry.
