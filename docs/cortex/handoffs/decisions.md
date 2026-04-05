@@ -26,3 +26,4 @@
 - 2026-04-04T00:30:00Z | semantic-retrieval | closed | contract: docs/cortex/contracts/semantic-retrieval/contract-001.md | eval-plan: (none)
 - 2026-04-04T01:00:00Z | llm-judge-calibration | closed | contract: docs/cortex/contracts/llm-judge-calibration/contract-001.md | eval-plan: (none)
 - 2026-04-05T06:30:00Z | necessity-gate | closed | contract: docs/cortex/contracts/necessity-gate/contract-001.md | eval-plan: (none)
+- 2026-04-05T08:00:00Z | policy-loop | closed | contract: docs/cortex/contracts/policy-loop/contract-001.md | eval-plan: (none)
