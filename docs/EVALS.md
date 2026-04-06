@@ -100,4 +100,4 @@ All eval artifacts are written to the **target project repo**, not the Cortex fr
 
 ## Contract Reference Requirement
 
-Every active contract (`docs/cortex/contracts/<slug>/contract-001.md`) must include an `eval_plan` field pointing to the eval plan path. The field may be set to `(pending)` when the contract is first created during `/cortex-spec`. Contracts cannot advance to `done` state while `eval_plan` is `(pending)` — the eval plan must be written and referenced before closure. The `eval_plan` field itself is a hard requirement on every contract, not an optional annotation.
+Every active contract (`docs/cortex/contracts/<slug>/contract-001.md`) must include an `eval_plan` field pointing to the eval plan path. The field may be set to `(pending)` when the contract is first created during `/cortex-spec`. The `(pending)` value is allowed during the `spec` and `execute` phases while the eval plan is being prepared. Contracts cannot advance to the `done` state while `eval_plan` is `(pending)` — the eval plan must be written and referenced before closure. The `eval_plan` field itself is a hard requirement on every contract, not an optional annotation.

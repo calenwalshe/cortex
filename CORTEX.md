@@ -150,7 +150,7 @@ cortex/
 └── docs/                       # Architecture and reference docs
     ├── INTELLIGENCE_FLOW.md    # Sequential spine diagram with loops and gates
     ├── DISCOVERY_LOOP.md       # Discovery loop design: mode transitions, spec-readiness gate, write-root policy
-    ├── COMMANDS.md             # 8-command reference with inputs, outputs, rules
+    ├── COMMANDS.md             # 13-command reference with inputs, outputs, rules
     ├── CONTINUITY.md           # Continuity strategy and artifact schemas
     ├── EVALS.md                # Eval lifecycle, matrix, and harness guide
     └── AGENTS.md               # Agent roster, tools, permission modes

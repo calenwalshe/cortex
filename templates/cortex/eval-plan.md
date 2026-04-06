@@ -60,14 +60,6 @@
 
 ## Results
 
-<!-- Populated after running — initially all checkboxes unchecked -->
-<!-- Each approved dimension gets one result entry -->
-<!-- Update after each eval run: check the box and record the outcome -->
-
-{RESULTS}
-
-<!-- Format per dimension:
-- [ ] {Dimension Name} — {outcome when checked: "passed" or "failed: {reason}"}
--->
-
-<!-- All dimensions must show "passed" before the contract can advance to assure state -->
+<!-- Results are written to a separate artifact: docs/cortex/evals/<slug>/results-<timestamp>.md -->
+<!-- Do NOT populate results inline here. See docs/EVALS.md for the canonical results location. -->
+<!-- All dimensions must show "passed" in the results artifact before the contract can advance to assure state. -->

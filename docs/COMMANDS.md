@@ -3,7 +3,7 @@
 All commands write artifacts to the target project repo (the repo where Cortex is installed and used). The Cortex framework repo itself is not modified by command invocations.
 The framework repo may still contain `.cortex/` and `.planning/` for dogfooding and development, but runtime command artifacts belong in the target project repo.
 
-Commands follow the intelligence spine: `/cortex-clarify` → `/cortex-research` → `/cortex-spec` → (GSD execution) → `/cortex-investigate` / `/cortex-review` / `/cortex-audit` → `/cortex-status`.
+Commands follow the intelligence spine: `/cortex-clarify` → `/cortex-research` → `/cortex-spec` → `/cortex-bridge` → (GSD execution) → `/cortex-investigate` / `/cortex-review` / `/cortex-audit` → `/cortex-status` → `/cortex-close`. Utility commands (`/cortex-fit`, `/cortex-stash`, `/cortex-drive`) can be invoked at any point.
 
 ---
 
@@ -458,6 +458,239 @@ See `docs/DISCOVERY_LOOP.md` for full experiment mode semantics, convergence gua
 
 ---
 
+## /cortex-bridge
+
+**Syntax**
+```bash
+/cortex-bridge [--slug <slug>]
+```
+
+**Purpose**
+Generates a complete GSD `.planning/` scaffold from Cortex artifacts (spec, contract, gsd-handoff). One-time handoff that crosses the Cortex→GSD seam.
+
+**Inputs**
+
+| Argument / Flag | Required | Description | Default |
+|-----------------|----------|-------------|---------|
+| `--slug` | Optional | Slug to bridge | Current active slug from state.json |
+
+**Outputs**
+
+| Artifact | Path | Contents |
+|----------|------|----------|
+| PROJECT.md | `.planning/PROJECT.md` | Project context from spec |
+| ROADMAP.md | `.planning/ROADMAP.md` | Phase breakdown from gsd-handoff |
+| REQUIREMENTS.md | `.planning/REQUIREMENTS.md` | Requirements from spec acceptance criteria |
+| STATE.md | `.planning/STATE.md` | Initial GSD state |
+| config.json | `.planning/config.json` | GSD configuration |
+| Phase CONTEXT.md | `.planning/phases/*/CONTEXT.md` | Per-phase context from contract done criteria |
+
+**Rules**
+- Requires spec, contract, and gsd-handoff to exist for the slug.
+- Done criteria from the contract must appear **verbatim** in ROADMAP.md phase success criteria.
+- This is the one sanctioned exception to "Cortex does not write to `.planning/`". GSD owns `.planning/` after the bridge runs.
+- Does NOT auto-invoke GSD execution.
+
+**State Effects**
+
+| Field | Operation | Value |
+|-------|-----------|-------|
+| `mode` | writes | `"execute"` |
+| `artifacts` | appends | all generated `.planning/` paths |
+
+**Block Conditions**
+- Blocks if spec, contract, or gsd-handoff is missing for the active slug.
+
+**Example**
+```
+/cortex-bridge
+```
+
+---
+
+## /cortex-close
+
+**Syntax**
+```bash
+/cortex-close
+```
+
+**Purpose**
+Archives a completed slug: copies artifacts to cold path, records closure in decisions.md, and resets state to idle.
+
+**Inputs**
+
+None. Operates on the current active slug. Requires user confirmation (mandatory gate — cannot be skipped).
+
+**Outputs**
+
+| Artifact | Path | Contents |
+|----------|------|----------|
+| Archive | `docs/cortex/archive/<slug>/` | Copy of all slug artifacts |
+| Decision log entry | `docs/cortex/handoffs/decisions.md` | Closure record |
+
+**Rules**
+- Slug confirmation gate is **mandatory** (no autonomy skip).
+- Archive is copy-only — originals are never deleted.
+- Ordering is safety-critical: copy artifacts first, update decisions.md second, reset state last.
+
+**State Effects**
+
+| Field | Operation | Value |
+|-------|-----------|-------|
+| `slug` | writes | `null` |
+| `mode` | writes | `"done"` |
+| `active_contract` | writes | `null` |
+| `artifacts` | writes | `[]` |
+| `gates` | writes | all `false` |
+
+**Block Conditions**
+- Blocks if no active slug exists.
+
+**Example**
+```
+/cortex-close
+```
+
+---
+
+## /cortex-fit
+
+**Syntax**
+```bash
+/cortex-fit <X> [against <Y>]
+```
+
+**Purpose**
+Evaluates composition-stage compatibility: does an incoming tool, framework, or agent fit the Cortex ecosystem? Produces a fit report with forced-separation analysis and a Tech Radar ring signal.
+
+**Inputs**
+
+| Argument | Required | Description | Default |
+|----------|----------|-------------|---------|
+| `<X>` | Required | Incoming entity to evaluate | — |
+| `against <Y>` | Optional | Existing context to compare against | Cortex ecosystem |
+
+**Outputs**
+
+| Artifact | Path | Contents |
+|----------|------|----------|
+| Fit report | `docs/cortex/fit/<slug>/fit-report.md` | 5-dimension forced-separation analysis, Tech Radar ring (Hold/Assess/Trial/Adopt), pre-populated clarify brief fields |
+
+**Rules**
+- SC2 forced-separation: no section may repeat content from another section.
+- Status is always `pending-human-decision` — never auto-approves.
+- Does NOT invoke `/cortex-clarify` — only pre-populates fields for optional use.
+
+**State Effects**
+- Writes fit report only. Does not modify `state.json` or `current-state.md`.
+
+**Block Conditions**
+- None.
+
+**Example**
+```
+/cortex-fit "Mem0 memory layer" against "Cortex continuity system"
+```
+
+---
+
+## /cortex-drive
+
+**Syntax**
+```bash
+/cortex-drive [<idea>] [--to <mode>] [--autonomy <preset>]
+```
+
+**Purpose**
+Autonomous lifecycle controller — drives a slug from clarify through done, making adaptive decisions at each transition. Invokes the appropriate Cortex command at each step.
+
+**Inputs**
+
+| Argument / Flag | Required | Description | Default |
+|-----------------|----------|-------------|---------|
+| `<idea>` | Optional | Start a new slug from scratch | Resume current slug |
+| `--to <mode>` | Optional | Stop at this lifecycle mode | `done` |
+| `--autonomy` | Optional | Override autonomy preset | Resolved from config |
+
+**Outputs**
+
+| Artifact | Path | Contents |
+|----------|------|----------|
+| Decision log | `docs/cortex/handoffs/decisions.md` | Autonomy decision entries for each transition |
+
+**Rules**
+- Always re-reads state from disk at the start of every iteration (never carries state in memory).
+- Circuit breaker: same action failing 2x consecutively = stop and surface to human.
+- Cortex-drive drives GSD — it does not execute tasks directly.
+- Mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always HITL stops.
+
+**State Effects**
+- Delegates to individual commands — each command writes its own state effects.
+
+**Block Conditions**
+- Circuit breaker: 2 consecutive failures of the same action.
+- Mandatory gate hits require human input.
+
+**Example**
+```
+/cortex-drive "add rate limiting to the API"
+/cortex-drive --to spec
+```
+
+---
+
+## /cortex-stash
+
+**Syntax**
+```bash
+/cortex-stash add "<idea>" [--context "..." | --no-context]
+/cortex-stash list | show <id> | review | promote <id> | discard <id>
+```
+
+**Purpose**
+Zero-friction capture of tangential ideas during active work. Global stash survives `/clear`, slug transitions, and project switches.
+
+**Inputs**
+
+| Subcommand | Required | Description |
+|------------|----------|-------------|
+| `add "<idea>"` | Required (for capture) | Idea text to stash |
+| `--context` | Optional | Manual context override |
+| `--no-context` | Optional | Skip auto-context capture |
+| `list` | — | Show all stashed ideas |
+| `show <id>` | — | Show a specific stash entry |
+| `review` | — | Interactive triage of all entries |
+| `promote <id>` | — | Promote to `/cortex-clarify` |
+| `discard <id>` | — | Remove a stash entry |
+
+**Outputs**
+
+| Artifact | Path | Contents |
+|----------|------|----------|
+| Stash entry | `~/.cortex/stash/<id>-<label>.md` | Idea, context, timestamp, disposition |
+
+**Rules**
+- Stash is **global** (per-user, not per-project).
+- Never modifies `state.json` or `current-state.md`.
+- `add` is the only write operation. `list`, `show`, `review` are read-only. `promote` and `discard` delete entries.
+- `disposition` is set at triage, not capture (always `explore` at capture time).
+
+**State Effects**
+- None — stash is independent of the Cortex lifecycle state.
+
+**Block Conditions**
+- None.
+
+**Example**
+```
+/cortex-stash add "shared validator harness across phases"
+/cortex-stash list
+/cortex-stash promote 20260330T070001Z
+```
+
+---
+
 ## Flag Reference
 
 | Flag | Commands | Values | Description |
@@ -466,6 +699,11 @@ See `docs/DISCOVERY_LOOP.md` for full experiment mode semantics, convergence gua
 | `--depth` | `/cortex-research` | `quick` \| `standard` \| `deep` | Controls research thoroughness and output length |
 | `--team` | `/cortex-research` | (flag — no value) | Opt-in: invokes agent team for research; adds cost |
 | `--write-plan` | `/cortex-research` | (flag — no value) | Writes `eval-plan.md` from `eval-proposal.md` after approval checks |
+| `--slug` | `/cortex-bridge` | `<slug>` | Override active slug for bridge generation |
+| `--to` | `/cortex-drive` | lifecycle mode name | Stop autonomous drive at this mode |
+| `--autonomy` | `/cortex-clarify`, `/cortex-bridge`, `/cortex-drive` | `supervised` \| `gates-only` \| `full-auto` | Override autonomy preset for this invocation |
+| `--context` | `/cortex-stash add` | `"text"` | Manual context override for stash entry |
+| `--no-context` | `/cortex-stash add` | (flag — no value) | Skip auto-context capture |
 
 ---
 
@@ -486,7 +724,13 @@ docs/cortex/
 ├── evals/<slug>/eval-proposal.md
 ├── evals/<slug>/eval-plan.md
 ├── experiments/<slug>/learning-contract-{id}.md
-└── experiments/<slug>/experiment-result-{id}.md
+├── experiments/<slug>/experiment-result-{id}.md
+├── fit/<slug>/fit-report.md
+├── archive/<slug>/...
+└── handoffs/decisions.md
+
+~/.cortex/
+└── stash/<id>-<label>.md
 
 .cortex/
 ├── state.json
