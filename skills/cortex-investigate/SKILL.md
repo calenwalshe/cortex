@@ -54,6 +54,8 @@ Tell the user: "Edits restricted to `<dir>/` for this debug session."
 
 ### Phase 2: Pattern Analysis
 
+**Query knowledge engine:** If `.cortex/facts.jsonl` exists, query for `lesson`, `pattern`, and `observation` type facts related to the affected files or error type. Surface relevant findings: "Similar failure on slug X — root cause was Y." This prevents re-investigating known issues.
+
 Check if this bug matches known patterns before going deeper:
 
 | Pattern | Signature | Where to Look |

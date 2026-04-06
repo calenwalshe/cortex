@@ -31,6 +31,7 @@ Also trigger when the user says:
 5. If no slug and no idea: check for backlog items in `~/.cortex/stash/` and `docs/cortex/research/autonomous-builder-ideas.md`. If items exist, rank by **alignment to owner objectives** (primary), then leverage, urgency, dependencies. Filter out items that contradict non-negotiables. Present the top 3 with alignment reasoning and ask which to start. If no items: print "Nothing to drive. Provide an idea or populate the stash." and stop.
 6. Resolve autonomy config (same as /cortex-spec: 4-layer resolution).
 7. Set `RETRY_COUNT = 0`, `ACTIONS_TAKEN = []`.
+8. **Retrieve relevant facts:** If `.cortex/facts.jsonl` exists, query for facts matching the current slug. Prioritize `lesson` and `procedure` type facts — these represent prior failures and reusable tactics. If a lesson says "approach X failed on a similar slug," flag it before dispatching actions that might repeat the same approach.
 
 ### Phase 2: The Drive Loop
 

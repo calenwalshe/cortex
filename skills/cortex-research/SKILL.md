@@ -38,6 +38,7 @@ If `--dry-run` is passed:
      > No clarify brief found for active slug. Run `/cortex-clarify` first.
 3. If `<topic>` argument is provided, use it as the research focus for this pass.
    If no `<topic>` is provided, use the clarify brief's Open Questions and Next Research Steps as the research agenda.
+   **Query knowledge engine:** If `.cortex/facts.jsonl` exists, query for facts matching the research topic or slug. If prior research on similar topics produced `observation` or `lesson` type facts, note findings and avoid re-covering known territory. Surface: "Prior work on slug X found Y — building on that rather than re-researching."
 4. Read the `Complexity:` field from the clarify brief.
    - **If `complexity: trivial`:** Skip the research phase entirely. Output:
      > Complexity: trivial — research phase skipped. Proceed to /cortex-spec.
