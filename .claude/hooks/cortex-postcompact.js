@@ -4,7 +4,7 @@
 // 1. Preserves existing behavior: writes last-compact-summary.md and next-prompt.md
 // 2. Extracts atomic facts from Cortex artifacts into .cortex/facts.jsonl
 //
-// Fact categories: decision, preference, constraint, pattern, blocker, context_pointer
+// Fact categories: decision, preference, constraint, pattern, blocker, context_pointer, procedure, lesson, observation
 // Deduplication: content hash (first 8 chars of MD5)
 // Performance budget: <5 seconds total
 
@@ -197,30 +197,111 @@ function extractFacts(state, ts) {
     }
   } catch {}
 
-  // ── 2d. Extract from git log ───────────────────────────────────────────
+  // ── 2d. Extract from git log (limited to substantive commits) ──────────
   try {
     const { execSync } = require('child_process');
-    const gitLog = execSync('git log --oneline -20', {
+    const gitLog = execSync('git log --oneline -10', {
       cwd: PROJECT_DIR,
       encoding: 'utf8',
       timeout: 3000,
     }).trim();
     if (gitLog) {
-      const commits = gitLog.split('\n').slice(0, 10);
+      const commits = gitLog.split('\n').slice(0, 5);
       for (const commit of commits) {
-        facts.push(makeFact('context_pointer', `Recent commit: ${commit}`, 'git log'));
+        // Only extract feat/fix commits, skip chore/docs
+        if (/^[a-f0-9]+ (feat|fix)\(/.test(commit)) {
+          facts.push(makeFact('context_pointer', `Shipped: ${commit}`, 'git log'));
+        }
       }
     }
   } catch {}
 
-  // ── 2e. Extract artifact paths as context pointers ─────────────────────
-  if (state.artifacts && Array.isArray(state.artifacts)) {
-    for (const artifact of state.artifacts) {
-      facts.push(makeFact('context_pointer', `Artifact: ${artifact}`, '.cortex/state.json'));
+  // ── 2e. Extract from contract Failed Approaches (E4: lessons) ─────────
+  try {
+    const contractsDir = path.join(PROJECT_DIR, 'docs', 'cortex', 'contracts', slug);
+    const contractFiles = fs.readdirSync(contractsDir)
+      .filter(f => f.match(/^contract-\d+\.md$/))
+      .sort();
+    for (const cf of contractFiles) {
+      const content = readFileOr(path.join(contractsDir, cf), '');
+      const failedMatch = content.match(/## Failed Approaches\n([\s\S]*?)(?=\n## )/);
+      if (failedMatch) {
+        const entries = failedMatch[1].split(/### Attempt/);
+        for (const entry of entries) {
+          const approachMatch = entry.match(/\*\*Approach:\*\*\s*(.*)/);
+          const resultMatch = entry.match(/\*\*Result:\*\*\s*(.*)/);
+          const causeMatch = entry.match(/\*\*Root cause:\*\*\s*(.*)/);
+          if (approachMatch && resultMatch) {
+            const text = `Tried: ${approachMatch[1].trim()}. Result: ${resultMatch[1].trim()}.${causeMatch ? ` Root cause: ${causeMatch[1].trim()}.` : ''}`;
+            facts.push(makeFact('lesson', text, `docs/cortex/contracts/${slug}/${cf}`));
+          }
+        }
+      }
     }
-  }
+  } catch {}
 
-  return facts;
+  // ── 2f. Extract from investigation artifacts (E4: lessons + observations)
+  try {
+    const invDir = path.join(PROJECT_DIR, 'docs', 'cortex', 'investigations', slug);
+    const invFiles = fs.readdirSync(invDir).filter(f => f.endsWith('.md')).slice(-3);
+    for (const inv of invFiles) {
+      const content = readFileOr(path.join(invDir, inv), '');
+      const source = `docs/cortex/investigations/${slug}/${inv}`;
+
+      // Root cause → observation
+      const rcMatch = content.match(/## Root Cause\n([\s\S]*?)(?=\n## )/);
+      if (rcMatch) {
+        const text = rcMatch[1].trim().split('\n')[0];
+        if (text && text.length > 20) facts.push(makeFact('observation', text, source));
+      }
+
+      // Repair recommendation → procedure
+      const repairMatch = content.match(/## Repair Recommendation\n([\s\S]*?)(?=\n## |$)/);
+      if (repairMatch) {
+        const lines = repairMatch[1].split('\n').filter(l => /^\d+\. /.test(l.trim()));
+        if (lines.length > 0) {
+          const text = `Repair approach: ${lines.map(l => l.replace(/^\d+\. /, '').trim()).join('; ')}`;
+          facts.push(makeFact('procedure', text, source));
+        }
+      }
+    }
+  } catch {}
+
+  // ── 2g. Extract from research dossier recommendations (E4: observations)
+  try {
+    const resDir = path.join(PROJECT_DIR, 'docs', 'cortex', 'research', slug);
+    const resFiles = fs.readdirSync(resDir).filter(f => f.endsWith('.md')).slice(-3);
+    for (const rf of resFiles) {
+      const content = readFileOr(path.join(resDir, rf), '');
+      const source = `docs/cortex/research/${slug}/${rf}`;
+
+      // Recommendations → observations
+      const recMatch = content.match(/## Recommend(?:ed|ation)([\s\S]*?)(?=\n## |$)/);
+      if (recMatch) {
+        const lines = recMatch[1].split('\n').filter(l => /^\d+\. /.test(l.trim()));
+        for (const line of lines.slice(0, 5)) {
+          const text = line.replace(/^\d+\. /, '').replace(/\*\*/g, '').trim();
+          if (text.length > 30) facts.push(makeFact('observation', text, source));
+        }
+      }
+    }
+  } catch {}
+
+  // ── Quality filter: remove noise ──────────────────────────────────────
+  return facts.filter(f => {
+    const t = f.text;
+    // Skip short facts
+    if (t.length < 20) return false;
+    // Skip bare section headings
+    if (/^#{1,3} /.test(t)) return false;
+    // Skip bare file paths or commit hashes with no context
+    if (/^[a-f0-9]{7,40}$/.test(t)) return false;
+    // Skip generic "no X" entries
+    if (/^No (specific|active|decisions|blockers)/.test(t)) return false;
+    // Skip artifact-only pointers with no substantive content
+    if (/^Artifact: /.test(t) && t.split('/').length > 3 && t.length < 80) return false;
+    return true;
+  });
 }
 
 // ── Phase 3: Deduplicate and append to facts.jsonl ───────────────────────────
