@@ -364,21 +364,33 @@ If "Reject": stop. User must address feedback and re-run `/cortex-spec`.
 
 ## Output Format
 
+**Follow the HITL report template** at `templates/cortex/hitl-report.md`. Read `docs/cortex/display.json` for `report_level` (default: 1).
+
+**Level 1 (owner) example:**
+
 ```
-SPEC WRITTEN
+## {slug} — Spec Ready
+
+**What this is:** {One sentence: what will be built and why it matters.}
+
+**What we found:**
+- {Scope: what's in, what's explicitly out}
+- {Approach: the key architectural choice, in plain language}
+- {The necessity gate verdict, if it ran}
+
+**Risks:**
+- {Top 1-2 risks from the spec's risk section, in plain language}
+
+**Your decision:** Approve this contract for execution?
 ════════════════════════════════════════
-Slug:     {slug}
+```
+
+**Level 2+ adds:**
+```
 Spec:     docs/cortex/specs/{slug}/spec.md
 Handoff:  docs/cortex/specs/{slug}/gsd-handoff.md
 Contract: docs/cortex/contracts/{slug}/contract-001.md
-
-Status: PENDING HUMAN APPROVAL
-
-Next steps:
-  1. Review docs/cortex/specs/{slug}/spec.md
-  2. Review docs/cortex/contracts/{slug}/contract-001.md
-  3. Approve both (update Status: draft → approved)
-  4. Import gsd-handoff.md into GSD manually
-     (do not run GSD commands from this skill)
-════════════════════════════════════════
+Done criteria: {count}
+Deliverables: {count}
+Write roots: {count}
 ```

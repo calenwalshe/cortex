@@ -110,25 +110,34 @@ Before dispatching, check these conditions. If any are true, stop immediately:
 
 ### Phase 6: Completion Summary
 
-After the loop exits (done, stop, or error), print:
+**Follow the HITL report template** at `templates/cortex/hitl-report.md`. Read `docs/cortex/display.json` for `report_level` (default: 1).
+
+**Level 1 (owner) example:**
 
 ```
-═══════════════════════════════════════
-CORTEX DRIVE — {COMPLETE|STOPPED|ERROR}
-═══════════════════════════════════════
-Slug:     {slug}
-Actions:  {count}
-Duration: {elapsed}
+## {slug} — {COMPLETE|STOPPED|ERROR}
 
+**What was built:** {One sentence: what the user can do now that they couldn't before.}
+
+**What happened:**
+- {2-4 bullets: key outcomes, not step-by-step process}
+- {Focus on results: "retrieval works in under 1 second" not "wrote cortex-retrieve.py"}
+
+**Risks:**
+- {What's not covered, known limitations}
+
+{If stopped: **Why it stopped:** {plain language reason}}
+{If complete: **Status:** Done. Slug archived.}
+{If error: **Needs your attention:** {what to do}}
+```
+
+**Level 2+ adds:**
+```
+Actions: {count}
+Duration: {elapsed}
 Actions taken:
   1. {action} — {outcome}
-  2. {action} — {outcome}
-  ...
-
-{If stopped: reason}
-{If complete: "Slug archived. State reset."}
-{If error: "Manual intervention needed: {details}"}
-═══════════════════════════════════════
+  2. ...
 ```
 
 ## Decision Logging

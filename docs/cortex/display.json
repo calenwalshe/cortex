@@ -1,0 +1,8 @@
+{
+  "report_level": 1,
+  "report_levels": {
+    "1": "owner — plain language, decision-focused, no jargon",
+    "2": "implementer — technical detail, file paths, architecture",
+    "3": "auditor — full evidence, all artifacts, search history"
+  }
+}

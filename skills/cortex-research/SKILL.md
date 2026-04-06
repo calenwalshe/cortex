@@ -338,6 +338,12 @@ If evidence does not invalidate the frame, do not write `reclarify_required` and
 
 See `docs/DISCOVERY_LOOP.md` §1 (research → clarify backtrack transition) for full semantics.
 
+## HITL Output
+
+When presenting research results at a HITL gate, **follow the HITL report template** at `templates/cortex/hitl-report.md`. Read `docs/cortex/display.json` for `report_level` (default: 1).
+
+The research-complete HITL summary should answer: what did we find out, what does it mean for the build, what are we still uncertain about, and should we proceed to spec?
+
 ## Rules
 
 - Reads the clarify brief as primary input context. Clarify brief must exist.
