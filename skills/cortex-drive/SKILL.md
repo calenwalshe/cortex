@@ -67,7 +67,12 @@ Evaluate conditions in this exact order (first match wins):
 | 7 | `mode == "spec"` AND `approval_status == "pending"` AND `gates.contract_approval == true` | Stop: "Contract needs human approval" | No |
 | 8 | `.planning/STATE.md` exists AND GSD phases incomplete | `/gsd:drive` | No (GSD handles) |
 | 9 | GSD execution complete AND active contract has validators | Run validators (external: bash, judgment: cortex-judge) | No |
-| 10 | All validators pass | `/cortex-close` | No |
+| 10 | All validators pass AND `gates.pr_opened == false` AND repo has GitHub remote (`gh repo view` succeeds) | `/cortex-ship` (create branch, push, open PR) | No |
+| 10b | `gates.pr_opened == true` AND CI checks pending | Poll CI: `gh pr checks {pr_number} --required`. Exit 0=pass, 1=fail, 8=pending. If pending, wait 30s and re-poll (max 15 minutes). | No |
+| 10c | `gates.pr_opened == true` AND CI passes | Stop: "PR #{N} ready at {url} — awaiting human merge." | No |
+| 10d | `gates.pr_opened == true` AND CI fails | Stop: "CI failed on PR #{N}. Run /cortex-investigate to diagnose." | No |
+| 10e | `gates.pr_merged == true` (check via `gh pr view {N} --json state`, state=="MERGED") | Close linked issue (if `github.issue_number` set: `gh issue close {N}`), then `/cortex-close` | No |
+| 10f | All validators pass AND repo has NO GitHub remote | `/cortex-close` (skip ship — backward compatible for non-GitHub repos) | No |
 | 11 | Validators fail AND repair budget > 0 AND no convergence stall | Create repair contract → re-execute | No |
 | 11b | Validators fail AND convergence stall detected | Stop: "Convergence stall — repair loop not converging. Escalating to human." Set `reclarify_required: true`. | No |
 | 12 | Validators fail AND repair budget exhausted | Stop: "Repair budget exhausted, escalating to human" | No |
@@ -76,6 +81,8 @@ Evaluate conditions in this exact order (first match wins):
 **For row 3 (research escalation):** Read the concept research dossier. Check if any open question in the dossier or clarify brief is specifically about implementation details (APIs, data formats, integration points, performance requirements). If yes and no implementation dossier exists, run implementation research. If all questions are resolved, skip to row 4.
 
 **For row 1 (backlog ranking):** Read stash files and ideas doc. Rank by: leverage (compounding value), urgency (is something broken?), dependencies (unblocks other work). Present top pick with reasoning.
+
+**For rows 10-10f (ship + CI + merge):** After validators pass, check if the repo has a GitHub remote (`gh repo view --json name 2>/dev/null`). If yes, dispatch `/cortex-ship` to push and open PR. Then poll CI via `gh pr checks {N} --required` — exit 0=pass, 1=fail, 8=pending. Poll every 30 seconds, timeout after 15 minutes. On CI pass, stop and tell the human to merge. On CI fail, stop and suggest `/cortex-investigate`. After human merges (detected by `gh pr view {N} --json state` returning `"MERGED"`), close any linked issue and run `/cortex-close`. For non-GitHub repos (row 10f), skip ship entirely and close directly.
 
 **For row 11/11b (repair with convergence check):** Before creating a repair contract, check for convergence stall files at `docs/cortex/reviews/{slug}/convergence-stall-*.md`. If any exist, take row 11b (stop + set `reclarify_required: true`). Also read `repair_budget` from `.cortex/state.json` — if 0 or missing, take row 12. To compute budget from contracts: count `docs/cortex/contracts/{slug}/contract-*.md` files, read `max_repair_contracts` from the active contract (default 3), remaining = max - (count - 1).
 

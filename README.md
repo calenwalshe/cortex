@@ -25,9 +25,9 @@ Cortex adds an intelligence layer that sits between idea and execution. GSD stil
 
 No layer owns what another layer owns. GSD does not adjudicate on spec quality. Cortex does not manage phases. Discipline rules apply during implementation, not during planning.
 
-### The 13-Command Surface
+### The 15-Command Surface
 
-Cortex adds 13 commands to your Claude Code workflow:
+Cortex adds 15 commands to your Claude Code workflow:
 
 | Command | What it does |
 |---------|-------------|

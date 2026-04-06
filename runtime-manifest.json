@@ -18,6 +18,7 @@
     { "name": "cortex-stash",       "profiles": ["core", "full"] },
     { "name": "cortex-drive",       "profiles": ["core", "full"] },
     { "name": "cortex-intent",      "profiles": ["core", "full"] },
+    { "name": "cortex-ship",        "profiles": ["core", "full"] },
     { "name": "power-search",       "profiles": ["full"] },
     { "name": "google",             "profiles": ["full"] },
     { "name": "cli",                "profiles": ["full"] }

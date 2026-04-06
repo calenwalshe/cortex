@@ -23,7 +23,15 @@ Also trigger when: "bridge to GSD", "generate GSD scaffold", "import to GSD", "g
 2. Else read `.cortex/state.json` → `slug` field.
 3. If neither exists, error: "No active slug. Run /cortex-clarify first or pass --slug <slug>."
 
-**1.2 Verify required Cortex artifacts exist.** Error with specific message if any missing:
+**1.2 Create feature branch (if on main):**
+1. Check current branch: `git branch --show-current`
+2. If on `main` or `master`: create and switch to feature branch: `git checkout -b cortex/{slug}`
+3. If already on a feature branch: continue on current branch.
+4. Write the branch name to `.cortex/state.json` as `github.branch`.
+
+This ensures all GSD execution happens on a feature branch, making `/cortex-ship` a clean push + PR without cherry-pick gymnastics.
+
+**1.3 Verify required Cortex artifacts exist.** Error with specific message if any missing:
 - `docs/cortex/specs/{slug}/gsd-handoff.md` — required. If missing: "Missing gsd-handoff.md for slug '{slug}'. Run /cortex-spec first."
 - `docs/cortex/specs/{slug}/spec.md` — required. If missing: "Missing spec.md for slug '{slug}'. Run /cortex-spec first."
 - `docs/cortex/contracts/{slug}/contract-001.md` — required. If missing: "Missing contract-001.md for slug '{slug}'. Run /cortex-review and get contract approval first."

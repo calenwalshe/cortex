@@ -50,6 +50,15 @@ Also trigger when the user says:
    ```
    Stop. Do not proceed.
 
+### Phase 2b: Close Linked GitHub Issue (if any)
+
+1. Read `state.json` for `github.issue_number`.
+2. If `issue_number` is set and not null:
+   - Run: `gh issue close {issue_number} --comment "Closed by cortex/{slug}" 2>/dev/null`
+   - If successful: report "Closed GitHub issue #{issue_number}"
+   - If failed (no gh, no remote, already closed): report warning but do not block
+3. If `github.pr_url` is set: report "PR: {pr_url}"
+
 ### Phase 3: Eval-Plan Check
 
 1. From `state.json`, look for the eval-plan path. Check `artifacts[]` for any entry matching `docs/cortex/evals/{slug}/eval-plan.md`.

@@ -145,6 +145,9 @@ Output is always a repo-local artifact. Chat-only responses do not satisfy this 
 | `gates.clarify_complete` | `true` |
 | `gates.research_complete` | `false` (unchanged) |
 | `gates.spec_complete` | `false` (unchanged) |
+| `gates.pr_opened` | `false` |
+| `gates.pr_merged` | `false` |
+| `github` | `{ "pr_number": null, "pr_url": null, "issue_number": null, "branch": null }` |
 
 ## Rules
 
