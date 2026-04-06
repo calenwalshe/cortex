@@ -122,10 +122,20 @@ After the DEBUG REPORT is produced, write it to a repo-local artifact:
 4. **Write** the full DEBUG REPORT block to the file.
 
 **Optional repair contract** — only when investigation determines a repair loop is needed (Status: `DONE_WITH_CONCERNS` or `BLOCKED`):
-- Scan `docs/cortex/contracts/{slug}/` for existing contracts; take the highest NNN and increment by 1.
-- Contract path: `docs/cortex/contracts/{slug}/contract-NNN.md`
-- Create directory: `mkdir -p docs/cortex/contracts/{slug}/`
-- Populate from `templates/cortex/contract.md` with repair scope derived from investigation findings.
+
+1. **Check repair budget** — Scan `docs/cortex/contracts/{slug}/` for existing contracts. Count all `contract-*.md` files. Read `max_repair_contracts` from the active contract (default: 3 if missing). If `(count - 1) >= max_repair_contracts`, do NOT create a repair contract. Instead output: `REPAIR BUDGET EXHAUSTED: {count-1} of {max} repair contracts used. Escalating to human.` and set `next_action` accordingly.
+
+2. **Create repair contract** — Take the highest NNN and increment by 1.
+   - Contract path: `docs/cortex/contracts/{slug}/contract-NNN.md`
+   - Create directory: `mkdir -p docs/cortex/contracts/{slug}/`
+   - Populate from `templates/cortex/contract.md` with repair scope derived from investigation findings.
+
+3. **Carry forward Failed Approaches** — Read all prior contracts' `## Failed Approaches` sections. Concatenate them into the new repair contract's `## Failed Approaches` section, preserving the `### Attempt N (contract-NNN.md)` format. Add a new entry for the current contract's approach and failure.
+
+4. **Populate Why Previous Approach Failed** — Write a clear explanation of why the previous contract's approach did not work. This section is REQUIRED for all repair contracts (contract-002.md+).
+
+5. **Sync repair budget to state** — After creating the repair contract, update `.cortex/state.json` with `repair_budget: max_repair_contracts - (total_contracts - 1)` so cortex-drive can read the remaining budget without recounting.
+
 - **Note:** The human must import the repair contract into GSD explicitly — do not call GSD commands.
 
 **Update `docs/cortex/handoffs/current-state.md`:**

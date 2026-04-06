@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # cortex-context-capacity.sh — PostToolUse hook for context window monitoring
 #
-# Reads context_window.remaining_percentage from PostToolUse stdin JSON.
+# Reads context window data from the statusline bridge file written by
+# gsd-statusline.js (/tmp/claude-ctx-{session_id}.json). Falls back to
+# PostToolUse stdin context_window field if bridge file is unavailable.
+#
 # Warns at 75-85% used (15-25% remaining), blocks at >85% used (<15% remaining).
 #
 # Exit codes:
@@ -17,18 +20,51 @@ set -euo pipefail
 # Read stdin JSON
 INPUT=$(cat)
 
-# Extract remaining_percentage — exit 0 if not available
-REMAINING=$(echo "$INPUT" | node -e "
+# Extract session_id for bridge file lookup
+SESSION_ID=$(echo "$INPUT" | node -e "
   let d='';
   process.stdin.on('data',c=>d+=c);
   process.stdin.on('end',()=>{
     try {
       const j=JSON.parse(d);
-      const r=j.context_window&&j.context_window.remaining_percentage;
-      console.log(r!=null?r:'');
+      console.log(j.session_id||'');
     } catch(e) { console.log(''); }
   });
 " 2>/dev/null)
+
+# Try bridge file first (written by gsd-statusline.js), then fall back to stdin
+REMAINING=""
+
+if [ -n "$SESSION_ID" ]; then
+  BRIDGE="/tmp/claude-ctx-${SESSION_ID}.json"
+  if [ -f "$BRIDGE" ]; then
+    # Staleness check: ignore bridge file older than 60s
+    BRIDGE_AGE=$(( $(date +%s) - $(stat -c %Y "$BRIDGE" 2>/dev/null || echo 0) ))
+    if [ "$BRIDGE_AGE" -lt 60 ]; then
+      REMAINING=$(node -e "
+        try {
+          const d=JSON.parse(require('fs').readFileSync('$BRIDGE','utf8'));
+          console.log(d.remaining_percentage!=null?d.remaining_percentage:'');
+        } catch(e) { console.log(''); }
+      " 2>/dev/null)
+    fi
+  fi
+fi
+
+# Fallback: try stdin context_window (may not be available in all Claude Code versions)
+if [ -z "$REMAINING" ]; then
+  REMAINING=$(echo "$INPUT" | node -e "
+    let d='';
+    process.stdin.on('data',c=>d+=c);
+    process.stdin.on('end',()=>{
+      try {
+        const j=JSON.parse(d);
+        const r=j.context_window&&j.context_window.remaining_percentage;
+        console.log(r!=null?r:'');
+      } catch(e) { console.log(''); }
+    });
+  " 2>/dev/null)
+fi
 
 if [ -z "$REMAINING" ]; then
   exit 0
@@ -56,7 +92,6 @@ if [ -f ".cortex/autonomy.json" ]; then
 fi
 
 # Compare remaining percentage against thresholds
-# Use node for reliable float comparison
 VERDICT=$(node -e "
   const r=parseFloat('${REMAINING}');
   const w=parseFloat('${WARN_PCT}');
@@ -76,9 +111,9 @@ case "$VERDICT" in
     exit 2
     ;;
   warn)
-    echo "CONTEXT CAPACITY WARNING" >&2
-    echo "Context window: $(node -e "console.log((100-${REMAINING}).toFixed(1))")% used (${REMAINING}% remaining)" >&2
-    echo "Consider running /compact soon to preserve context quality" >&2
+    # Use JSON stdout for in-conversation warning
+    USED=$(node -e "console.log((100-${REMAINING}).toFixed(1))" 2>/dev/null)
+    echo "{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"CONTEXT CAPACITY WARNING: ${USED}% used (${REMAINING}% remaining). Consider running /compact soon to preserve context quality.\"}}"
     exit 0
     ;;
   *)

@@ -71,6 +71,15 @@
             "async": true
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/hooks/cortex-context-capacity.sh\"",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "TaskCreated": [

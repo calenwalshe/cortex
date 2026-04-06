@@ -288,6 +288,7 @@ Populate all required fields:
 - **Done Criteria** — From the spec's Acceptance Criteria section
 - **Validators** — Validation commands or checks to run to confirm done criteria pass
 - **Eval Plan** — **Mandatory field.** Include path `docs/cortex/evals/{slug}/eval-plan.md`. If no eval plan exists yet, set to `docs/cortex/evals/{slug}/eval-plan.md` (pending). A contract without this field is incomplete and must not be approved.
+- **Repair Budget** — Populate `max_repair_contracts: 3` and `cooldown_between_repairs: 1` (defaults). For contract-001.md, `## Failed Approaches` is empty and `## Why Previous Approach Failed` is "N/A — initial contract".
 - **Approvals** — Both checkboxes unchecked (contract approval and evals approval)
 - **Rollback Hints** — Specific file paths to delete, commands to run, state to restore
 

@@ -5,6 +5,7 @@
 **Phase:** execute
 **Created:** 20260403T215523Z
 **Status:** draft
+**Repair Budget:** max_repair_contracts: 3, cooldown_between_repairs: 1
 
 ---
 

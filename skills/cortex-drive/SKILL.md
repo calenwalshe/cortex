@@ -65,13 +65,16 @@ Evaluate conditions in this exact order (first match wins):
 | 8 | `.planning/STATE.md` exists AND GSD phases incomplete | `/gsd:drive` | No (GSD handles) |
 | 9 | GSD execution complete AND active contract has validators | Run validators (external: bash, judgment: cortex-judge) | No |
 | 10 | All validators pass | `/cortex-close` | No |
-| 11 | Validators fail AND repair budget > 0 | Create repair contract → re-execute | No |
+| 11 | Validators fail AND repair budget > 0 AND no convergence stall | Create repair contract → re-execute | No |
+| 11b | Validators fail AND convergence stall detected | Stop: "Convergence stall — repair loop not converging. Escalating to human." Set `reclarify_required: true`. | No |
 | 12 | Validators fail AND repair budget exhausted | Stop: "Repair budget exhausted, escalating to human" | No |
 | 13 | `mode == "done"` AND `slug == null` | Done | No |
 
 **For row 3 (research escalation):** Read the concept research dossier. Check if any open question in the dossier or clarify brief is specifically about implementation details (APIs, data formats, integration points, performance requirements). If yes and no implementation dossier exists, run implementation research. If all questions are resolved, skip to row 4.
 
 **For row 1 (backlog ranking):** Read stash files and ideas doc. Rank by: leverage (compounding value), urgency (is something broken?), dependencies (unblocks other work). Present top pick with reasoning.
+
+**For row 11/11b (repair with convergence check):** Before creating a repair contract, check for convergence stall files at `docs/cortex/reviews/{slug}/convergence-stall-*.md`. If any exist, take row 11b (stop + set `reclarify_required: true`). Also read `repair_budget` from `.cortex/state.json` — if 0 or missing, take row 12. To compute budget from contracts: count `docs/cortex/contracts/{slug}/contract-*.md` files, read `max_repair_contracts` from the active contract (default 3), remaining = max - (count - 1).
 
 ### Phase 4: Dispatch
 

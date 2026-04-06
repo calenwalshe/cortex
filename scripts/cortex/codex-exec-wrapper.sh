@@ -555,6 +555,7 @@ if ! extract_result "$JSONL_FILE" "$RESULT_FILE"; then
   if [[ "$WORKTREE_COMMITS" -gt 0 ]]; then
     echo "[codex-wrapper] Found $WORKTREE_COMMITS commits despite parse error" >&2
   fi
+  record_failure
   write_ledger "0"
   output_result "fallback" "parse_error"
   exit 0

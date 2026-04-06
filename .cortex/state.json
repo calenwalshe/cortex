@@ -1,19 +1,14 @@
 {
-  "slug": "semantic-retrieval",
-  "mode": "spec",
+  "slug": "pattern-harvest-safety-nets",
+  "mode": "done",
   "approval_status": "approved",
-  "active_contract": "docs/cortex/contracts/semantic-retrieval/contract-001.md",
+  "active_contract": null,
   "artifacts": [
-    "docs/cortex/clarify/semantic-retrieval/20260403T233000Z-clarify-brief.md",
-    "docs/cortex/research/semantic-retrieval/concept-20260403T234000Z.md",
-    "docs/cortex/specs/semantic-retrieval/spec.md",
-    "docs/cortex/specs/semantic-retrieval/gsd-handoff.md",
-    "docs/cortex/contracts/semantic-retrieval/contract-001.md"
+    "docs/cortex/clarify/pattern-harvest-safety-nets/20260406T043000Z-clarify-brief.md",
+    "docs/cortex/research/pattern-harvest-safety-nets/concept-20260406T050000Z.md",
+    "docs/cortex/research/pattern-harvest-safety-nets/20260406T060000Z-external-research.md"
   ],
-  "approvals": {
-    "contract": false,
-    "evals": false
-  },
+  "approvals": { "contract": true, "evals": false },
   "gates": {
     "clarify_complete": true,
     "research_complete": true,
