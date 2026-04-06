@@ -1,0 +1,323 @@
+{
+  "version": "1.0.0",
+  "generated_from": "manual bootstrap from COMMANDS.md + SKILL.md files",
+  "commands": [
+    {
+      "name": "cortex-clarify",
+      "syntax": "/cortex-clarify <idea> [--autonomy <preset>] [--gate <name>=<bool>] [--dry-run]",
+      "purpose": "Converts a fuzzy idea into a written problem frame (clarify brief) — the gate to all downstream research and spec work.",
+      "category": "spine",
+      "profiles": ["core", "full"],
+      "inputs": [
+        { "name": "<idea>", "required": true, "description": "The idea, problem, or feature to clarify" },
+        { "name": "--autonomy", "required": false, "description": "Override autonomy preset", "values": ["supervised", "gates-only", "full-auto"] },
+        { "name": "--gate", "required": false, "description": "Override a specific gate (repeatable)" },
+        { "name": "--dry-run", "required": false, "description": "Print resolved autonomy gate table without executing" }
+      ],
+      "outputs": [
+        { "artifact": "Clarify brief", "path_pattern": "docs/cortex/clarify/<slug>/<timestamp>-clarify-brief.md", "contents_summary": "goal, non-goals, constraints, assumptions, open questions, next research steps" }
+      ],
+      "state_effects": [
+        { "field": "slug", "operation": "writes", "value": "derived slug" },
+        { "field": "mode", "operation": "writes", "value": "clarify" },
+        { "field": "approval_status", "operation": "writes", "value": "pending" },
+        { "field": "active_contract", "operation": "writes", "value": null },
+        { "field": "artifacts", "operation": "appends", "value": "clarify brief path" },
+        { "field": "gates.clarify_complete", "operation": "writes", "value": true }
+      ],
+      "block_conditions": ["Warns (does NOT block) if state.json has a different active slug; requires user confirmation"],
+      "spine_position": 1,
+      "skill_dir": "skills/cortex-clarify"
+    },
+    {
+      "name": "cortex-research",
+      "syntax": "/cortex-research [<topic>] [--phase concept|implementation|evals] [--depth quick|standard|deep] [--team] [--write-plan]",
+      "purpose": "Produces a research dossier for the current slug at a specified phase and depth.",
+      "category": "spine",
+      "profiles": ["core", "full"],
+      "inputs": [
+        { "name": "<topic>", "required": false, "description": "Focus topic for this research pass" },
+        { "name": "--phase", "required": false, "description": "Research phase", "values": ["concept", "implementation", "evals"] },
+        { "name": "--depth", "required": false, "description": "Research depth", "values": ["quick", "standard", "deep"] },
+        { "name": "--team", "required": false, "description": "Invoke agent team for research" },
+        { "name": "--write-plan", "required": false, "description": "Write eval-plan.md from eval-proposal.md" }
+      ],
+      "outputs": [
+        { "artifact": "Research dossier", "path_pattern": "docs/cortex/research/<slug>/<phase>-<timestamp>.md", "contents_summary": "findings, trade-offs, recommendations, open questions" },
+        { "artifact": "Eval proposal", "path_pattern": "docs/cortex/evals/<slug>/eval-proposal.md", "contents_summary": "proposed eval dimensions, fixtures, thresholds" },
+        { "artifact": "Eval plan", "path_pattern": "docs/cortex/evals/<slug>/eval-plan.md", "contents_summary": "approved eval dimensions with execution plan" }
+      ],
+      "state_effects": [
+        { "field": "mode", "operation": "writes", "value": "research" },
+        { "field": "artifacts", "operation": "appends", "value": "dossier or eval proposal path" },
+        { "field": "gates.research_complete", "operation": "writes", "value": true }
+      ],
+      "block_conditions": ["No clarify brief exists for active slug"],
+      "spine_position": 2,
+      "skill_dir": "skills/cortex-research"
+    },
+    {
+      "name": "cortex-spec",
+      "syntax": "/cortex-spec [--autonomy <preset>] [--gate <name>=<bool>] [--dry-run]",
+      "purpose": "Compresses clarify brief and research into a spec, GSD handoff, and first execution contract.",
+      "category": "spine",
+      "profiles": ["core", "full"],
+      "inputs": [
+        { "name": "--autonomy", "required": false, "description": "Override autonomy preset" },
+        { "name": "--gate", "required": false, "description": "Override a specific gate" },
+        { "name": "--dry-run", "required": false, "description": "Print resolved gate table without executing" }
+      ],
+      "outputs": [
+        { "artifact": "Spec", "path_pattern": "docs/cortex/specs/<slug>/spec.md", "contents_summary": "problem, scope, architecture, interfaces, dependencies, risks, tasks, acceptance criteria" },
+        { "artifact": "GSD handoff", "path_pattern": "docs/cortex/specs/<slug>/gsd-handoff.md", "contents_summary": "GSD-ready work order" },
+        { "artifact": "Contract", "path_pattern": "docs/cortex/contracts/<slug>/contract-001.md", "contents_summary": "deliverables, done criteria, validators, repair budget" }
+      ],
+      "state_effects": [
+        { "field": "mode", "operation": "writes", "value": "spec" },
+        { "field": "approval_status", "operation": "writes", "value": "pending" },
+        { "field": "active_contract", "operation": "writes", "value": "contract path" },
+        { "field": "gates.spec_complete", "operation": "writes", "value": true }
+      ],
+      "block_conditions": ["No clarify brief", "No research dossier (unless trivial)", "reclarify_required is true", "Critical open questions unresolved"],
+      "spine_position": 3,
+      "skill_dir": "skills/cortex-spec"
+    },
+    {
+      "name": "cortex-bridge",
+      "syntax": "/cortex-bridge [--slug <slug>] [--autonomy <preset>] [--gate <name>=<bool>] [--dry-run]",
+      "purpose": "Generates a complete GSD .planning/ scaffold from Cortex artifacts. Creates feature branch.",
+      "category": "spine",
+      "profiles": ["core", "full"],
+      "inputs": [
+        { "name": "--slug", "required": false, "description": "Override active slug" }
+      ],
+      "outputs": [
+        { "artifact": "GSD scaffold", "path_pattern": ".planning/{PROJECT,ROADMAP,REQUIREMENTS,STATE,config}.{md,json}", "contents_summary": "GSD milestone structure from spec and contract" }
+      ],
+      "state_effects": [
+        { "field": "mode", "operation": "writes", "value": "execute" },
+        { "field": "artifacts", "operation": "appends", "value": "all .planning/ paths" }
+      ],
+      "block_conditions": ["Missing spec, contract, or gsd-handoff for active slug"],
+      "spine_position": 4,
+      "skill_dir": "skills/cortex-bridge"
+    },
+    {
+      "name": "cortex-investigate",
+      "syntax": "/cortex-investigate [<subject>]",
+      "purpose": "Writes an investigation artifact with root cause analysis and optionally produces a repair contract.",
+      "category": "validation",
+      "profiles": ["core", "full"],
+      "inputs": [
+        { "name": "<subject>", "required": false, "description": "What to investigate — failure or unexpected behavior" }
+      ],
+      "outputs": [
+        { "artifact": "Investigation", "path_pattern": "docs/cortex/investigations/<slug>/<timestamp>.md", "contents_summary": "findings, root cause, evidence, repair recommendations" },
+        { "artifact": "Repair contract (optional)", "path_pattern": "docs/cortex/contracts/<slug>/contract-NNN.md", "contents_summary": "repair scope from investigation" }
+      ],
+      "state_effects": [
+        { "field": "artifacts", "operation": "appends", "value": "investigation path" }
+      ],
+      "block_conditions": ["No slug AND no subject argument"],
+      "spine_position": null,
+      "skill_dir": "skills/cortex-investigate"
+    },
+    {
+      "name": "cortex-review",
+      "syntax": "/cortex-review [<target>] [--security] [--pr N]",
+      "purpose": "Writes a review artifact evaluating the target against the active contract's done criteria and validators.",
+      "category": "validation",
+      "profiles": ["core", "full"],
+      "inputs": [
+        { "name": "<target>", "required": false, "description": "File, PR, or component to review" },
+        { "name": "--security", "required": false, "description": "Add security lens" },
+        { "name": "--pr", "required": false, "description": "Review a specific PR number" }
+      ],
+      "outputs": [
+        { "artifact": "Review", "path_pattern": "docs/cortex/reviews/<slug>/<timestamp>.md", "contents_summary": "review findings, contract compliance, recommendations" }
+      ],
+      "state_effects": [
+        { "field": "artifacts", "operation": "appends", "value": "review path" },
+        { "field": "mode", "operation": "conditional", "value": "repair (on P0 eval failures)" }
+      ],
+      "block_conditions": [],
+      "spine_position": null,
+      "skill_dir": "skills/cortex-review"
+    },
+    {
+      "name": "cortex-audit",
+      "syntax": "/cortex-audit [<target>] [--comprehensive] [--diff] [--quick]",
+      "purpose": "Writes a security and quality audit artifact covering all 7 required audit lenses.",
+      "category": "validation",
+      "profiles": ["core", "full"],
+      "inputs": [
+        { "name": "<target>", "required": false, "description": "Scope to audit" },
+        { "name": "--comprehensive", "required": false, "description": "Extended audit depth" },
+        { "name": "--diff", "required": false, "description": "Audit only changed files" },
+        { "name": "--quick", "required": false, "description": "Quick surface-level audit" }
+      ],
+      "outputs": [
+        { "artifact": "Audit", "path_pattern": "docs/cortex/audits/<slug>/<timestamp>.md", "contents_summary": "findings per lens, severity ratings, remediation" }
+      ],
+      "state_effects": [
+        { "field": "artifacts", "operation": "appends", "value": "audit path" }
+      ],
+      "block_conditions": [],
+      "spine_position": null,
+      "skill_dir": "skills/cortex-audit"
+    },
+    {
+      "name": "cortex-status",
+      "syntax": "/cortex-status",
+      "purpose": "Reconstructs current working context from repo-local artifacts and updates continuity handoff files.",
+      "category": "utility",
+      "profiles": ["core", "full"],
+      "inputs": [],
+      "outputs": [
+        { "artifact": "Current state", "path_pattern": "docs/cortex/handoffs/current-state.md", "contents_summary": "refreshed working state snapshot" },
+        { "artifact": "Next prompt", "path_pattern": "docs/cortex/handoffs/next-prompt.md", "contents_summary": "paste-ready restart prompt" }
+      ],
+      "state_effects": [],
+      "block_conditions": [],
+      "spine_position": null,
+      "skill_dir": "skills/cortex-status"
+    },
+    {
+      "name": "cortex-experiment",
+      "syntax": "/cortex-experiment <open|run|close>",
+      "purpose": "Manages the full lifecycle of a bounded hypothesis test: open, run, and close with a structured decision.",
+      "category": "spine",
+      "profiles": ["core", "full"],
+      "inputs": [
+        { "name": "open|run|close", "required": true, "description": "Subcommand: start, orientation, or close experiment" }
+      ],
+      "outputs": [
+        { "artifact": "Learning contract", "path_pattern": "docs/cortex/experiments/<slug>/learning-contract-<id>.md", "contents_summary": "hypothesis, design, threshold, timebox" },
+        { "artifact": "Experiment result", "path_pattern": "docs/cortex/experiments/<slug>/experiment-result-<id>.md", "contents_summary": "outcomes, learning, decision, rationale" }
+      ],
+      "state_effects": [
+        { "field": "mode", "operation": "writes", "value": "experiment (open) / decision-driven (close)" },
+        { "field": "experiment_complete", "operation": "writes", "value": true }
+      ],
+      "block_conditions": ["No active slug (open)", "Mode not experiment (run/close)", "No open learning contract (close)"],
+      "spine_position": null,
+      "skill_dir": "skills/cortex-experiment"
+    },
+    {
+      "name": "cortex-close",
+      "syntax": "/cortex-close",
+      "purpose": "Archives a completed slug: copies artifacts to cold path, closes linked GitHub issue, records closure, resets state.",
+      "category": "spine",
+      "profiles": ["core", "full"],
+      "inputs": [],
+      "outputs": [
+        { "artifact": "Archive", "path_pattern": "docs/cortex/archive/<slug>/", "contents_summary": "copy of all slug artifacts" }
+      ],
+      "state_effects": [
+        { "field": "slug", "operation": "writes", "value": null },
+        { "field": "mode", "operation": "writes", "value": "done" },
+        { "field": "gates", "operation": "writes", "value": "all false" }
+      ],
+      "block_conditions": ["No active slug", "Slug confirmation mismatch"],
+      "spine_position": 8,
+      "skill_dir": "skills/cortex-close"
+    },
+    {
+      "name": "cortex-fit",
+      "syntax": "/cortex-fit <X> [against <Y>]",
+      "purpose": "Evaluates composition-stage compatibility: does an incoming tool/framework/agent fit the Cortex ecosystem?",
+      "category": "utility",
+      "profiles": ["core", "full"],
+      "inputs": [
+        { "name": "<X>", "required": true, "description": "Incoming entity to evaluate" },
+        { "name": "against <Y>", "required": false, "description": "Existing context to compare against" }
+      ],
+      "outputs": [
+        { "artifact": "Fit report", "path_pattern": "docs/cortex/fit/<slug>/fit-report.md", "contents_summary": "5-dimension analysis, Tech Radar ring, clarify brief fields" }
+      ],
+      "state_effects": [],
+      "block_conditions": [],
+      "spine_position": null,
+      "skill_dir": "skills/cortex-fit"
+    },
+    {
+      "name": "cortex-stash",
+      "syntax": "/cortex-stash add|list|show|review|promote|discard",
+      "purpose": "Zero-friction capture of tangential ideas during active work. Global stash survives /clear and slug transitions.",
+      "category": "utility",
+      "profiles": ["core", "full"],
+      "inputs": [
+        { "name": "add \"<idea>\"", "required": false, "description": "Stash an idea" },
+        { "name": "list|show|review|promote|discard", "required": false, "description": "Manage stash entries" }
+      ],
+      "outputs": [
+        { "artifact": "Stash entry", "path_pattern": "~/.cortex/stash/<id>-<label>.md", "contents_summary": "idea, context, timestamp, disposition" }
+      ],
+      "state_effects": [],
+      "block_conditions": [],
+      "spine_position": null,
+      "skill_dir": "skills/cortex-stash"
+    },
+    {
+      "name": "cortex-drive",
+      "syntax": "/cortex-drive [<idea>] [--to <mode>] [--autonomy <preset>] [--dry-run]",
+      "purpose": "Autonomous lifecycle controller — drives a slug from clarify through done with adaptive decisions at each transition.",
+      "category": "utility",
+      "profiles": ["core", "full"],
+      "inputs": [
+        { "name": "<idea>", "required": false, "description": "Start a new slug from scratch" },
+        { "name": "--to", "required": false, "description": "Stop at this lifecycle mode" },
+        { "name": "--autonomy", "required": false, "description": "Override autonomy preset" }
+      ],
+      "outputs": [
+        { "artifact": "Decision log", "path_pattern": "docs/cortex/handoffs/decisions.md", "contents_summary": "autonomy decision entries" }
+      ],
+      "state_effects": [],
+      "block_conditions": ["Circuit breaker (2 consecutive same-action failures)", "Mandatory gates", "Non-negotiable violations", "Kill criteria"],
+      "spine_position": null,
+      "skill_dir": "skills/cortex-drive"
+    },
+    {
+      "name": "cortex-intent",
+      "syntax": "/cortex-intent init|review|update|diff",
+      "purpose": "Manages the owner-intent.md and preferences.json artifacts that give Cortex a durable alignment layer.",
+      "category": "utility",
+      "profiles": ["core", "full"],
+      "inputs": [
+        { "name": "init", "required": false, "description": "Interactive bootstrap from CLAUDE.md and project history" },
+        { "name": "review", "required": false, "description": "Check staleness, contradictions, drift" },
+        { "name": "update <section>", "required": false, "description": "Targeted edit to section or preference" },
+        { "name": "diff", "required": false, "description": "Show changes since last confirmed version" }
+      ],
+      "outputs": [
+        { "artifact": "Owner intent", "path_pattern": "docs/cortex/intent/owner-intent.md", "contents_summary": "mission, objectives, metrics, non-negotiables, tradeoffs, kill criteria" },
+        { "artifact": "Preferences", "path_pattern": "docs/cortex/intent/preferences.json", "contents_summary": "structured preference records with strength/confidence/staleness" }
+      ],
+      "state_effects": [],
+      "block_conditions": [],
+      "spine_position": null,
+      "skill_dir": "skills/cortex-intent"
+    },
+    {
+      "name": "cortex-ship",
+      "syntax": "/cortex-ship [--issue <N>] [--draft] [--dry-run]",
+      "purpose": "Ships validated code to GitHub: creates branch, pushes, opens PR via /gsd:ship, writes PR state back to Cortex.",
+      "category": "spine",
+      "profiles": ["core", "full"],
+      "inputs": [
+        { "name": "--issue", "required": false, "description": "Link PR to GitHub issue #N" },
+        { "name": "--draft", "required": false, "description": "Open as draft PR" },
+        { "name": "--dry-run", "required": false, "description": "Show what would happen without side effects" }
+      ],
+      "outputs": [],
+      "state_effects": [
+        { "field": "github.pr_number", "operation": "writes", "value": "PR number" },
+        { "field": "github.pr_url", "operation": "writes", "value": "PR URL" },
+        { "field": "gates.pr_opened", "operation": "writes", "value": true }
+      ],
+      "block_conditions": ["No active slug", "Validators not passed", "Dirty working tree", "No GitHub remote", "gh not authenticated", "PR already opened"],
+      "spine_position": 7,
+      "skill_dir": "skills/cortex-ship"
+    }
+  ]
+}
