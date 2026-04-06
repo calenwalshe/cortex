@@ -113,12 +113,13 @@ The following gates apply to this skill:
    ```
    If `gates.necessity` is `true` (or no autonomy config exists): evaluate as follows:
 
-   **Necessity Attack:** Read the clarify brief and all research dossiers for the active slug. Construct a necessity check by asking these five diagnostic questions about the proposed work:
+   **Necessity Attack:** Read the clarify brief, all research dossiers, and `docs/cortex/intent/owner-intent.md` (if it exists) for the active slug. Construct a necessity check by asking these six diagnostic questions about the proposed work:
    1. Who actually has this problem? Is it the human user, or is the system solving its own problem?
    2. Does the existing system already handle this adequately, even if imperfectly?
    3. Would a human notice if this didn't exist?
    4. Is this a "solution looking for a problem"?
    5. Could the same value be achieved with a simpler approach that doesn't require a new tool?
+   6. Does this serve a stated owner objective in `owner-intent.md`? If not, is the problem severe enough to justify work outside the owner's stated priorities?
 
    Based on the answers, determine one of four verdicts:
    - **BUILD** — Real problem, viable solution, proceed to spec.

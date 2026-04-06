@@ -95,7 +95,7 @@ Fill all fields:
 | `{IDEA}` | Verbatim user input — do not paraphrase |
 | `{GOAL}` | One sentence outcome: what success looks like when this idea is fully realized |
 | `{NON_GOALS}` | Explicit list of things this work will NOT cover. Each item starts with `- ` |
-| `{CONSTRAINTS}` | Hard limits that must be respected (technical, business, timeline, regulatory). Each starts with `- ` |
+| `{CONSTRAINTS}` | Hard limits that must be respected (technical, business, timeline, regulatory). Each starts with `- `. **Auto-inject:** If `docs/cortex/intent/owner-intent.md` exists, read its Non-Negotiables section and prepend each as a standing constraint (prefixed with `[owner-intent]`). These appear in every clarify brief automatically. |
 | `{ASSUMPTIONS}` | Things assumed true without verification. Each starts with `- ` |
 | `{OPEN_QUESTIONS}` | Actionable questions that must be answered before research begins. Each starts with `- ` |
 | `{NEXT_RESEARCH_STEPS}` | Ordered numbered agenda for `/cortex-research --phase concept` |

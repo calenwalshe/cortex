@@ -25,10 +25,12 @@ Also trigger when the user says:
 ### Phase 1: Initialize
 
 1. Read `.cortex/state.json` to get current slug, mode, gates, and active contract.
-2. If an `<idea>` argument was provided and no active slug exists, run `/cortex-clarify <idea>` first.
-3. If no slug and no idea: check for backlog items in `~/.cortex/stash/` and `docs/cortex/research/autonomous-builder-ideas.md`. If items exist, present the top 3 ranked by leverage and ask which to start. If no items: print "Nothing to drive. Provide an idea or populate the stash." and stop.
-4. Resolve autonomy config (same as /cortex-spec: 4-layer resolution).
-5. Set `RETRY_COUNT = 0`, `ACTIONS_TAKEN = []`.
+2. **Read owner intent:** If `docs/cortex/intent/owner-intent.md` exists, parse frontmatter + sections. Extract: objectives, non-negotiables, tradeoff preferences, kill criteria, current initiatives. If the file doesn't exist, proceed without intent (backward compatible).
+3. **Read preferences:** If `docs/cortex/intent/preferences.json` exists, parse and apply staleness model (demote expired preferences by one strength level). If >3 preferences are stale, log warning to `decisions.md`: "N preferences stale — consider running /cortex-intent review." If the file doesn't exist, proceed without preferences.
+4. If an `<idea>` argument was provided and no active slug exists, run `/cortex-clarify <idea>` first.
+5. If no slug and no idea: check for backlog items in `~/.cortex/stash/` and `docs/cortex/research/autonomous-builder-ideas.md`. If items exist, rank by **alignment to owner objectives** (primary), then leverage, urgency, dependencies. Filter out items that contradict non-negotiables. Present the top 3 with alignment reasoning and ask which to start. If no items: print "Nothing to drive. Provide an idea or populate the stash." and stop.
+6. Resolve autonomy config (same as /cortex-spec: 4-layer resolution).
+7. Set `RETRY_COUNT = 0`, `ACTIONS_TAKEN = []`.
 
 ### Phase 2: The Drive Loop
 
@@ -94,6 +96,9 @@ Before dispatching, check these conditions. If any are true, stop immediately:
 | Error compounding | RETRY_COUNT >= 2 | Stop: "Circuit breaker triggered" |
 | Context capacity | Context usage > 85% (if detectable) | Stop: "Context checkpoint — save and continue in new session" |
 | Budget | If cost tracking available and exceeds threshold | Stop: "Budget threshold reached" |
+| Non-negotiable violation | Proposed action would violate an owner non-negotiable from `docs/cortex/intent/owner-intent.md` | Stop: "Action violates non-negotiable: {which one}. Aborting." |
+| Kill criteria | Current slug or project matches a kill criterion from owner-intent.md | Stop: "Kill criterion triggered: {which one}. Escalating to human." |
+| Review cadence | owner-intent.md review_cadence exceeded by 2x | Warning in decisions.md (non-blocking): "Owner intent review overdue — consider running /cortex-intent review" |
 
 ### Phase 6: Completion Summary
 

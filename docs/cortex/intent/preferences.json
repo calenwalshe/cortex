@@ -1,0 +1,136 @@
+{
+  "$schema": "cortex/preferences/v1",
+  "project": "cortex",
+  "last_updated": "2026-04-06T18:00:00Z",
+  "preferences": [
+    {
+      "key": "tradeoff.speed_vs_correctness",
+      "value": "correctness",
+      "scope": "project",
+      "strength": "requirement",
+      "confidence": 1.0,
+      "source": "explicit",
+      "last_confirmed": "2026-04-06",
+      "context": "Cortex is infrastructure. Bugs in the intelligence layer compound into every slug it drives."
+    },
+    {
+      "key": "tradeoff.autonomy_vs_control",
+      "value": "autonomy",
+      "scope": "project",
+      "strength": "preference",
+      "confidence": 0.8,
+      "source": "explicit",
+      "last_confirmed": "2026-04-06",
+      "context": "Goal is for cortex-drive to handle standard slugs end-to-end. Mandatory gates remain."
+    },
+    {
+      "key": "tradeoff.generality_vs_specificity",
+      "value": "specificity",
+      "scope": "project",
+      "strength": "preference",
+      "confidence": 0.9,
+      "source": "explicit",
+      "last_confirmed": "2026-04-06",
+      "context": "Solve concrete cases first. YAGNI. Generalize only when 3+ concrete cases share a pattern."
+    },
+    {
+      "key": "tradeoff.features_vs_stability",
+      "value": "stability",
+      "scope": "project",
+      "strength": "preference",
+      "confidence": 0.7,
+      "source": "explicit",
+      "last_confirmed": "2026-04-06",
+      "expires_after": "P180D",
+      "context": "Current priority is hardening existing commands. Will shift once core is stable."
+    },
+    {
+      "key": "quality.review_depth",
+      "value": "standard",
+      "scope": "project",
+      "strength": "preference",
+      "confidence": 0.8,
+      "source": "explicit",
+      "last_confirmed": "2026-04-06"
+    },
+    {
+      "key": "quality.max_validator_false_positive_rate",
+      "value": 0.10,
+      "scope": "project",
+      "strength": "requirement",
+      "confidence": 0.9,
+      "source": "explicit",
+      "last_confirmed": "2026-04-06",
+      "context": "If validators lie, the entire system is unreliable. 10% is the ceiling."
+    },
+    {
+      "key": "workflow.default_autonomy",
+      "value": "gates-only",
+      "scope": "project",
+      "strength": "preference",
+      "confidence": 0.8,
+      "source": "explicit",
+      "last_confirmed": "2026-04-06",
+      "context": "Gates-only is the current sweet spot. Supervised is too slow, full-auto needs more trust."
+    },
+    {
+      "key": "workflow.max_repair_iterations",
+      "value": 3,
+      "scope": "project",
+      "strength": "preference",
+      "confidence": 0.7,
+      "source": "explicit",
+      "last_confirmed": "2026-04-06"
+    },
+    {
+      "key": "workflow.research_depth",
+      "value": "standard",
+      "scope": "project",
+      "strength": "suggestion",
+      "confidence": 0.6,
+      "source": "inferred",
+      "last_confirmed": "2026-04-06",
+      "expires_after": "P90D",
+      "context": "Standard depth is usually enough. Deep research warranted for novel domains."
+    },
+    {
+      "key": "tool.preferred_language",
+      "value": ["typescript", "python", "bash"],
+      "scope": "global",
+      "strength": "preference",
+      "confidence": 1.0,
+      "source": "explicit",
+      "last_confirmed": "2026-04-06"
+    },
+    {
+      "key": "tool.git_commit_style",
+      "value": "conventional",
+      "scope": "global",
+      "strength": "requirement",
+      "confidence": 1.0,
+      "source": "explicit",
+      "last_confirmed": "2026-04-06",
+      "context": "Conventional commits (feat:, fix:, chore:, docs:). Enforced by CLAUDE.md."
+    },
+    {
+      "key": "style.code_comments",
+      "value": "minimal",
+      "scope": "global",
+      "strength": "preference",
+      "confidence": 0.9,
+      "source": "explicit",
+      "last_confirmed": "2026-04-06",
+      "context": "Clean readable code, not comment-heavy. Comments for why, not what."
+    },
+    {
+      "key": "style.abstraction_level",
+      "value": "concrete",
+      "scope": "project",
+      "strength": "preference",
+      "confidence": 0.9,
+      "source": "explicit",
+      "last_confirmed": "2026-04-06",
+      "context": "No unnecessary abstractions. Solve the concrete case."
+    }
+  ]
+}
