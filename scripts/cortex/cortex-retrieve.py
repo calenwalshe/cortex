@@ -121,11 +121,18 @@ def main():
     parser.add_argument('--top-k', type=int, default=5, help='Number of results (default: 5)')
     parser.add_argument('--threshold', type=float, default=0.0,
                         help='Minimum similarity score (default: 0.0)')
+    parser.add_argument('--format', choices=['json', 'text'], default='json',
+                        help='Output format (default: json)')
     args = parser.parse_args()
 
     results = retrieve(args.query, top_k=args.top_k, threshold=args.threshold)
-    json.dump(results, sys.stdout, indent=2)
-    print()
+
+    if args.format == 'text':
+        for r in results:
+            print(f"- {r['text']}")
+    else:
+        json.dump(results, sys.stdout, indent=2)
+        print()
 
 
 if __name__ == '__main__':

@@ -75,6 +75,59 @@ SLUG=$(jq -r '.slug // ""' "$STATE_JSON" 2>/dev/null || echo "")
   git -C "$CLAUDE_PROJECT_DIR" log --oneline -20 2>/dev/null || echo "(no git history)"
   echo ""
 
+  # ── Section 6: Current session work (files modified since last commit) ──
+  echo "## Uncommitted Changes"
+  DIRTY=$(git -C "$CLAUDE_PROJECT_DIR" diff --name-only 2>/dev/null)
+  STAGED=$(git -C "$CLAUDE_PROJECT_DIR" diff --cached --name-only 2>/dev/null)
+  UNTRACKED=$(git -C "$CLAUDE_PROJECT_DIR" ls-files --others --exclude-standard 2>/dev/null | head -20)
+  if [[ -n "$DIRTY" || -n "$STAGED" || -n "$UNTRACKED" ]]; then
+    [[ -n "$STAGED" ]] && echo "Staged:" && echo "$STAGED" | sed 's/^/  /'
+    [[ -n "$DIRTY" ]] && echo "Modified:" && echo "$DIRTY" | sed 's/^/  /'
+    [[ -n "$UNTRACKED" ]] && echo "Untracked:" && echo "$UNTRACKED" | sed 's/^/  /'
+  else
+    echo "(clean working tree)"
+  fi
+  echo ""
+
+  # ── Section 7: Hot context intent (if available) ────────────────────────
+  echo "## Session Intent"
+  HOT_CTX="$HOME/.claude/hot-context/cortex.md"
+  if [[ -f "$HOT_CTX" ]]; then
+    # Extract just the Current Intent section
+    sed -n '/^## Current Intent/,/^## /p' "$HOT_CTX" | head -10
+  else
+    echo "(no hot-context snapshot)"
+  fi
+  echo ""
+
+  # ── Section 8: Supervisor event summary ─────────────────────────────────
+  echo "## Recent Events"
+  SUPERVISOR_LOG="$CORTEX_DIR/supervisor.jsonl"
+  if [[ -f "$SUPERVISOR_LOG" ]]; then
+    python3 -c "
+import json, sys
+from collections import Counter
+events = []
+for line in open('$SUPERVISOR_LOG'):
+    line = line.strip()
+    if line:
+        try: events.append(json.loads(line))
+        except: pass
+recent = events[-20:]
+by_hook = Counter(e.get('hook','?') for e in recent)
+for hook, count in by_hook.most_common(10):
+    print(f'  {hook}: {count}')
+errors = [e for e in recent if e.get('event') == 'hook_error']
+if errors:
+    print(f'  ERRORS: {len(errors)}')
+    for e in errors[-3:]:
+        print(f'    {e.get(\"hook\",\"?\")}: {e.get(\"error\",\"?\")}')
+" 2>/dev/null
+  else
+    echo "(no supervisor log)"
+  fi
+  echo ""
+
 } > "$SNAPSHOT" 2>/dev/null || exit 0
 
 exit 0
