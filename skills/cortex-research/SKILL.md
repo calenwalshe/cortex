@@ -262,7 +262,8 @@ Steps:
    mkdir -p docs/cortex/research/{slug}/
    ```
 3. Read `templates/cortex/research-dossier.md`
-4. Populate all fields (SLUG, PHASE, TIMESTAMP, DEPTH, SUMMARY, FINDINGS, TRADE_OFFS, RECOMMENDATIONS, OPEN_QUESTIONS, SOURCES)
+4. Populate all fields (SLUG, PHASE, TIMESTAMP, DEPTH, SUMMARY, FINDINGS, TRADE_OFFS, RECOMMENDATIONS, ADJACENT_FINDINGS, OPEN_QUESTIONS, SOURCES)
+   - **ADJACENT_FINDINGS:** If the filter pipeline (Step 5) produced 1-3 findings, populate the `## Adjacent Findings` section with BLUF-formatted findings. If zero findings passed the filter, **omit the entire section** — remove the `## Adjacent Findings` heading, the placeholder, and all comments. Do not leave an empty section or write "None."
 5. Write to target path
 
 #### If `--phase evals`
