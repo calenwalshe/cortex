@@ -87,6 +87,37 @@ for url in top_urls[:3]:
 Read all sources. What's consistent? What conflicts? What's missing?
 Generate follow-up queries for gaps.
 
+**Step 2b: Adjacent discovery — Outside-In query reformulation**
+
+After analyzing primary sources and identifying gaps, broaden the search aperture using the IC Outside-In Thinking domain checklist. This is the discovery mechanism for adjacent findings.
+
+**Domain checklist** (select the 3-5 most relevant to this slug):
+- **Political/regulatory** — governance, compliance, policy shifts affecting the domain
+- **Economic** — cost structures, market dynamics, funding models, incentive misalignment
+- **Technological** — competing approaches, enabling tech, infrastructure constraints
+- **Legal** — IP, liability, contractual, licensing implications
+- **Social** — user behavior, adoption patterns, community norms, workforce impact
+- **Environmental** — sustainability, resource constraints, ecological dependencies
+
+**Process:**
+1. From the clarify brief context and primary research, identify which 3-5 domains are most likely to contain decision-relevant information the user has not considered.
+2. For each selected domain, reformulate the research question from that domain's perspective. Frame as: "What would a [domain expert] say is the most important thing this project is overlooking?"
+3. Run one search per reformulated query:
+```python
+# Adjacent discovery — one query per Outside-In domain (max_results=3 to stay within wall time budget)
+for angle_query in reformulated_queries:
+    results = search(angle_query, intent=Intent.SEARCH, provider="tavily", max_results=3)
+```
+4. Hold all candidate findings for the filter pipeline (Step 5). Do not surface findings directly from this step.
+
+**Depth scaling for Outside-In queries:**
+
+| Depth | Angles | Notes |
+|-------|--------|-------|
+| Quick | 1-2 | Pick only the two most obviously relevant domains |
+| Standard | 3-5 | Full domain selection process |
+| Deep | 5 | All five angles; extend to 6 if a domain is clearly split |
+
 **Step 3: Fill gaps (iterate)**
 ```python
 # Follow-up searches (max 2 rounds)
