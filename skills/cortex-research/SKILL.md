@@ -159,7 +159,34 @@ Evaluate any new candidates that emerge against the filter pipeline (Step 5). Th
 
 At `deep` depth, extend the self-check: also ask "What would a critic of this approach point out?" and "What favorable conditions exist that I haven't noticed?" (opportunity analysis). Evaluate all responses against the filter pipeline.
 
-**Step 5: Synthesize into dossier**
+**Step 5: Filter adjacent finding candidates**
+
+Before synthesizing the dossier, run all candidate adjacent findings (from Step 2b, 2c, and 4b) through this 6-stage filter pipeline. Apply stages sequentially — a candidate that fails any stage is eliminated.
+
+**Stage 1 — Decision-relevance gate (VOI)** [mandatory, binary]
+Would knowing this change a decision the user faces for this slug? If the optimal decision is the same regardless, the finding has zero value. Reject it. This gate is mandatory — nothing proceeds without passing it.
+
+**Stage 2 — Specificity gate (80% test)**
+Does this finding apply to 80% or more of projects? If yes, it is generic advice, not an adjacent discovery. Reject it. (Example: "you should have good error handling" fails this test.)
+
+**Stage 3 — Novelty check**
+Does the user likely already know this, given the context in the clarify brief? If the finding restates something the user has already articulated, it adds no value. Reject it.
+
+**Stage 4 — Timeliness check**
+Is this finding relevant to decisions the user faces now? If it is only relevant later (e.g., at scale, after launch, in a future phase), do not surface it as an adjacent finding. Instead, note it in Open Questions with a trigger condition: "Revisit [finding] when [trigger condition]."
+
+**Stage 5 — BLUF formatting**
+Format each surviving finding as:
+> **[Finding title]:** [1-2 sentence BLUF statement of the finding]. [One sentence: why this matters to this slug's decisions — the information scent]. Source: [link or reference]
+
+Every finding MUST include the "why it matters" sentence specific to the current slug. This is the information scent — without it, users rationally ignore adjacent material.
+
+**Stage 6 — Cap at 3, ranked by Impact x Novelty**
+Rank all surviving findings by Impact x Novelty (approximate Bayesian surprise). Keep the top 3. Discard the rest.
+
+**Zero findings is a valid and expected outcome.** Do not pad. Do not lower filter thresholds to produce findings. The system should err toward omission, not inclusion.
+
+**Step 5b: Synthesize into dossier**
 
 #### Deep Path (`--depth deep`)
 ```python
