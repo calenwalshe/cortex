@@ -118,6 +118,21 @@ for angle_query in reformulated_queries:
 | Standard | 3-5 | Full domain selection process |
 | Deep | 5 | All five angles; extend to 6 if a domain is clearly split |
 
+**Step 2c: Assumption-indicator generation (I&W framework)**
+
+For each assumption listed in the clarify brief's Assumptions section, generate one falsifiable indicator — a concrete, observable signal that would prove the assumption wrong. This maps to the IC Indicators & Warnings (I&W) methodology.
+
+**Guard:** If the clarify brief has no Assumptions section, skip this step entirely. Do not fabricate assumptions.
+
+**Process:**
+1. Read the clarify brief's Assumptions section.
+2. For each assumption, produce one indicator in this format:
+   > If you observe [concrete, observable X], then assumption "[Y]" is wrong.
+3. Discard any indicator that is itself unfalsifiable or too vague to observe. If an assumption is too abstract to generate a concrete indicator, skip it rather than producing a weak one.
+4. Hold all indicators for the filter pipeline (Step 5). Only indicators that pass VOI + at least one secondary dimension will be surfaced as adjacent findings.
+
+**Depth scaling:** At `quick` depth, skip assumption-indicator generation entirely. At `standard` and `deep` depth, run the full process.
+
 **Step 3: Fill gaps (iterate)**
 ```python
 # Follow-up searches (max 2 rounds)
