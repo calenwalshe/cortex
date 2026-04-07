@@ -149,6 +149,16 @@ Send consolidated findings to Gemini for a second-opinion analysis:
 cross_ref = search(consolidated_findings, intent=Intent.GENERATE, provider="gemini")
 ```
 
+**Step 4b: "Wait" self-check**
+
+After all research is gathered (primary, gap-filling, cross-reference, and adjacent discovery) but before synthesis, pause and explicitly ask:
+
+> "Wait — what did I not consider?"
+
+Evaluate any new candidates that emerge against the filter pipeline (Step 5). This single self-correction step reduces blind spots by forcing the model out of its confirmation trajectory.
+
+At `deep` depth, extend the self-check: also ask "What would a critic of this approach point out?" and "What favorable conditions exist that I haven't noticed?" (opportunity analysis). Evaluate all responses against the filter pipeline.
+
 **Step 5: Synthesize into dossier**
 
 #### Deep Path (`--depth deep`)
