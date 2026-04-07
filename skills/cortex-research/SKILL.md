@@ -56,6 +56,14 @@ If `--dry-run` is passed:
 | Deep | Complex investigation | gpt-researcher + all sources | ~5-15 min |
 | YouTube | Video content needed | Gemini multimodal | ~1 min |
 
+**Adjacent discovery depth scaling:**
+
+| Depth | Outside-In Angles | Assumption Indicators | "Wait" Self-Check |
+|-------|-------------------|----------------------|-------------------|
+| Quick | 1-2 angles (most obvious domains only) | Skip entirely | Basic: "what did I not consider?" |
+| Standard | 3-5 angles (full domain selection) | Full: one indicator per assumption | Basic: "what did I not consider?" |
+| Deep | 5 angles (extend to 6 if domain splits) | Full: one indicator per assumption | Extended: add critic + opportunity prompts |
+
 ### Phase 2: Execute Research
 
 #### Quick Path (`--depth quick` or simple question)
