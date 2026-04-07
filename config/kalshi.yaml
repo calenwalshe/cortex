@@ -1,0 +1,36 @@
+# Kalshi calibration harness configuration
+# API keys and private key paths come from environment variables,
+# NEVER stored in this file.
+
+api:
+  demo:
+    base_url: "https://demo-api.kalshi.co/trade-api/v2"
+  prod:
+    base_url: "https://api.elections.kalshi.com/trade-api/v2"
+  # Which environment to use: "demo" or "prod"
+  environment: "demo"
+
+markets:
+  # Target cities for weather market discovery
+  target_cities:
+    - "NYC"
+    - "Chicago"
+  # Series ticker prefix for weather markets
+  weather_series_prefix: "KXHIGH"
+
+trading:
+  # Default stake per trade in cents ($5 = 500 cents)
+  default_stake_cents: 500
+  # Minimum edge (your_probability - market_price) to place a bet
+  edge_threshold: 0.05
+  # Order type: "limit" (recommended) or "market"
+  default_order_type: "limit"
+
+monitoring:
+  # How often to check for new evidence (seconds)
+  # Default: 3600 (1 hour) — for daily weather markets, once is enough
+  interval_seconds: 3600
+
+data:
+  # Path to bet records JSONL file (relative to repo root)
+  bets_path: "data/bets/bets.jsonl"
