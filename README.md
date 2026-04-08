@@ -27,28 +27,47 @@ No layer owns what another layer owns. GSD does not adjudicate on spec quality. 
 
 ### The 16-Command Surface
 
-Cortex adds 16 commands to your Claude Code workflow:
-
 | Command | What it does |
 |---------|-------------|
 | `/cortex-clarify` | Converts a fuzzy idea into a written clarify brief — goal, non-goals, constraints, assumptions, open questions, next research steps |
-| `/cortex-research` | Runs research in one of three phases: `concept`, `implementation`, or `evals`. Supports `--depth quick|standard|deep`, `--team`, and `--write-plan` for eval plan generation after approval checks. |
-| `/cortex-spec` | Compresses clarify brief + research dossier into a GSD-ready handoff pack, spec.md, and first execution contract |
+| `/cortex-research` | Runs research in one of three phases: `concept`, `implementation`, or `evals`. Supports `--depth quick\|standard\|deep`, `--team`, and `--write-plan` for eval plan generation. |
+| `/cortex-spec` | Compresses clarify brief + research dossier into a spec, GSD handoff, and first execution contract |
 | `/cortex-bridge` | Generates a complete GSD `.planning/` scaffold from Cortex artifacts (one-time handoff rendering) |
-| `/cortex-investigate` | Writes investigation artifacts to `docs/cortex/investigations/` in the target repo; can hand off into a GSD repair contract |
-| `/cortex-review` | Writes review artifacts to `docs/cortex/reviews/` including a contract compliance lens |
-| `/cortex-audit` | Writes audit artifacts to `docs/cortex/audits/` with required lenses: auth, data, secrets, unsafe tools, input validation, deps, misuse |
-| `/cortex-experiment` | Opens a bounded hypothesis test, runs it, and closes with a decision (promote/iterate/re-clarify/abandon) |
-| `/cortex-status` | Reconstructs current state from repo-local artifacts and updates the continuity handoff files — the recovery command after `/clear` or compaction |
+| `/cortex-ship` | Pushes validated code to GitHub and opens a PR via GSD, writing PR state back to Cortex |
+| `/cortex-investigate` | Writes investigation artifacts with root cause analysis; can hand off into a repair contract |
+| `/cortex-review` | Writes review artifacts including a contract compliance lens |
+| `/cortex-audit` | Writes security and quality audit artifacts with 7 required lenses |
+| `/cortex-experiment` | Opens a bounded hypothesis test (learning contract), runs it, and closes with a structured decision |
+| `/cortex-status` | Reconstructs current state from repo-local artifacts — the recovery command after `/clear` or compaction |
 | `/cortex-close` | Archives a completed slug: copies artifacts to cold path, records close in decisions.md, resets state |
-| `/cortex-stash` | Captures an idea for later without starting the full pipeline |
-| `/cortex-fit` | Composition-stage compatibility check for cross-artifact coherence |
+| `/cortex-stash` | Captures an idea for later without starting the full pipeline (global, survives `/clear`) |
+| `/cortex-fit` | Composition-stage compatibility check — does an incoming tool/framework fit the ecosystem? |
 | `/cortex-drive` | Autonomous lifecycle controller — drives a slug from clarify through done with adaptive decisions |
-| `/cortex-parallel` | Create isolated worktree for parallel builds — multiple slugs building concurrently without conflict |
+| `/cortex-parallel` | Creates an isolated worktree for parallel builds — multiple slugs building concurrently |
+| `/cortex-intent` | Manages the owner-intent alignment layer — mission, objectives, non-negotiables, tradeoff preferences |
 
 Commands run in spine order for new work: clarify → research → spec → [GSD execute] → validate → repair → assure → done. Investigate, review, and audit can run at any time.
 
 Runtime artifacts are written to the **target project repo** where Cortex is installed (for example `docs/cortex/` and `.cortex/`); this framework repo may still contain `.cortex/` and `.planning/` for dogfooding and development.
+
+### Autonomy System
+
+Cortex supports three autonomy presets — `supervised` (all human gates active), `gates-only` (fewer gates), and `full-auto` (minimal gates) — controlling 13 configurable gates across the lifecycle. Gates resolve via 4-layer precedence: invocation flags > project config > global config > preset defaults. Three mandatory gates (`ux_taste_eval`, `human_action`, `reclarify`) are always enforced regardless of config. Every command supports `--dry-run` to preview gate resolution without side effects. See [`docs/HOOKS.md`](./docs/HOOKS.md) for details.
+
+### Agents
+
+Four specialized subagents run with role-based write scopes enforced by hooks: **cortex-critic** (adversarial spec/contract review, read-only), **cortex-specifier** (spec + contract compression), **cortex-eval-designer** (8-dimension eval matrix), and **cortex-scribe** (continuity artifact maintenance). See [`docs/AGENTS.md`](./docs/AGENTS.md) for the full roster and permissions.
+
+### Intelligence Features
+
+Beyond the command surface, Cortex includes:
+
+- **Adjacent discovery** — research uses IC Outside-In domain analysis, assumption-indicator generation (I&W), and a 6-stage VOI filter pipeline to surface findings the user hasn't considered
+- **Depth-scaled research** — three tiers (quick/standard/deep) with automatic provider routing (Perplexity, Tavily, Jina, Gemini, gpt-researcher)
+- **Knowledge engine** — `.cortex/facts.jsonl` persists lessons across slugs so research builds on prior work
+- **Complexity tiers** — trivial slugs skip research and get thin specs; complex slugs force deep research and extended validators
+- **Bounded repair loops** — convergence stall detection, circuit breaker (2 consecutive failures), repair budget limits
+- **20 lifecycle hooks** — session start/end, compaction, phase guard, write guard, research guard, token ledger, doc drift detection, validator trigger, and more
 
 ## Quick Start
 
@@ -83,45 +102,56 @@ The active profile is written to `~/.claude/.cortex-profile` after each install.
 
 For downstream fork setup (e.g. cloning Cortex into a Meta internal environment), see [`DOWNSTREAM.md`](./DOWNSTREAM.md).
 
-The `--project` step scaffolds `docs/cortex/` and `.cortex/` in your target repo, including `.cortex/state.json` and `.cortex/dirty-files.json`, so hooks and runtime state work immediately.
-Runtime inventory and hook wiring are defined in `runtime-manifest.json`; installer behavior and installer tests read from that manifest as the single source of truth.
+The `--project` step scaffolds `docs/cortex/` and `.cortex/` in your target repo, including `.cortex/state.json` and `.cortex/dirty-files.json`, so hooks and runtime state work immediately. Runtime inventory and hook wiring are defined in `runtime-manifest.json`; installer behavior and installer tests read from that manifest as the single source of truth.
 
-Once installed and bootstrapped, start with `/cortex-clarify <your idea>` to begin the intelligence cycle. The clarify command produces a written problem frame you can review before committing to research and spec work.
+Once installed and bootstrapped, start with `/cortex-clarify <your idea>` to begin the intelligence cycle.
 
 ## Structure
 
 ```
 cortex/                          # Framework repo
 ├── CORTEX.md                    # Architecture reference
+├── command-registry.json        # Command metadata — syntax, I/O, state effects
+├── runtime-manifest.json        # Single source of truth for runtime inventory + hook wiring
 ├── docs/
-│   ├── INTELLIGENCE_FLOW.md    # Sequential spine diagram
-│   ├── COMMANDS.md             # Command reference
-│   ├── CONTINUITY.md           # Continuity strategy + schemas + contract loop
-│   ├── EVALS.md                # Eval lifecycle + 8-dimension matrix
-│   └── AGENTS.md               # Agent roster + permissions
+│   ├── INTELLIGENCE_FLOW.md     # Sequential spine diagram
+│   ├── DISCOVERY_LOOP.md        # Adjacent discovery + backtracking semantics
+│   ├── COMMANDS.md              # Command reference
+│   ├── CONTINUITY.md            # Continuity strategy + schemas + contract loop
+│   ├── EVALS.md                 # Eval lifecycle + 8-dimension matrix
+│   ├── HOOKS.md                 # Hook design + event wiring
+│   └── AGENTS.md                # Agent roster + permissions
 ├── skills/
-│   ├── cortex-clarify/         # Fuzzy idea → clarify brief
-│   ├── cortex-research/        # Research dossier (concept/impl/evals + approval gate)
-│   ├── cortex-spec/            # Spec + GSD handoff + contract
-│   ├── cortex-investigate/     # Investigation artifacts
-│   ├── cortex-review/          # Review + contract compliance + repair-on-failure
-│   ├── cortex-audit/           # Security + quality audit (7 lenses)
-│   ├── cortex-status/          # State reconstruction after /clear or compaction
-│   ├── power-search/           # Tool skill: unified search/AI router — Tavily, Jina, Firecrawl, Crawl4AI, Perplexity, Gemini, GPT (--profile=full)
-│   ├── google/                 # Tool skill: Gmail, Drive, Stitch (--profile=full)
-│   └── cli/                    # Tool skill: context-aware shell execution (--profile=full)
+│   ├── cortex-clarify/          # Fuzzy idea → clarify brief
+│   ├── cortex-research/         # Research dossier (concept/impl/evals + approval gate)
+│   ├── cortex-spec/             # Spec + GSD handoff + contract
+│   ├── cortex-bridge/           # GSD .planning/ scaffold generation
+│   ├── cortex-ship/             # Push + PR creation
+│   ├── cortex-investigate/      # Root cause analysis + repair contracts
+│   ├── cortex-review/           # Review + contract compliance
+│   ├── cortex-audit/            # Security + quality audit (7 lenses)
+│   ├── cortex-experiment/       # Bounded hypothesis testing
+│   ├── cortex-status/           # State reconstruction after /clear or compaction
+│   ├── cortex-close/            # Slug archival + state reset
+│   ├── cortex-stash/            # Idea capture (global, survives /clear)
+│   ├── cortex-fit/              # Composition-stage compatibility check
+│   ├── cortex-drive/            # Autonomous lifecycle controller
+│   ├── cortex-parallel/         # Worktree-isolated parallel builds
+│   ├── cortex-intent/           # Owner alignment layer
+│   ├── power-search/            # Tool skill: unified search/AI router (--profile=full)
+│   ├── google/                  # Tool skill: Gmail, Drive, Stitch (--profile=full)
+│   └── cli/                     # Tool skill: context-aware shell execution (--profile=full)
 ├── .claude/
-│   ├── agents/                 # Subagent definitions
-│   ├── hooks/                  # Hook scripts (session lifecycle, phase guard, task gating)
-│   └── settings.json           # Project-local hook event wiring (uses $CLAUDE_PROJECT_DIR)
-├── runtime-manifest.json       # Single source of truth for runtime inventory + hook event wiring
-├── templates/cortex/           # Artifact templates (clarify, research, spec, contract, evals)
-├── scripts/cortex/             # scaffold_runtime.sh — bootstrap docs/cortex/ in target repos
-├── bin/                        # install.js — idempotent installer with --profile and --dry-run support
-├── DOWNSTREAM.md               # Downstream fork guide — arc diff workflow, .arcconfig template
-├── dotfiles-setup.sh           # Shell wrapper for bin/install.js
-├── layers/                     # Discipline + Thinking rule extracts
-└── upstream/                   # Tracked upstream sources (Superpowers, GStack)
+│   ├── agents/                  # 4 subagent definitions (critic, specifier, eval-designer, scribe)
+│   ├── hooks/                   # 20 hook scripts — lifecycle, guards, tracking
+│   └── settings.json            # Project-local hook event wiring
+├── templates/cortex/            # Artifact templates (clarify, research, spec, contract, evals)
+├── scripts/cortex/              # Autonomy resolver, health checks, runtime scaffold
+├── bin/                         # install.js — idempotent installer with --profile and --dry-run
+├── config/                      # Domain configs and prompt surfaces
+├── DOWNSTREAM.md                # Downstream fork guide — arc diff workflow
+├── layers/                      # Discipline + Thinking rule extracts
+└── upstream/                    # Tracked upstream sources (Superpowers, GStack)
 ```
 
 ## Upstream Tracking
@@ -138,4 +168,4 @@ See `upstream/UPSTREAM.md` for the full extraction mapping.
 
 ## Architecture Reference
 
-See `CORTEX.md` for the full architecture and layer activation rules. See `docs/` for detailed references on commands, continuity, evals, and agents.
+See `CORTEX.md` for the full architecture and layer activation rules. See `docs/` for detailed references on commands, continuity, evals, hooks, and agents.
