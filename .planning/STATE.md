@@ -1,13 +1,13 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.5
-milestone_name: pattern-harvest
+milestone: v1.0
+milestone_name: eval-system-refactor
 status: planning
 stopped_at: Bridge import complete
-last_updated: "2026-04-03T22:15:00Z"
-last_activity: 2026-04-03 — Bridge import from Cortex artifacts
+last_updated: "2026-04-10T02:30:00Z"
+last_activity: 2026-04-10 — Bridge import from Cortex artifacts
 progress:
-  total_phases: 8
+  total_phases: 6
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -18,19 +18,19 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-03)
+See: .planning/PROJECT.md (updated 2026-04-10)
 
-**Core value:** Repair loops self-terminate, context degradation is caught before it hurts, and planning depth adapts to work complexity — all without new runtime dependencies.
-**Current focus:** Phase 1 — Context Capacity Gate
+**Core value:** Every slug that ships has independently verified results rather than self-reported ones, making the owner-intent "honest quality signal" objective achievable and measurable.
+**Current focus:** Phase 1 — Duplication Elimination
 
 ## Current Position
 
-Phase: 1 — Context Capacity Gate
+Phase: 1 — Duplication Elimination
 Plan: Not started
 Status: Ready for planning
-Last activity: 2026-04-03 — Bridge import complete
+Last activity: 2026-04-10 — Bridge import complete
 
-Progress: [░░░░░░░░░░░░░░░░░░░░░] 0/0 plans; 0/8 phases complete
+Progress: [░░░░░░░░░░░░░░░░░░░░░] 0/0 plans; 0/6 phases complete
 
 ## Performance Metrics
 
@@ -49,7 +49,7 @@ Progress: [░░░░░░░░░░░░░░░░░░░░░] 0/0 
 
 ### Decisions
 
-Bridge import from Cortex contract: docs/cortex/contracts/pattern-harvest/contract-001.md
+Bridge import from Cortex contract: docs/cortex/contracts/eval-system-refactor/contract-001.md
 
 ### Pending Todos
 
@@ -61,6 +61,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-03T22:15:00Z
+Last session: 2026-04-10T02:30:00Z
 Stopped at: Bridge import complete
 Resume file: None

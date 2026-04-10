@@ -7,7 +7,7 @@ When the user types `/cortex-research`, run this skill.
 Also trigger when: "research this", "deep dive on", "investigate topic", "what do we know about", "intelligence brief on".
 
 ## Arguments
-- `/cortex-research [<topic>] [--phase concept|implementation|evals] [--depth quick|standard|deep] [--team]`
+- `/cortex-research [<topic>] [--phase concept|implementation|evals] [--depth quick|standard|deep] [--team] [--agentic]`
 
 | Argument / Flag | Required | Description | Default |
 |-----------------|----------|-------------|---------|
@@ -15,9 +15,12 @@ Also trigger when: "research this", "deep dive on", "investigate topic", "what d
 | `--phase` | Optional | Research phase: `concept`, `implementation`, or `evals` | `concept` |
 | `--depth` | Optional | Research depth: `quick`, `standard`, or `deep` | `standard` |
 | `--team` | Optional flag | Invokes agent team for research (opt-in, adds cost) | Off |
+| `--agentic` | Optional flag | Enable iterative ReAct loop with Generator/Digester/Evaluator personas. Requires `--depth standard` or `--depth deep`. Incompatible with `--depth quick`. | Off |
 | `--autonomy` | Optional | Override autonomy preset for this invocation: `supervised`, `gates-only`, `full-auto` | Current config |
 | `--gate` | Optional | Override specific gate: `--gate eval_proposal=false`. Repeatable. | Current config |
 | `--dry-run` | Optional | Print resolved autonomy gate table without executing any command logic or writing files | Off |
+
+**`--agentic` validation:** If `--agentic` is set with `--depth quick`, block immediately with: `ERROR: --agentic requires --depth standard or --depth deep. Quick depth has too few iterations to benefit from loop structure.`
 
 ### --dry-run Mode
 
@@ -47,45 +50,193 @@ If `--dry-run` is passed:
    - **If `complexity: standard` or not set:** Use the `--depth` flag as provided (default: `standard`).
    Note: This is a suggestion, not a hard gate. If the clarify brief says `trivial` but the open questions indicate significant unknowns, override to `standard` and note the override in the dossier.
 
-### Phase 1: Determine Research Depth
+### Phase 1: Question Type Routing (type routing table)
 
-| Depth | When | Tools | Time |
-|-------|------|-------|------|
-| Quick | Simple factual question | Perplexity sonar | ~30s |
-| Standard | Most research tasks | Tavily + Jina + Gemini synthesis | ~2-5 min |
-| Deep | Complex investigation | gpt-researcher + all sources | ~5-15 min |
-| YouTube | Video content needed | Gemini multimodal | ~1 min |
+Read the clarify brief. Parse the YAML frontmatter `questions:` array. For each question, route to the appropriate execution path using this **type routing table**:
 
-### Phase 2: Execute Research
+| Type | Intent | Primary Call | Fallback Chain | When to use |
+|------|--------|--------------|----------------|-------------|
+| `factual` | `Intent.RESEARCH` | `search(q, intent=Intent.RESEARCH, provider="perplexity", max_tokens=2500)` | perplexity → gemini_grounded → gemini | Specific answers with citations: "What is X?", "What's the benchmark score?" |
+| `landscape` | `Intent.SEARCH` | `search(q, provider="tavily", depth="advanced", max_results=7)` then read top 2-3 URLs via Jina | tavily → gemini_grounded → perplexity; jina → firecrawl for reads | Broad surveys: "What AI memory systems exist?", "Survey of X approaches" |
+| `mechanism` | `Intent.SEARCH` + `Intent.READ_URL` | `tavily_results = search(q, provider="tavily", depth="advanced", max_results=5)` then `for url in top_authority_urls[:2]: search(url, intent=Intent.READ_URL)` | tavily → gemini_grounded; jina → firecrawl | Understanding how a system/pattern works: "How does MemGPT work?" |
+| `comparison` | `Intent.RESEARCH` + `Intent.GENERATE` | `perplexity_result = search(q, intent=Intent.RESEARCH, provider="perplexity")` then `gemini_challenge = search(perplexity_result, intent=Intent.GENERATE, provider="gemini")` | perplexity → gemini_grounded; gemini for GENERATE | Trade-offs: "X vs Y for use case Z" |
+| `codebase` | NOT web research | `Agent(subagent_type="Explore", prompt=q)` or direct Read/Grep/Glob | Fall back to Read tool directly | Internal project analysis: "Where does Cortex lose context?" |
 
-#### Quick Path (`--depth quick` or simple question)
+**Default unclassified questions to `factual`** (cheapest route, ~$0.02/call). Missing types are NOT auto-defaulted — unknown types error out with: `Unknown question type '{type}' in clarify brief. Valid types: factual, landscape, mechanism, comparison, codebase.`
+
+**Backward compatibility:** If the clarify brief has no `questions:` frontmatter array (legacy brief), extract open questions from the body's `## Open Questions` section and classify them inline using the LLM before proceeding. Print a deprecation note: `Clarify brief lacks questions frontmatter — classifying inline. Regenerate the brief with /cortex-clarify for typed routing.`
+
+### Phase 1.5: Budget Matrix (depth controls per-question budget)
+
+Depth controls the budget per classified question — **not provider choice**. Provider choice comes from the type routing table above.
+
+| Depth | factual | landscape | mechanism | comparison | codebase |
+|-------|---------|-----------|-----------|------------|----------|
+| Quick | 1 Perplexity call (~$0.02) | 1 Tavily search + 1 Jina read (~$0.02) | 1 Tavily search + 1 Jina read (~$0.02) | 1 Perplexity call (~$0.02) | 1 Agent call |
+| Standard | 1 Perplexity + 1 verification search (~$0.04) | 1 Tavily (7 results) + 2 Jina reads (~$0.02) | 1 Tavily (5 results) + 2 Jina reads (~$0.02) | 1 Perplexity + 1 Gemini cross-ref (~$0.02) | 1 Agent call + direct file reads |
+| Deep | 1 Perplexity + 1 follow-up + Gemini verify (~$0.06) | 1 Tavily + 3 Jina reads + 1 follow-up (~$0.04) | 1 Tavily + 3 Jina reads + 1 follow-up (~$0.04) | 1 Perplexity + 1 Gemini + 1 Tavily edge-case (~$0.04) | 2 Agent calls + direct reads |
+
+**Per-session budget cap:** sum across all classified questions + adjacent discovery budget. If a call exceeds its cost budget, log a warning and skip to the next question with status `skipped (budget exhausted)`.
+
+**Adjacent discovery depth scaling:**
+
+| Depth | Outside-In Angles | Assumption Indicators | "Wait" Self-Check |
+|-------|-------------------|----------------------|-------------------|
+| Quick | 1-2 angles (most obvious domains only) | Skip entirely | Basic: "what did I not consider?" |
+| Standard | 3-5 angles (full domain selection) | Full: one indicator per assumption | Basic: "what did I not consider?" |
+| Deep | 5 angles (extend to 6 if domain splits) | Full: one indicator per assumption | Extended: add critic + opportunity prompts |
+
+### Phase 2: Execute Classified Routing
+
+Iterate through the classified questions from the clarify brief. For each question, execute its type-specific path below. Log the actually-used provider in the dossier source list (important for fallback chain visibility).
+
+#### Factual Path (`type: factual`)
+
 ```python
 from power_search import search
 from power_search.base import Intent
 
-result = search(query, intent=Intent.RESEARCH, provider="perplexity", max_tokens=2000)
+# Primary call — Perplexity synthesis with citations
+result = search(question_text, intent=Intent.RESEARCH, provider="perplexity", max_tokens=2500)
+
+# Standard depth: add 1 verification search if result is thin
+# Deep depth: add 1 follow-up + 1 Gemini GENERATE verification
 ```
 
-#### Standard Path (default)
-
-**Step 1: Multi-source search (parallel)**
-```python
-from power_search import search
-from power_search.base import Intent
-
-# Multi-source search
-results = search(query, intent=Intent.SEARCH, provider="tavily", depth="advanced", max_results=7)
-```
+#### Landscape Path (`type: landscape`)
 
 ```python
-# Extract top 3 source URLs
-for url in top_urls[:3]:
+# Broad discovery via Tavily advanced search
+results = search(question_text, intent=Intent.SEARCH, provider="tavily", depth="advanced", max_results=7)
+
+# Apply source authority ranking (Phase 2.5) before Jina reads
+ranked_urls = rank_urls_by_authority(results.sources)
+for url in ranked_urls[:2]:  # Quick: top 1; Standard: top 2; Deep: top 3
     content = search(url, intent=Intent.READ_URL)
 ```
+
+#### Mechanism Path (`type: mechanism`)
+
+```python
+# Focused search for mechanism understanding
+results = search(question_text, intent=Intent.SEARCH, provider="tavily", depth="advanced", max_results=5)
+
+# Read top authority URLs deeply
+ranked_urls = rank_urls_by_authority(results.sources)
+for url in ranked_urls[:2]:  # Deep: top 3
+    content = search(url, intent=Intent.READ_URL)
+```
+
+#### Comparison Path (`type: comparison`)
+
+```python
+# Perplexity synthesis for the comparison
+perplexity_result = search(question_text, intent=Intent.RESEARCH, provider="perplexity", max_tokens=3000)
+
+# Gemini cross-reference (effectively free, adds skeptical second opinion)
+gemini_challenge = search(
+    f"Challenge these findings and identify gaps: {perplexity_result.content}",
+    intent=Intent.GENERATE,
+    provider="gemini"
+)
+```
+
+#### Codebase Path (`type: codebase`)
+
+NOT web research. Use the Agent tool with `subagent_type="Explore"`, or use Read/Grep/Glob directly for simple lookups:
+
+```python
+# Agent-based codebase analysis
+# In practice: invoke Agent tool with Explore subagent, NOT power_search
+```
+
+### Phase 2.5: Source Authority Ranking (before Jina reads)
+
+Before spending Jina reads on URLs from Tavily results, rank them by domain authority. Read high-authority sources first; only fall through to low-authority if higher tiers are exhausted within the budget.
+
+```python
+AUTHORITY_TIERS = {
+    "high": [
+        "arxiv.org", "anthropic.com", "letta.com", "openai.com",
+        "python.org", "docs.", ".gov", "acm.org", "ieee.org",
+        "github.com",  # for official repo docs
+    ],
+    "medium": [
+        "dev.to", "medium.com", "substack.com", "engineering.",
+        "stackoverflow.com",  # for technical Q&A
+    ],
+    "low": [
+        "linkedin.com", "reddit.com", "twitter.com", "x.com",
+        ".wordpress.com", "quora.com",
+    ],
+}
+
+def rank_urls_by_authority(urls):
+    """Sort URLs: high authority first, medium next, low last."""
+    def tier(url):
+        for domain in AUTHORITY_TIERS["high"]:
+            if domain in url: return 0
+        for domain in AUTHORITY_TIERS["medium"]:
+            if domain in url: return 1
+        for domain in AUTHORITY_TIERS["low"]:
+            if domain in url: return 2
+        return 1  # unknown domains default to medium
+    return sorted(urls, key=tier)
+```
+
+**Rule:** Never spend a Jina read on a low-authority URL when a high-authority URL exists on the same question. This is a sort order, not a hard filter — low-authority URLs are still read if the high/medium pool is exhausted within the budget.
 
 **Step 2: Analyze and identify gaps**
 Read all sources. What's consistent? What conflicts? What's missing?
 Generate follow-up queries for gaps.
+
+**Step 2b: Adjacent discovery — Outside-In query reformulation**
+
+**System map context:** Before reformulating queries, check if `docs/cortex/system-map.md` exists. If it does, read the component registry and C4 diagrams to inform domain angle selection — actual system structure produces better reformulated queries than prose inference from the clarify brief alone. If the map does not exist, proceed with clarify brief context only.
+
+After analyzing primary sources and identifying gaps, broaden the search aperture using the IC Outside-In Thinking domain checklist. This is the discovery mechanism for adjacent findings.
+
+**Domain checklist** (select the 3-5 most relevant to this slug):
+- **Political/regulatory** — governance, compliance, policy shifts affecting the domain
+- **Economic** — cost structures, market dynamics, funding models, incentive misalignment
+- **Technological** — competing approaches, enabling tech, infrastructure constraints
+- **Legal** — IP, liability, contractual, licensing implications
+- **Social** — user behavior, adoption patterns, community norms, workforce impact
+- **Environmental** — sustainability, resource constraints, ecological dependencies
+
+**Process:**
+1. From the clarify brief context and primary research, identify which 3-5 domains are most likely to contain decision-relevant information the user has not considered.
+2. For each selected domain, reformulate the research question from that domain's perspective. Frame as: "What would a [domain expert] say is the most important thing this project is overlooking?"
+3. Run one search per reformulated query:
+```python
+# Adjacent discovery — one query per Outside-In domain (max_results=3 to stay within wall time budget)
+for angle_query in reformulated_queries:
+    results = search(angle_query, intent=Intent.SEARCH, provider="tavily", max_results=3)
+```
+4. Hold all candidate findings for the filter pipeline (Step 5). Do not surface findings directly from this step.
+
+**Depth scaling for Outside-In queries:**
+
+| Depth | Angles | Notes |
+|-------|--------|-------|
+| Quick | 1-2 | Pick only the two most obviously relevant domains |
+| Standard | 3-5 | Full domain selection process |
+| Deep | 5 | All five angles; extend to 6 if a domain is clearly split |
+
+**Step 2c: Assumption-indicator generation (I&W framework)**
+
+For each assumption listed in the clarify brief's Assumptions section, generate one falsifiable indicator — a concrete, observable signal that would prove the assumption wrong. This maps to the IC Indicators & Warnings (I&W) methodology.
+
+**Guard:** If the clarify brief has no Assumptions section, skip this step entirely. Do not fabricate assumptions.
+
+**Process:**
+1. Read the clarify brief's Assumptions section.
+2. For each assumption, produce one indicator in this format:
+   > If you observe [concrete, observable X], then assumption "[Y]" is wrong.
+3. Discard any indicator that is itself unfalsifiable or too vague to observe. If an assumption is too abstract to generate a concrete indicator, skip it rather than producing a weak one.
+4. Hold all indicators for the filter pipeline (Step 5). Only indicators that pass VOI + at least one secondary dimension will be surfaced as adjacent findings.
+
+**Depth scaling:** At `quick` depth, skip assumption-indicator generation entirely. At `standard` and `deep` depth, run the full process.
 
 **Step 3: Fill gaps (iterate)**
 ```python
@@ -103,7 +254,44 @@ Send consolidated findings to Gemini for a second-opinion analysis:
 cross_ref = search(consolidated_findings, intent=Intent.GENERATE, provider="gemini")
 ```
 
-**Step 5: Synthesize into dossier**
+**Step 4b: "Wait" self-check**
+
+After all research is gathered (primary, gap-filling, cross-reference, and adjacent discovery) but before synthesis, pause and explicitly ask:
+
+> "Wait — what did I not consider?"
+
+Evaluate any new candidates that emerge against the filter pipeline (Step 5). This single self-correction step reduces blind spots by forcing the model out of its confirmation trajectory.
+
+At `deep` depth, extend the self-check: also ask "What would a critic of this approach point out?" and "What favorable conditions exist that I haven't noticed?" (opportunity analysis). Evaluate all responses against the filter pipeline.
+
+**Step 5: Filter adjacent finding candidates**
+
+Before synthesizing the dossier, run all candidate adjacent findings (from Step 2b, 2c, and 4b) through this 6-stage filter pipeline. Apply stages sequentially — a candidate that fails any stage is eliminated.
+
+**Stage 1 — Decision-relevance gate (VOI)** [mandatory, binary]
+Would knowing this change a decision the user faces for this slug? If the optimal decision is the same regardless, the finding has zero value. Reject it. This gate is mandatory — nothing proceeds without passing it.
+
+**Stage 2 — Specificity gate (80% test)**
+Does this finding apply to 80% or more of projects? If yes, it is generic advice, not an adjacent discovery. Reject it. (Example: "you should have good error handling" fails this test.)
+
+**Stage 3 — Novelty check**
+Does the user likely already know this, given the context in the clarify brief? If the finding restates something the user has already articulated, it adds no value. Reject it.
+
+**Stage 4 — Timeliness check**
+Is this finding relevant to decisions the user faces now? If it is only relevant later (e.g., at scale, after launch, in a future phase), do not surface it as an adjacent finding. Instead, note it in Open Questions with a trigger condition: "Revisit [finding] when [trigger condition]."
+
+**Stage 5 — BLUF formatting**
+Format each surviving finding as:
+> **[Finding title]:** [1-2 sentence BLUF statement of the finding]. [One sentence: why this matters to this slug's decisions — the information scent]. Source: [link or reference]
+
+Every finding MUST include the "why it matters" sentence specific to the current slug. This is the information scent — without it, users rationally ignore adjacent material.
+
+**Stage 6 — Cap at 3, ranked by Impact x Novelty**
+Rank all surviving findings by Impact x Novelty (approximate Bayesian surprise). Keep the top 3. Discard the rest.
+
+**Zero findings is a valid and expected outcome.** Do not pad. Do not lower filter thresholds to produce findings. The system should err toward omission, not inclusion.
+
+**Step 5b: Synthesize into dossier**
 
 #### Deep Path (`--depth deep`)
 ```python
@@ -161,6 +349,172 @@ from power_search.base import Intent
 result = search(url, intent=Intent.CRAWL_SITE)
 ```
 
+### Phase 2.7: Agentic Mode (optional, `--agentic` flag)
+
+When `--agentic` is set, replace the linear classified routing above with an iterative ReAct loop using three distinct LLM personas. This mode is opt-in for complex exploratory research where the initial question set will evolve based on findings.
+
+**When to recommend agentic mode:**
+- Clarify brief has 6+ open questions
+- Brief uses exploration language: "explore", "analyze", "investigate", "discover", "survey"
+- `complexity: complex` AND `--depth deep`
+- Initial research passes are likely to surface new questions not in the original brief
+
+**Hard limits per depth (circuit breakers — override quality-based termination):**
+
+| Limit | Standard | Deep |
+|-------|----------|------|
+| max_iterations | 5 | 8 |
+| max_cost_usd | 0.25 | 0.50 |
+| max_wall_time_s | 300 | 600 |
+
+Exceeding any limit triggers immediate termination with a warning in the dossier: `Loop terminated by {limit_type} — {N} questions remain unanswered.`
+
+**Three LLM personas (separate calls per iteration):**
+
+**Generator** (Think + Act) — system prompt:
+> You are a research generator. Given the current ResearchState, identify the highest-value next question to pursue. Reference the open questions in the clarify brief. Classify the question by type (factual/landscape/mechanism/comparison/codebase) using the type routing table. Output JSON: `{"question": str, "type": str, "reasoning": str}`. You CANNOT terminate the loop — that's the evaluator's job.
+
+**Digester** (Observe → Extract) — system prompt:
+> You are a research digest extractor. Given raw search results and the clarify brief's open questions, produce a concise digest identifying which questions the result addresses and the key findings. Output JSON: `{"addressed_questions": [ids], "key_findings": [str], "gaps_revealed": [str]}`.
+
+**Evaluator** (Skeptical Assess) — system prompt:
+> You are a SKEPTICAL research evaluator. Review the ResearchState and assess: (1) which clarify-brief questions are genuinely answered vs still open, (2) is the current understanding coherent or contradictory, (3) is the loop going in circles (check search_history hashes for duplicates), (4) should the loop terminate. Be skeptical — do NOT approve termination if any open question is partially answered. Output JSON: `{"done": bool, "reason": str, "open_gaps": [question_ids], "suggested_next": str}`.
+
+**Loop structure:**
+
+```python
+# Pseudocode for the agentic loop
+state = load_or_init_research_state()  # ResearchState from .cortex/research-state/{slug}.json
+
+while True:
+    # 1. Generator: think + act
+    next_q = generator_llm_call(state)  # {question, type, reasoning}
+    
+    # 2. Route + execute via classified routing (Phase 1 type table)
+    result = execute_classified_call(next_q.type, next_q.question)
+    
+    # 3. Digester: extract findings (separate LLM call)
+    digest = digester_llm_call(result, state.clarify_brief.open_questions)
+    
+    # 4. Update state
+    state.search_history.append({
+        "iteration": state.iteration,
+        "question_id": next_q.id,
+        "query_hash": hash(next_q.question),
+        "provider": result.provider,  # actually-used provider
+        "cost": result.cost,
+        "result_hash": hash(result.content),
+    })
+    state.digest_history.append(digest)
+    state.current_understanding = merge(state.current_understanding, digest)
+    state.iteration += 1
+    state.cost_accumulated += result.cost
+    
+    # 5. Atomic write of state
+    save_state_atomic(state)  # tmp + rename pattern
+    
+    # 6. Hard limit checks (override quality-based termination)
+    if state.iteration >= state.hard_limits.max_iterations:
+        terminate(reason="max_iterations")
+        break
+    if state.cost_accumulated >= state.hard_limits.max_cost_usd:
+        terminate(reason="max_cost")
+        break
+    if wall_time_elapsed() >= state.hard_limits.max_wall_time_s:
+        terminate(reason="max_wall_time")
+        break
+    
+    # 7. Evaluator: skeptical assessment (separate LLM call)
+    evaluation = evaluator_llm_call(state)  # {done, reason, open_gaps, suggested_next}
+    
+    if evaluation.done:
+        # Ralph loop: ask once more before actually terminating
+        ralph_check = evaluator_llm_call(
+            state,
+            extra_prompt="Are you ABSOLUTELY sure all aspects of the clarify brief are comprehensively covered? Review each open question individually."
+        )
+        if ralph_check.done:
+            break
+        # If Ralph found a gap, continue the loop
+
+# After loop exits, archive state and synthesize
+archive_state(state)  # move to .cortex/research-state/archive/{slug}-{timestamp}.json
+synthesize_dossier(state)
+```
+
+**ResearchState JSON schema (v1):**
+
+```json
+{
+  "schema_version": 1,
+  "slug": "research-depth-routing",
+  "iteration": 3,
+  "started_at": "2026-04-10T00:00:00Z",
+  "last_updated": "2026-04-10T00:03:42Z",
+  "clarify_brief_path": "docs/cortex/clarify/{slug}/...",
+  "depth": "deep",
+  "hard_limits": {
+    "max_iterations": 8,
+    "max_cost_usd": 0.50,
+    "max_wall_time_s": 600
+  },
+  "cost_accumulated": 0.14,
+  "wall_time_s": 222,
+  "questions": [
+    {"id": "q1", "text": "...", "type": "factual", "status": "answered", "findings": ["finding-1"]},
+    {"id": "q2", "text": "...", "type": "mechanism", "status": "partial", "findings": ["finding-3"]}
+  ],
+  "search_history": [
+    {"iteration": 1, "question_id": "q1", "query_hash": "ab12...", "provider": "perplexity", "cost": 0.02, "result_hash": "cd34..."}
+  ],
+  "digest_history": [
+    {"iteration": 1, "question_id": "q1", "digest": "...", "addressed_questions": ["q1"], "gaps_revealed": []}
+  ],
+  "current_understanding": "Evolving summary...",
+  "evaluator_decisions": [
+    {"iteration": 2, "done": false, "reason": "q2 still open", "suggested_next": "Read letta.com/blog/agent-memory"}
+  ]
+}
+```
+
+**Atomic write pattern (ResearchState persistence):**
+
+```python
+import os, json
+
+STATE_DIR = ".cortex/research-state"
+ARCHIVE_DIR = ".cortex/research-state/archive"
+
+def save_state_atomic(state: dict):
+    """Atomic write: tmp file + rename. os.rename is atomic on POSIX."""
+    os.makedirs(STATE_DIR, exist_ok=True)
+    path = f"{STATE_DIR}/{state['slug']}.json"
+    tmp = f"{path}.tmp"
+    with open(tmp, 'w') as f:
+        json.dump(state, f, indent=2)
+    os.rename(tmp, path)  # atomic
+
+def archive_state(state: dict):
+    """Move completed state to archive for debugging. Do NOT delete."""
+    os.makedirs(ARCHIVE_DIR, exist_ok=True)
+    src = f"{STATE_DIR}/{state['slug']}.json"
+    timestamp = state['last_updated'].replace(':', '').replace('-', '')
+    dst = f"{ARCHIVE_DIR}/{state['slug']}-{timestamp}.json"
+    if os.path.exists(src):
+        os.rename(src, dst)
+
+def load_state(slug: str) -> dict | None:
+    """Load existing state if present (e.g., resuming an interrupted loop)."""
+    path = f"{STATE_DIR}/{slug}.json"
+    if os.path.exists(path):
+        with open(path) as f:
+            return json.load(f)
+    return None
+```
+
+**Progress visibility during loop:** Print running cost after each iteration:
+`[iter 3/8] $0.14 / $0.25 budget | 4/7 questions answered | 222s elapsed`
+
 ### Phase 3: Store Results
 
 Output routing depends on `--phase`:
@@ -179,7 +533,8 @@ Steps:
    mkdir -p docs/cortex/research/{slug}/
    ```
 3. Read `templates/cortex/research-dossier.md`
-4. Populate all fields (SLUG, PHASE, TIMESTAMP, DEPTH, SUMMARY, FINDINGS, TRADE_OFFS, RECOMMENDATIONS, OPEN_QUESTIONS, SOURCES)
+4. Populate all fields (SLUG, PHASE, TIMESTAMP, DEPTH, SUMMARY, FINDINGS, TRADE_OFFS, RECOMMENDATIONS, ADJACENT_FINDINGS, OPEN_QUESTIONS, SOURCES)
+   - **ADJACENT_FINDINGS:** If the filter pipeline (Step 5) produced 1-3 findings, populate the `## Adjacent Findings` section with BLUF-formatted findings. If zero findings passed the filter, **omit the entire section** — remove the `## Adjacent Findings` heading, the placeholder, and all comments. Do not leave an empty section or write "None."
 5. Write to target path
 
 #### If `--phase evals`
@@ -194,6 +549,18 @@ Steps:
    ```bash
    mkdir -p docs/cortex/evals/{slug}/
    ```
+
+**Step 1.5: Overwrite guard** — Before writing, check if `docs/cortex/evals/{slug}/eval-proposal.md` already exists.
+If it does, read the file and check the `**Approval Status:**` field.
+- If `Approval Status: approved`: **block with error**:
+  ```
+  ERROR: eval-proposal for '{slug}' is already approved.
+  Overwriting an approved proposal would invalidate the eval plan derived from it.
+  If you need to revise the proposal, manually set Approval Status to 'draft' first.
+  ```
+  Do NOT overwrite. Stop.
+- If `Approval Status: pending` or `Approval Status: draft` or field is absent: proceed (overwrite is safe — proposal hasn't been locked yet).
+
 2. Read `templates/cortex/eval-proposal.md` (NOT the research dossier template)
 
 **Step 2.5: Enumerate all 8 eval dimensions for `{PROPOSED_DIMENSIONS}`**

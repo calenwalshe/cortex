@@ -1,18 +1,29 @@
 {
-  "slug": "complexity-tiers",
-  "mode": "research",
-  "approval_status": "pending",
-  "active_contract": null,
+  "slug": "eval-system-refactor",
+  "mode": "execute",
+  "approval_status": "approved",
+  "active_contract": "docs/cortex/contracts/eval-system-refactor/contract-001.md",
   "artifacts": [
-    "docs/cortex/clarify/complexity-tiers/20260406T070000Z-clarify-brief.md",
-    "docs/cortex/research/complexity-tiers/concept-20260406T120000Z.md",
-    "docs/cortex/research/complexity-tiers/concept-synthesis-20260406T130000Z.md"
+    "docs/cortex/clarify/eval-system-refactor/20260409T170000Z-clarify-brief.md",
+    "docs/cortex/research/eval-system-refactor/concept-20260410T010000Z.md",
+    "docs/cortex/research/eval-system-refactor/implementation-20260410T014500Z.md",
+    "docs/cortex/specs/eval-system-refactor/spec.md",
+    "docs/cortex/specs/eval-system-refactor/gsd-handoff.md",
+    "docs/cortex/contracts/eval-system-refactor/contract-001.md"
   ],
-  "approvals": { "contract": false, "evals": false },
+  "approvals": { "contract": true, "evals": false },
   "gates": {
     "clarify_complete": true,
     "research_complete": true,
-    "spec_complete": false,
-    "contract_approved": false
+    "spec_complete": true,
+    "contract_approved": true,
+    "pr_opened": false,
+    "pr_merged": false
+  },
+  "github": {
+    "pr_number": null,
+    "pr_url": null,
+    "issue_number": null,
+    "branch": null
   }
 }

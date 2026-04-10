@@ -54,6 +54,19 @@
 
 ---
 
+## Adjacent Findings
+
+{ADJACENT_FINDINGS}
+
+<!-- 0-3 findings discovered outside the primary research focus that passed the VOI filter pipeline -->
+<!-- Omit this entire section (including the heading) if zero findings qualify — do not render an empty section or "None" placeholder -->
+<!-- Each finding uses BLUF format: -->
+<!--   - **[Finding title]:** [1-2 sentence statement of the finding]. [One sentence: why this matters to the current slug's decisions — the information scent]. Source: [link or reference] -->
+<!-- Hard cap: 3 findings maximum. Zero is valid — never pad to fill a quota -->
+<!-- Findings must be specific to this slug — reject anything that applies to 80%+ of projects -->
+
+---
+
 ## Open Questions
 
 {OPEN_QUESTIONS}
