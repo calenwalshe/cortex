@@ -25,15 +25,26 @@ If `--dry-run` is passed:
 
 ### Phase 1: Derive slug
 
-Slugify the `<idea>` argument:
-1. Lowercase everything
-2. Replace spaces and non-alphanumeric characters with hyphens
-3. Collapse consecutive hyphens to one
-4. Strip leading and trailing hyphens
+**Distill the idea into a short, memorable identifier** — not a kebab-cased sentence. The slug appears in file paths, state files, commit messages, and every future conversation that references this work. Aim for 2-4 words that name the essence of the change.
 
-**Example:**
-- Input: `"add smart retry logic to the API client"`
-- Output: `smart-retry-logic`
+**How to distill:**
+1. Read the idea and identify the core noun phrase or verb+object that names what's being done (e.g., "rate limiter", "hook loader", "auth middleware")
+2. If context is ambiguous, add ONE scope qualifier (e.g., `tavily-rate-limiter`, `sessionstart-hook-loader`)
+3. Lowercase, hyphen-separate words, strip non-alphanumeric
+
+**Slug shape test (critical):**
+- **Rule of thumb:** If the slug exceeds ~40 characters, you have kebab-cased the sentence instead of distilling it — re-distill.
+- ✓ Good: `smart-retry-logic`, `tavily-rate-limiter`, `sessionstart-token-budget`, `auth-middleware-rewrite`
+- ✗ Bad (kebab-cased prose): `add-a-rate-limiter-to-the-tavily-provider-in-power-search`
+- ✗ Bad (too generic, loses context): `rate-limiter`, `hook`, `retry`
+
+**Examples (input → output):**
+- `"add smart retry logic to the API client"` → `smart-retry-logic`
+- `"rewrite the auth middleware to use JWT instead of sessions"` → `jwt-auth-middleware`
+- `"improve the onboarding flow so new users reach the first value moment within 90 seconds"` → `onboarding-flow`
+- `"migrate the analytics pipeline from Airflow to Prefect because the DAG authoring experience is hostile"` → `airflow-to-prefect-migration`
+
+The idea text's length has no bearing on the slug's length. Distill aggressively. If you cannot distill without losing essential disambiguation, add one scope qualifier and stop — do not include the full prose.
 
 Record the slug — it is used in all subsequent steps.
 
@@ -101,6 +112,23 @@ Fill all fields:
 | `{NEXT_RESEARCH_STEPS}` | Ordered numbered agenda for `/cortex-research --phase concept` |
 
 **If the idea is too sparse to derive non-goals, constraints, or open questions:** ask the user clarifying questions before writing. Do not silently leave fields empty.
+
+**Classify open questions for research routing.** Populate the YAML frontmatter `questions:` array at the top of the clarify brief. For each item in `## Open Questions`, create an entry with `id` (sequential: q1, q2, ...), `text` (the question verbatim), and `type` (one of the 5-type taxonomy below).
+
+**5-type question taxonomy** (used by `/cortex-research` for provider routing):
+
+| Type | When to use | Example |
+|------|-------------|---------|
+| `factual` | Specific answer with citations needed | "What LoCoMo score does Letta achieve?" |
+| `landscape` | Broad survey of what exists in a space | "What AI memory systems exist?" |
+| `mechanism` | How a specific system or pattern works | "How does MemGPT's tiered hierarchy work?" |
+| `comparison` | Trade-offs between alternatives | "MemGPT vs Mem0 vs Zep for file-based storage?" |
+| `codebase` | Internal project analysis (not web research) | "Where does Cortex lose context between sessions?" |
+
+Classification rules:
+1. Multi-intent questions are **decomposed into separate typed sub-questions** (Anthropic multi-agent decomposition pattern). Example: "How does X work and what are the alternatives?" becomes two entries: one `mechanism`, one `comparison`.
+2. If a question's type is genuinely ambiguous, default to `factual` (the cheapest routing path). A misclassification to `factual` is cheap; misclassification to `mechanism` is expensive.
+3. Populate the same classifications into the `## Next Research Steps` section if the research step corresponds directly to an open question.
 
 ### Phase 4: Write artifact
 

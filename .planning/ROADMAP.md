@@ -1,93 +1,82 @@
-# Roadmap: Pattern Harvest
+# Roadmap: eval-system-refactor
 
 ## Overview
 
-Add 13 patterns harvested from competing systems (Praetorian, BMAD, Swarm-IOSM, OpenHands, LangSmith, DeepEval) to Cortex across 3 tiers: safety nets (prevent runaway loops and silent degradation), repair quality (make each fix attempt count), and intelligence depth (smarter planning and better measurement). All patterns fit within SKILL.md instruction architecture — no new runtime dependencies. Success = repair loops self-terminate, context degradation is caught before it hurts, and planning depth adapts to work complexity.
+Refactor the Cortex eval system to deliver an honest quality signal: eliminate the 68–73% mechanical duplication between eval-proposals and eval-plans via an automated generator; introduce `codex-eval-executor.sh` (a fork of the battle-tested `codex-exec-wrapper.sh`) that runs codex (OpenAI `o4-mini`) as a cross-vendor independent evaluator with no access to the code-writing session's context; wire the pipeline into an explicit `/cortex-eval-run` skill; and lay the foundation for false-positive rate instrumentation — so that every slug that ships has independent verification rather than self-reported results.
 
 ## Phases
 
-### Phase 1: Context Capacity Gate
+### Phase 1: Duplication Elimination
 
-**Goal**: Add a mandatory context_capacity gate to resolve-autonomy.js and a PostToolUse hook that monitors context window usage, warning at 75-85% and blocking at >85%.
+**Goal**: Automate the proposal→plan transformation (currently 68–73% mechanical copy) and add an overwrite guard to cortex-research to prevent silent clobber of approved proposals
 **Depends on**: Nothing
-**Requirements**: REQ-PH-01
+**Requirements**: N/A
 **Success Criteria** (what must be TRUE):
-  1. Context capacity gate blocks at >85% used, warns at 75-85%
+  1. `generate-eval-plan.py` correctly transforms the `kalshi-adaptive-loop` eval-proposal: approved dimensions only, fixtures verbatim, run instructions preserved, rubrics absent, failure taxonomy absent
+  2. `test/test_generate_eval_plan.py` passes with ≥5 test cases and 0 failures
+  3. Running `/cortex-research --phase evals` on a slug with `Approval Status: approved` produces an error and does not overwrite
 **Research**: Unlikely
 **Plans**: 0 plans
 
-### Phase 2: Repair Budget + Convergence Detector
+### Phase 2a: Scaffolding
 
-**Goal**: Add repair_budget and cooldown fields to the contract template, and add a convergence detector to cortex-review that identifies repeated similar failures and generates convergence-stall.md.
-**Depends on**: Phase 1: Context Capacity Gate
-**Requirements**: REQ-PH-02, REQ-PH-03
+**Goal**: Build the three structural components that codex-eval-executor needs as inputs: eval-capsule template, eval-result JSON schema, and capsule assembler with rejection-rules validation
+**Depends on**: Phase 1: Duplication Elimination
+**Requirements**: N/A
 **Success Criteria** (what must be TRUE):
-  1. Repair contracts capped at max_repair_contracts (default 3)
-  2. Convergence detector identifies 3+ similar failures, generates convergence-stall.md
+  1. `eval-capsule.md` template has all 6 required sections: Slug, Approved Dimensions, Fixtures Per Dimension, Thresholds Per Dimension, Rejection Rules, Deliverable Files
+  2. `eval-result.schema.json` is valid JSON Schema; validates a conforming sample object; rejects an object missing `overall_verdict`
+  3. `generate-eval-capsule.py` raises non-zero exit when eval-plan has no `## Rejection Rules` section
+  4. `generate-eval-capsule.py` enforces 200-line / 12KB per-file cap on deliverables
+  5. `test/test_generate_eval_capsule.py` passes with ≥5 test cases and 0 failures
 **Research**: Unlikely
 **Plans**: 0 plans
 
-### Phase 3: Circuit Breaker + Iteration Budget
+### Phase 2b: Executor
 
-**Goal**: Add circuit breaker logic and iteration budget (max_steps) to codex-exec-wrapper.sh so Codex dispatch stops after 3 consecutive failures and runaway tasks are killed.
-**Depends on**: Phase 2: Repair Budget + Convergence Detector
-**Requirements**: REQ-PH-04, REQ-PH-05
+**Goal**: Build codex-eval-executor.sh — a fork of codex-exec-wrapper.sh specialised for read-only eval runs: no git merge on success, eval-specific JSONL events, task_type="eval" ledger tagging
+**Depends on**: Phase 2a: Scaffolding
+**Requirements**: N/A
 **Success Criteria** (what must be TRUE):
-  1. Codex circuit breaker stops dispatch after 3 consecutive failures
-  2. Codex iteration budget kills tasks exceeding max_steps
+  1. A successful `codex-eval-executor.sh` run does not produce any new git commits (git log unchanged)
+  2. `codex-eval-executor.sh` exits with correct `fallback_reason` on timeout, crash, and parse error
+  3. `test/test_codex_eval_executor.sh` passes with ≥10 test cases and 0 failures
 **Research**: Unlikely
 **Plans**: 0 plans
 
-### Phase 4: Failed Approaches + Reflexion Mandate
+### Phase 2c: Results Processor
 
-**Goal**: Add Failed Approaches and Why Previous Approach Failed sections to the contract template so repair contracts carry failure history and force the repairing agent to explain why the previous approach failed.
-**Depends on**: Phase 3: Circuit Breaker + Iteration Budget
-**Requirements**: REQ-PH-06
+**Goal**: Build format-eval-results.py to transform the eval-result JSON from codex into the existing results-{timestamp}.md format and update eval-status.md composite scoring
+**Depends on**: Phase 2b: Executor
+**Requirements**: N/A
 **Success Criteria** (what must be TRUE):
-  1. Repair contracts include Failed Approaches + Why Previous Failed sections
+  1. `format-eval-results.py` output matches `kalshi-adaptive-loop/results-20260407T064500Z.md` format (table structure, section headings, Overall verdict line)
+  2. `format-eval-results.py` writes at least one dimension score row to `eval-status.md`
+  3. `test/test_format_eval_results.py` passes with ≥5 test cases and 0 failures
 **Research**: Unlikely
 **Plans**: 0 plans
 
-### Phase 5: Validator Taxonomy + Completion Promises
+### Phase 2d: Wiring
 
-**Goal**: Annotate contract validators as [external] or [judgment] to distinguish deterministic from taste checks, and add completion promise signaling so executors emit explicit done signals that hooks can verify.
-**Depends on**: Phase 4: Failed Approaches + Reflexion Mandate
-**Requirements**: REQ-PH-07, REQ-PH-08
+**Goal**: Wire the full pipeline into /cortex-eval-run skill, update cortex-task-completed.sh to be non-blocking on missing evals, update cortex-review to scan eval results and emit repair recommendations, and create the eval-ledger stub
+**Depends on**: Phase 2c: Results Processor
+**Requirements**: N/A
 **Success Criteria** (what must be TRUE):
-  1. Validators annotated as [external] or [judgment]
-  2. Executor emits CORTEX_PROMISE signal, hook checks for it
+  1. `/cortex-eval-run` SKILL reads active contract eval_plan field, invokes generate-capsule → executor → format-results in sequence, produces `results-{timestamp}.md` at `docs/cortex/evals/{slug}/`
+  2. `cortex-task-completed.sh` exits 0 and writes "evals pending" to eval-status.md when eval-plan is referenced but results absent (not blocking)
+  3. `cortex-review` SKILL outputs a repair recommendation paragraph naming the dimension and quoting evidence for any FAIL verdict in results
+  4. `.cortex/eval-ledger.jsonl` exists with header comment
 **Research**: Unlikely
 **Plans**: 0 plans
 
-### Phase 6: Complexity Tiers
+### Phase 4: Cleanup
 
-**Goal**: Add a complexity field (trivial/standard/complex) to the clarify-brief template and add conditional logic to cortex-research and cortex-spec so trivial slugs skip research and get thin specs.
-**Depends on**: Phase 5: Validator Taxonomy + Completion Promises
-**Requirements**: REQ-PH-09, REQ-PH-10
+**Goal**: Archive the dead cortex-eval-designer agent and annotate docs/EVALS.md with ASPIRATIONAL/IMPLEMENTED markers to close the gap between documentation and implementation reality
+**Depends on**: Phase 2d: Wiring
+**Requirements**: N/A
 **Success Criteria** (what must be TRUE):
-  1. Clarify brief has complexity field (trivial/standard/complex)
-  2. Trivial slugs skip research, get thin spec
-**Research**: Unlikely
-**Plans**: 0 plans
-
-### Phase 7: Cross-Artifact Coherence + Composite Scoring
-
-**Goal**: Add a cross-artifact coherence validator to cortex-spec that verifies the spec addresses all clarify-brief goals, and create eval-status.md template with 0-1 per-dimension composite scoring.
-**Depends on**: Phase 6: Complexity Tiers
-**Requirements**: REQ-PH-11, REQ-PH-12
-**Success Criteria** (what must be TRUE):
-  1. Cross-artifact coherence check at spec time
-  2. eval-status.md shows 0-1 scores per dimension with composite
-**Research**: Unlikely
-**Plans**: 0 plans
-
-### Phase 8: Event Log + Step Budget
-
-**Goal**: Add JSONL event logging and step-count budget enforcement to codex-exec-wrapper.sh, and create the execution-event JSON schema.
-**Depends on**: Phase 7: Cross-Artifact Coherence + Composite Scoring
-**Requirements**: REQ-PH-13
-**Success Criteria** (what must be TRUE):
-  1. Execution event log records structured events per Codex task
+  1. `.claude/agents/archive/cortex-eval-designer.md` exists with `# ARCHIVED` header comment referencing this spec
+  2. `docs/EVALS.md` contains `ASPIRATIONAL` in the repair loop section and `IMPLEMENTED` in the results and proposal/plan lifecycle sections
 **Research**: Unlikely
 **Plans**: 0 plans
 
@@ -95,11 +84,9 @@ Add 13 patterns harvested from competing systems (Praetorian, BMAD, Swarm-IOSM, 
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| Phase 1: Context Capacity Gate | 0/0 | Not started | - |
-| Phase 2: Repair Budget + Convergence Detector | 0/0 | Not started | - |
-| Phase 3: Circuit Breaker + Iteration Budget | 0/0 | Not started | - |
-| Phase 4: Failed Approaches + Reflexion Mandate | 0/0 | Not started | - |
-| Phase 5: Validator Taxonomy + Completion Promises | 0/0 | Not started | - |
-| Phase 6: Complexity Tiers | 0/0 | Not started | - |
-| Phase 7: Cross-Artifact Coherence + Composite Scoring | 0/0 | Not started | - |
-| Phase 8: Event Log + Step Budget | 0/0 | Not started | - |
+| Phase 1: Duplication Elimination | 0/0 | Not started | - |
+| Phase 2a: Scaffolding | 0/0 | Not started | - |
+| Phase 2b: Executor | 0/0 | Not started | - |
+| Phase 2c: Results Processor | 0/0 | Not started | - |
+| Phase 2d: Wiring | 0/0 | Not started | - |
+| Phase 4: Cleanup | 0/0 | Not started | - |
