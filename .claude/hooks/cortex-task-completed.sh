@@ -18,8 +18,25 @@ ACTIVE_CONTRACT=$(jq -r '.active_contract // ""' "$STATE_JSON" 2>/dev/null || ec
 # No active contract — no enforcement possible
 [[ -z "$ACTIVE_CONTRACT" ]] && exit 0
 
-# No eval-status.md — evals haven't run yet
+# EVAL-SPECIFIC: non-blocking eval gate
+# If eval plan exists but results haven't run yet, write pending status and allow completion.
+# The blocking behaviour is reserved for FAIL verdicts in populated eval-status.md.
 if [[ ! -f "$EVAL_STATUS" ]]; then
+  # Check if the active contract has an eval_plan field (non-pending)
+  EVAL_PLAN_FIELD=$(grep -m1 'eval_plan:' "${CLAUDE_PROJECT_DIR}/${ACTIVE_CONTRACT}" 2>/dev/null | sed 's/.*eval_plan: *//' | tr -d '[:space:]' || echo "")
+  SLUG=$(jq -r '.slug // ""' "$STATE_JSON" 2>/dev/null || echo "")
+  EVALS_DIR="${CLAUDE_PROJECT_DIR}/docs/cortex/evals/${SLUG}"
+  RESULTS_EXIST=$(ls "${EVALS_DIR}"/results-*.md 2>/dev/null | head -1 || echo "")
+
+  if [[ -n "$EVAL_PLAN_FIELD" && "$EVAL_PLAN_FIELD" != "(pending)" && -z "$RESULTS_EXIST" ]]; then
+    # Eval plan configured but evals not yet run — write pending notice, exit 0 (non-blocking)
+    mkdir -p "$(dirname "$EVAL_STATUS")"
+    echo "evals pending — run /cortex-eval-run to execute" > "$EVAL_STATUS"
+    echo "[cortex-task-completed] Evals pending for ${SLUG} — non-blocking (run /cortex-eval-run)" >&2
+    exit 0
+  fi
+
+  # No eval plan and no eval-status — block (old behaviour preserved)
   python3 -c "
 import json
 print(json.dumps({

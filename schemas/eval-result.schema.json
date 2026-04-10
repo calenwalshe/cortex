@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cortex/schemas/eval-result.schema.json",
+  "title": "EvalResult",
+  "description": "Output schema for codex-eval-executor.sh — constrains codex structured output to a verifiable eval verdict",
+  "type": "object",
+  "required": ["overall_verdict", "evaluated_dimensions"],
+  "additionalProperties": false,
+  "properties": {
+    "overall_verdict": {
+      "type": "string",
+      "enum": ["pass", "fail", "partial"],
+      "description": "Aggregate verdict across all evaluated dimensions. 'partial' means some dimensions passed and some failed."
+    },
+    "evaluated_dimensions": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Per-dimension evaluation results. Must include one entry per approved dimension.",
+      "items": {
+        "type": "object",
+        "required": ["dimension", "verdict", "finding", "severity", "fixtures_tested"],
+        "additionalProperties": false,
+        "properties": {
+          "dimension": {
+            "type": "string",
+            "description": "Dimension name, e.g. 'Functional Correctness', 'Style'"
+          },
+          "verdict": {
+            "type": "string",
+            "enum": ["pass", "fail", "partial"],
+            "description": "Verdict for this dimension based on thresholds and rejection rules"
+          },
+          "finding": {
+            "type": "string",
+            "description": "Evidence-based summary of what was observed. Must cite concrete evidence, not just a conclusion."
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["blocking", "warn", "note"],
+            "description": "Severity of findings: 'blocking' = must fix before shipping, 'warn' = should fix, 'note' = informational"
+          },
+          "fixtures_tested": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of fixture paths or names that were evaluated for this dimension"
+          },
+          "failures": {
+            "type": "array",
+            "description": "Specific failure instances. Empty array if verdict is 'pass'.",
+            "items": {
+              "type": "object",
+              "required": ["criterion", "evidence"],
+              "additionalProperties": false,
+              "properties": {
+                "criterion": {
+                  "type": "string",
+                  "description": "The specific criterion from the threshold or rejection rule that was not met"
+                },
+                "evidence": {
+                  "type": "string",
+                  "description": "Concrete evidence of the failure — file path, line number, actual vs expected value, etc."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "deviations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of deviations from the spec or contract not captured in dimension verdicts. Empty array if none."
+    },
+    "convergence_risk": {
+      "type": ["string", "null"],
+      "description": "Assessment of repair-loop convergence risk. Null if not applicable. Non-null if patterns suggest the repair path may not converge."
+    }
+  }
+}

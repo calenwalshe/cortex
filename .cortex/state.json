@@ -1,14 +1,15 @@
 {
-  "slug": "kalshi-calibration-harness",
+  "slug": "eval-system-refactor",
   "mode": "execute",
   "approval_status": "approved",
-  "active_contract": "docs/cortex/contracts/kalshi-calibration-harness/contract-001.md",
+  "active_contract": "docs/cortex/contracts/eval-system-refactor/contract-001.md",
   "artifacts": [
-    "docs/cortex/clarify/kalshi-calibration-harness/20260407T033340Z-clarify-brief.md",
-    "docs/cortex/research/kalshi-calibration-harness/concept-20260407T035137Z.md",
-    "docs/cortex/specs/kalshi-calibration-harness/spec.md",
-    "docs/cortex/specs/kalshi-calibration-harness/gsd-handoff.md",
-    "docs/cortex/contracts/kalshi-calibration-harness/contract-001.md"
+    "docs/cortex/clarify/eval-system-refactor/20260409T170000Z-clarify-brief.md",
+    "docs/cortex/research/eval-system-refactor/concept-20260410T010000Z.md",
+    "docs/cortex/research/eval-system-refactor/implementation-20260410T014500Z.md",
+    "docs/cortex/specs/eval-system-refactor/spec.md",
+    "docs/cortex/specs/eval-system-refactor/gsd-handoff.md",
+    "docs/cortex/contracts/eval-system-refactor/contract-001.md"
   ],
   "approvals": { "contract": true, "evals": false },
   "gates": {
@@ -23,6 +24,6 @@
     "pr_number": null,
     "pr_url": null,
     "issue_number": null,
-    "branch": "feat/kalshi-calibration-harness"
+    "branch": null
   }
 }

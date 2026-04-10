@@ -1,0 +1,1 @@
+# Cortex eval ledger — one JSON line per eval run. Fields: slug, timestamp, overall_verdict, dimensions_passed, dimensions_failed, cost_usd, codex_model

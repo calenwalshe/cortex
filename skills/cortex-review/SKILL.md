@@ -83,6 +83,7 @@ For each changed file, check:
 - Do tests use real code, not excessive mocks?
 
 **Architecture:**
+- If `docs/cortex/system-map.md` exists, read it as the reference artifact for this lens. Use the component registry, C4 diagrams, and crosscutting conventions to evaluate architectural fit. Prefix findings with the map's freshness (from `last_verified` frontmatter). If the map does not exist, evaluate based on code context alone.
 - Does this fit the existing patterns?
 - Does it introduce new dependencies?
 - Is the abstraction level appropriate?
@@ -326,6 +327,39 @@ Run this check when an active contract is loaded and its `eval_plan` field point
   ────────────────────────────────────────────────
   All checked dimensions: PASS
   ```
+
+### Eval Results Scan
+
+Run this check after the Eval Failure Check above, when an active slug exists.
+
+1. Glob `docs/cortex/evals/{slug}/results-*.md` — look for any results files from prior `/cortex-eval-run` invocations.
+2. If no results files exist: skip this section silently (evals not yet run).
+3. If results files exist, read the most recent one (sort by filename timestamp, take last).
+4. Parse the `## Results Summary` table: extract each dimension's verdict (PASSED / FAILED / PARTIAL).
+5. **For each FAIL or PARTIAL dimension**, generate a repair recommendation paragraph:
+
+   Format:
+   ```
+   **[{dimension} FAIL]** Evidence: {finding field from results}. Suggested repair: {one sentence from the failure evidence or generic "Fix the failing criterion and re-run /cortex-eval-run"}.
+   ```
+
+6. **Recurring failure detection:** Also read the second-most-recent results file (if it exists). If the same dimension fails in both the current and a prior run, prepend:
+   `⚠️ Recurring failure —` to the recommendation, e.g.:
+   ```
+   ⚠️ Recurring failure — **[Style FAIL]** Evidence: ...
+   ```
+   This surfaces to the convergence detector that the repair path may not be converging.
+
+7. Append the eval results scan output to the review artifact:
+   ```
+   EVAL RESULTS SCAN
+   ────────────────────────────────────────────────
+   Latest results: docs/cortex/evals/{slug}/results-{timestamp}.md
+   Overall verdict: {PASSED|FAILED|PARTIAL}
+
+   {For each FAIL/PARTIAL: the repair recommendation paragraph}
+   {If all PASSED: "All dimensions PASSED — no repair needed."}
+   ```
 
 ### Convergence Detector
 
