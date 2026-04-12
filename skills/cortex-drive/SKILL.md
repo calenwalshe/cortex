@@ -65,7 +65,7 @@ Evaluate conditions in this exact order (first match wins):
 | 5 | `mode == "spec"` AND `gates.spec_complete == true` AND `approval_status == "approved"` | `/cortex-bridge` | No |
 | 6 | `mode == "spec"` AND `approval_status == "pending"` AND `gates.contract_approval == false` | Auto-approve, then `/cortex-bridge` | No |
 | 7 | `mode == "spec"` AND `approval_status == "pending"` AND `gates.contract_approval == true` | Stop: "Contract needs human approval" | No |
-| 8 | `.planning/STATE.md` exists AND GSD phases incomplete | `/gsd:drive` | No (GSD handles) |
+| 8 | `.planning/STATE.md` exists AND GSD phases incomplete | GSD phase loop: read STATE.md → find first incomplete phase N → `/gsd:plan-phase N` (if no PLAN.md files exist for phase N) → `/gsd:execute-phase N` → re-read STATE.md → repeat until all phases complete | No |
 | 9 | GSD execution complete AND active contract has validators | Run validators (external: bash, judgment: cortex-judge) | No |
 | 10 | All validators pass AND `gates.pr_opened == false` AND repo has GitHub remote (`gh repo view` succeeds) | `/cortex-ship` (create branch, push, open PR) | No |
 | 10b | `gates.pr_opened == true` AND CI checks pending | Poll CI: `gh pr checks {pr_number} --required`. Exit 0=pass, 1=fail, 8=pending. If pending, wait 30s and re-poll (max 15 minutes). | No |
@@ -77,6 +77,8 @@ Evaluate conditions in this exact order (first match wins):
 | 11b | Validators fail AND convergence stall detected | Stop: "Convergence stall — repair loop not converging. Escalating to human." Set `reclarify_required: true`. | No |
 | 12 | Validators fail AND repair budget exhausted | Stop: "Repair budget exhausted, escalating to human" | No |
 | 13 | `mode == "done"` AND `slug == null` | Done | No |
+
+**For row 8 (GSD phase loop):** Read `.planning/STATE.md` to find the first incomplete phase N (check ROADMAP.md progress table or phase directory for missing VERIFICATION.md). For each incomplete phase: check if `*-PLAN.md` files exist in `.planning/phases/{N}-*/` — if none exist, dispatch Skill(`gsd:plan-phase`, N) first. Then dispatch Skill(`gsd:execute-phase`, N). After execute-phase returns, re-read STATE.md. If gaps found (VERIFICATION.md shows `gaps_found`), dispatch Skill(`gsd:plan-phase`, "{N} --gaps") then re-execute. Stop for human checkpoints (plans with `autonomous: false`). Continue loop until STATE.md shows all phases complete.
 
 **For row 3 (research escalation):** Read the concept research dossier. Check if any open question in the dossier or clarify brief is specifically about implementation details (APIs, data formats, integration points, performance requirements). If yes and no implementation dossier exists, run implementation research. If all questions are resolved, skip to row 4.
 
@@ -153,7 +155,7 @@ Every action logged to `docs/cortex/handoffs/decisions.md` under `## Autonomy De
 - **Always re-read state from disk.** Never carry state in memory across loop iterations. This is the #1 lesson from gsd:drive and production agent systems.
 - **Checkpoint every transition.** Log to decisions.md BEFORE dispatching, not after. If the dispatch crashes, the log shows what was attempted.
 - **Circuit breaker on consecutive failures.** Same action failing twice = stop. Don't compound errors.
-- **Cortex drives, GSD executes.** The policy loop calls `/gsd:drive` for execution — it does NOT directly invoke GSD plan/execute/verify skills. GSD owns its own inner loop.
+- **Cortex orchestrates GSD directly.** For row 8, cortex-drive calls `/gsd:plan-phase` and `/gsd:execute-phase` directly — it is the loop controller. No intermediate `/gsd:drive` command needed.
 - **The loop is the controller, skills are the workers.** The loop never does work itself — it only reads state and dispatches skills.
 - **Respect mandatory gates.** ux_taste_eval, human_action, and reclarify are always HITL stops regardless of autonomy preset.
 - **The necessity gate is the "should this exist?" check.** The loop trusts it. If necessity returns REJECT, the loop stops — it doesn't override or retry.

@@ -1,3 +1,48 @@
+---
+# Optional terminal-state frontmatter — added by /cortex-clarify if initial_terminal_set is known.
+# Omit entirely for first-iteration briefs; /cortex-clarify writes defaults.
+#
+# initial_terminal_set: the set of terminals this slug could plausibly reach at the start.
+#   Default: all six non-transitional terminals (list below).
+#   Narrow this when a terminal is clearly ruled out before research begins.
+#
+# ruled_out: terminals already eliminated before research begins.
+#   Default: [] (empty — nothing ruled out yet).
+#   Each entry should be confirmed by evidence, not assumption.
+#
+# Six non-transitional terminals (the loop ends here):
+#   commit-to-build       — real problem, viable solution, proceed to spec and execution
+#   kill-with-learning    — real problem but not the right solution; document why and stop
+#   decompose             — problem is real but too broad; split into N child slugs
+#   experiment-required   — not enough evidence; bounded test needed before committing
+#   already-exists        — the existing system already handles this adequately
+#   hold-on-dependency    — blocked by an external dependency; resume when it resolves
+#
+# Note: reframe-and-continue is the seventh terminal but is TRANSITIONAL — reaching it
+#   means producing a new clarify iteration (supersedes: this brief). It does NOT appear
+#   in initial_terminal_set because it is reached implicitly, not declared.
+#
+# Worked example (from clarify-research-loop iter-3 brief — the canonical pattern):
+#
+#   iteration: 3
+#   supersedes: docs/cortex/clarify/clarify-research-loop/20260412T001619Z-clarify-brief.md
+#   informed_by:
+#     - docs/cortex/research/clarify-research-loop/concept-20260411T235252Z.md
+#     - docs/cortex/research/clarify-research-loop/concept-20260412T002407Z.md
+#   reframe_reason: |
+#     Iter 2 lacked a strong convergence model. Iter 3 introduces the seven-terminal
+#     taxonomy as the philosophical core: the loop is a terminal-state finder, not a
+#     spec-generator. Convergence = terminal set narrowing to one.
+#   initial_terminal_set:
+#     - commit-to-build
+#     - kill-with-learning
+#     - decompose
+#     - experiment-required
+#     - already-exists
+#     - hold-on-dependency
+#   ruled_out: []
+---
+
 # Clarify Brief: {SLUG}
 
 <!-- ART-01: Clarify Brief Template — produced by /cortex-clarify -->

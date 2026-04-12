@@ -26,7 +26,8 @@ Benchmark pilot found that baselines without skills produce substantive analysis
 ## Archive Index
 
 <!-- Each entry records a slug that was archived via /cortex-close -->
-<!-- Entry format: - {ISO8601} | {slug} | closed | contract: {path} | eval-plan: {path} -->
+<!-- Entry format: - {ISO8601} | {slug} | closed | terminal: {name} | contract: {path} | eval-plan: {path} -->
+<!-- Legacy entries without terminal: field remain valid (backward compatible) -->
 
 - 2026-04-01T18:06:49Z | cortex-discovery-loop | closed | contract: docs/cortex/contracts/cortex-discovery-loop/contract-001.md | eval-plan: (none)
 - 2026-04-04T00:30:00Z | semantic-retrieval | closed | contract: docs/cortex/contracts/semantic-retrieval/contract-001.md | eval-plan: (none)
@@ -42,3 +43,9 @@ Benchmark pilot found that baselines without skills produce substantive analysis
 - 2026-04-10T01:30:00Z | claude-code-status-line | closed | contract: docs/cortex/contracts/claude-code-status-line/contract-001.md | eval-plan: (none)
 - 2026-04-10T02:00:00Z | gate: necessity | verdict: BUILD | confidence: 0.97 | slug: eval-system-refactor | command: /cortex-spec
 - 2026-04-10T02:35:00Z | drive: /gsd:drive | row: 8 | slug: eval-system-refactor | mode: execute | reasoning: .planning/STATE.md exists with 6 incomplete phases — handing execution to GSD
+- 2026-04-11T23:41:36Z | eval-system-refactor | closed | contract: docs/cortex/contracts/eval-system-refactor/contract-001.md | eval-plan: (none)
+- 2026-04-12T01:30:00Z | gate: necessity | verdict: BUILD | confidence: 0.9 | slug: clarify-research-loop | command: /cortex-spec
+- 2026-04-12T03:40:00Z | drive: evaluate_decision_table | row: 8 | slug: clarify-research-loop | mode: execute | reasoning: .planning/STATE.md exists with 5 incomplete phases — row 8 dispatches /gsd:drive
+- 2026-04-12T03:40:00Z | drive: stop_environment | slug: clarify-research-loop | mode: execute | reasoning: /gsd:drive skill not available in current Claude Code environment — cannot dispatch to GSD. User must invoke /gsd:drive at harness level OR execute contract deliverables manually.
+- 2026-04-12T04:15:00Z | drive: gsd-phase-loop | row: 8 | slug: clarify-research-loop | mode: execute | reasoning: .planning/STATE.md exists with 5 incomplete phases — cortex orchestrating GSD directly via plan-phase/execute-phase loop
+- 2026-04-12T05:30:00Z | clarify-research-loop | closed | terminal: commit-to-build | contract: docs/cortex/contracts/clarify-research-loop/contract-001.md | eval-plan: docs/cortex/evals/clarify-research-loop/eval-plan.md

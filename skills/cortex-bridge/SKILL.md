@@ -409,7 +409,7 @@ Key constraints from contract-001.md Write Roots apply.
 After writing all artifacts (skip if `--dry-run`):
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "docs({slug}): generate GSD scaffold via /cortex-bridge" --files .planning/PROJECT.md .planning/ROADMAP.md .planning/REQUIREMENTS.md .planning/STATE.md .planning/config.json .planning/phases/
+git add .planning/PROJECT.md .planning/ROADMAP.md .planning/REQUIREMENTS.md .planning/STATE.md .planning/config.json .planning/phases/ && git commit -m "docs({slug}): generate GSD scaffold via /cortex-bridge"
 ```
 
 ### Phase 5: Summary output
