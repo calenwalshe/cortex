@@ -20,6 +20,7 @@
     { "name": "cortex-intent",      "profiles": ["core", "full"] },
     { "name": "cortex-ship",        "profiles": ["core", "full"] },
     { "name": "cortex-parallel",    "profiles": ["core", "full"] },
+    { "name": "cortex-map",         "profiles": ["core", "full"] },
     { "name": "power-search",       "profiles": ["full"] },
     { "name": "google",             "profiles": ["full"] },
     { "name": "cli",                "profiles": ["full"] }

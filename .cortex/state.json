@@ -1,36 +1,14 @@
 {
-  "slug": "clarify-research-loop",
-  "mode": "execute",
-  "approval_status": "approved",
-  "active_contract": "docs/cortex/contracts/clarify-research-loop/contract-001.md",
-  "artifacts": [
-    "docs/cortex/clarify/clarify-research-loop/20260411T234737Z-clarify-brief.md",
-    "docs/cortex/research/clarify-research-loop/concept-20260411T235252Z.md",
-    "docs/cortex/clarify/clarify-research-loop/20260412T001619Z-clarify-brief.md",
-    "docs/cortex/research/clarify-research-loop/concept-20260412T002407Z.md",
-    "docs/cortex/clarify/clarify-research-loop/deferred-gaps.md",
-    "docs/cortex/clarify/clarify-research-loop/20260412T011953Z-clarify-brief.md",
-    "docs/cortex/research/clarify-research-loop/concept-20260412T012620Z.md",
-    "docs/cortex/specs/clarify-research-loop/spec.md",
-    "docs/cortex/specs/clarify-research-loop/project-context.md",
-    "docs/cortex/specs/clarify-research-loop/gsd-handoff.md",
-    "docs/cortex/contracts/clarify-research-loop/contract-001.md",
-    "docs/cortex/evals/clarify-research-loop/eval-proposal.md",
-    "docs/cortex/evals/clarify-research-loop/eval-plan.md"
-  ],
-  "approvals": { "contract": true, "evals": true },
+  "slug": null,
+  "mode": "done",
+  "approval_status": "pending",
+  "active_contract": null,
+  "artifacts": [],
+  "approvals": { "contract": false, "evals": false },
   "gates": {
-    "clarify_complete": true,
-    "research_complete": true,
-    "spec_complete": true,
-    "contract_approved": false,
-    "pr_opened": false,
-    "pr_merged": false
-  },
-  "github": {
-    "pr_number": null,
-    "pr_url": null,
-    "issue_number": null,
-    "branch": "cortex/clarify-research-loop"
+    "clarify_complete": false,
+    "research_complete": false,
+    "spec_complete": false,
+    "contract_approved": false
   }
 }

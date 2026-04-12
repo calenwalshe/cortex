@@ -69,8 +69,8 @@ Implement a pilot of the seven-terminal-state model for the Cortex pre-spec phas
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| Phase 1: Pre-pilot Retroactive Audit | 0/0 | Not started | - |
-| Phase 2: Templates | 0/0 | Not started | - |
-| Phase 3: Skill Modifications | 0/0 | Not started | - |
-| Phase 4: Documentation | 0/0 | Not started | - |
-| Phase 5: Dogfood + Validate | 0/0 | Not started | - |
+| Phase 1: Pre-pilot Retroactive Audit | 1/1 | Complete | 2026-04-12 |
+| Phase 2: Templates | 1/1 | Complete | 2026-04-12 |
+| Phase 3: Skill Modifications | 1/1 | Complete | 2026-04-12 |
+| Phase 4: Documentation | 1/1 | Complete | 2026-04-12 |
+| Phase 5: Dogfood + Validate | 1/1 | Complete | 2026-04-12 |
