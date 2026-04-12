@@ -1,7 +1,7 @@
-# Requirements: clarify-research-loop
+# Requirements: gate-critique
 
 **Defined:** 2026-04-12
-**Core Value:** The Cortex pre-spec phase becomes a terminal-state finder: every slug converges to one of seven valid resolutions, so the human-on-the-loop can always answer "which terminal am I heading toward?" without reading every dossier.
+**Core Value:** Every Cortex gate has a structured dual-critique step so bad assumptions and poor framing are caught before they propagate downstream into expensive work — the owner no longer approves AI-generated artifacts in a vacuum.
 
 ## Requirements
 
@@ -13,11 +13,8 @@ No formalized REQ-IDs exist for this slug — the GSD handoff records "None form
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| Audit complete + threshold met | Phase 1: Pre-pilot Retroactive Audit | Pending |
-| Templates added | Phase 2: Templates | Pending |
-| Skill modifications complete | Phase 3: Skill Modifications | Pending |
-| Documentation complete | Phase 4: Documentation | Pending |
-| Dogfood + validation complete | Phase 5: Dogfood + Validate | Pending |
+| cortex-critique skill built with Codex exec, adversarial prompt, three-tier severity, artifact persistence | Phase 1: Build cortex-critique skill | Pending |
+| cortex-clarify, cortex-research, cortex-spec wired to invoke cortex-critique | Phase 2: Wire critique into existing skills | Pending |
 
 **Coverage:**
 - Formal requirements: 0 total — all mapped via contract done_criteria
