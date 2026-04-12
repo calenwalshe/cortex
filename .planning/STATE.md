@@ -1,36 +1,36 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: cortex-vault
-status: in_progress
-stopped_at: Phase 2 skill wiring complete
-last_updated: "2026-04-13T16:00:00Z"
-last_activity: 2026-04-13 — Completed Phase 2 skill insertions (cortex-clarify, cortex-research, cortex-spec)
+milestone_name: gate-critique
+status: planning
+stopped_at: Bridge import complete
+last_updated: "2026-04-12T09:30:00Z"
+last_activity: 2026-04-12 — Bridge import from Cortex artifacts
 progress:
   total_phases: 2
-  completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
-  percent: 100
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-13)
+See: .planning/PROJECT.md (updated 2026-04-12)
 
-**Core value:** Each new Cortex slug starts with accumulated cross-slug learnings rather than from zero — decisions made, approaches failed, and lessons learned in prior slugs are automatically available at session start without any manual curation.
-**Current focus:** Phase 2 complete — all skill insertions wired
+**Core value:** Every Cortex gate has a structured dual-critique step so bad assumptions and poor framing are caught before they propagate downstream into expensive work — the owner no longer approves AI-generated artifacts in a vacuum.
+**Current focus:** Phase 1 — Build cortex-critique skill
 
 ## Current Position
 
-Phase: 2 of 2 (Wire skill insertions)
-Plan: 2 of 2
-Status: Phase complete
-Last activity: 2026-04-13 — Completed 02-02-PLAN (skill wiring)
+Phase: 1 — Build cortex-critique skill
+Plan: Not started
+Status: Ready for planning
+Last activity: 2026-04-12 — Bridge import complete
 
-Progress: [█████████████████████] 2/2 plans; 1/2 phases complete (Phase 1 done per prompt context; Phase 2 now done)
+Progress: [░░░░░░░░░░░░░░░░░░░░░] 0/0 plans; 0/2 phases complete
 
 ## Performance Metrics
 
@@ -49,15 +49,14 @@ Progress: [█████████████████████] 2/2 
 
 ### Decisions
 
-Bridge import from Cortex contract: docs/cortex/contracts/cortex-vault/contract-001.md
+Bridge import from Cortex contract: docs/cortex/contracts/gate-critique/contract-001.md
 
 Key architectural decisions already locked:
-- Write path: direct `add_fact()` via `sys.path.insert` import (NOT subprocess — fact_store.py has no CLI interface)
-- Read path: `recall_query.py --top-k 5 --project cortex` shallow mode (no --deep, target <3s)
-- Idempotency key: `(session_id, topic, content[:50])` — check before every `add_fact()` call
-- Budget guard: `max(0, 9500 - len(existing_content))` — truncate vault facts to available space
-- Hook injection point: after outer `if [[ -f "$FACTS_FILE"...]]` closes, before `HEALTH=""` line
-- 9 extraction categories: scope-exclusion, owner-constraint, design-assumption, research-finding, architecture-decision, adjacent-finding, failed-approach, risk-mitigation (memory_type=procedural), open-question
+- Codex CLI exec mode: `codex exec --full-auto --profile llm --skip-git-repo-check --cd /tmp "<prompt>"`
+- Fallback: `claude -p` subprocess with same adversarial prompt when codex binary not found
+- Three-tier severity: STOP / CAUTION / GO (not binary pass/fail)
+- Adversarial prompt must open with role declaration before presenting artifact
+- AI critique always runs; human_critique is the only autonomy-conditional gate
 
 ### Pending Todos
 
@@ -67,16 +66,8 @@ None.
 
 eval_plan is pending — run /cortex-research --phase evals to produce eval plan before final close.
 
-### Phase 2 Decisions
-
-| Decision | Context |
-|----------|---------|
-| Rename critique phases (4c→4d, 2.9→2.95, 2c→2d) | Contract done criteria name Phase 4c/2.9/2c for vault extractor — vault extractor must claim those labels |
-| Synchronous extractor invocation | Consistent with cortex-critique pattern; no async benefit |
-| Extractor skip on evals path (research) | Evals artifacts have different schema; skip condition inherited from existing Phase 2.9 pattern |
-
 ## Session Continuity
 
-Last session: 2026-04-13T16:00:00Z
-Stopped at: Completed 02-02-PLAN — all Phase 2 skill insertions wired
+Last session: 2026-04-12T09:30:00Z
+Stopped at: Bridge import complete
 Resume file: None

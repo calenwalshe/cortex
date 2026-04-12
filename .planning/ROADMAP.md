@@ -1,38 +1,36 @@
-# Roadmap: cortex-vault — Memory Vault Integration
+# Roadmap: gate-critique — Adversarial Gate Critique
 
 ## Overview
 
-Wire the existing memory vault (`~/memory/vault/`) into Cortex's intelligence phases so that session start injects top-5 cross-slug vault facts into `additionalContext` and gate transitions (clarify brief, research dossier, spec) write typed facts back to the vault via a new `cortex-vault-extractor.py` script calling `add_fact()` directly.
+Build a standalone `/cortex-critique` skill that runs an adversarial AI review of Cortex artifacts (clarify brief, research dossier, spec) at each gate transition, so bad assumptions and poor framing are caught before they propagate downstream into expensive execution work.
 
 ## Phases
 
-### Phase 1: Build extractor and hook injection
+### Phase 1: Build cortex-critique skill
 
-**Goal**: Write `scripts/cortex/cortex-vault-extractor.py` with full extraction logic and modify `cortex-session-start.sh` to inject vault facts into `additionalContext`
+**Goal**: Write the standalone `skills/cortex-critique/SKILL.md` with all core mechanics — Codex CLI invocation, artifact-type routing, adversarial prompt template, three-tier severity, artifact persistence, gate receipt writer, and `human_critique` autonomy gate
 **Depends on**: Nothing
 **Requirements**: None formalized
 **Success Criteria** (what must be TRUE):
-  1. `cortex-session-start.sh` calls `recall_query.py` and injects vault facts into `additionalContext` under a distinct `VAULT MEMORY` section header
-  2. Total `additionalContext` length after vault injection remains under 10,000 characters
-  3. Vault read uses `--top-k 5 --project cortex-memory-platform` to scope retrieval to Cortex-relevant facts
-  4. Vault read soft-fails gracefully (empty string, no error) when vault index is absent or query returns nothing
-  5. `scripts/cortex/cortex-vault-extractor.py` exists and accepts `--artifact <path> --slug <slug>` arguments
-  6. Extractor correctly identifies artifact type using this path-pattern truth table: path contains `clarify/` → `brief`; path contains `research/` and filename does not match `current-understanding.md` → `dossier`; path contains `specs/` and filename is `spec.md` → `spec`. Any other path → error "unsupported artifact type"
-  7. Extractor calls `add_fact()` for each extracted typed fact with these exact field values: `project_scope="cortex-memory-platform"`, `session_id="cortex-{slug}"`, `scope="learning"`, `valid_from=YYYY-MM-DD` derived from artifact filename timestamp or file mtime. Per-category values: scope-exclusion → `confidence=0.95, importance=0.6, memory_type="semantic"`; owner-constraint → `confidence=0.95, importance=0.8, memory_type="semantic"`; design-assumption → `confidence=0.75, importance=0.7, memory_type="semantic"`; research-finding → `confidence=0.80, importance=0.7, memory_type="semantic"`; architecture-decision → `confidence=0.90, importance=0.8, memory_type="semantic"`; adjacent-finding → `confidence=0.75, importance=0.65, memory_type="semantic"`; failed-approach → `confidence=0.85, importance=0.75, memory_type="procedural"`; risk-mitigation → `confidence=0.80, importance=0.70, memory_type="semantic"`
-  8. Extraction is idempotent: re-running extractor on the same artifact path and slug does not create duplicate facts (deduplication by `session_id + topic + content[:50]` check before write)
-  9. Vault write soft-fails gracefully (logged warning, no exception) when `fact_store.py` is unavailable or vault path does not exist
+  1. `skills/cortex-critique/SKILL.md` exists and implements the cortex-critique skill with: artifact-type routing (brief, dossier, spec, contract), Codex CLI invocation with exec mode and adversarial prompt, three-tier severity output (STOP/CAUTION/GO), and persistent critique artifact output
+  2. The Codex invocation uses `codex exec --full-auto` with a prompt that explicitly frames Codex as an adversarial critic — not an assistant — before presenting the artifact to critique
+  3. Running cortex-critique against a clarify brief produces `docs/cortex/reviews/{slug}/critique-clarify.md` containing: severity verdict, finding count by tier, and specific findings with artifact quotes
+  4. Running cortex-critique against a research dossier produces `docs/cortex/reviews/{slug}/critique-dossier-{timestamp}.md`
+  5. Running cortex-critique against a spec produces `docs/cortex/reviews/{slug}/critique-spec.md`
 **Research**: Unlikely
 **Plans**: 0 plans
 
-### Phase 2: Wire skill insertions
+### Phase 2: Wire critique into existing skills
 
-**Goal**: Insert extractor calls at Phase 4c (cortex-clarify), Phase 2.9 (cortex-research), and Phase 2c (cortex-spec) in the three intelligence skill files
-**Depends on**: Phase 1: Build extractor and hook injection
+**Goal**: Edit cortex-clarify, cortex-research, and cortex-spec to invoke cortex-critique at the correct gate transition point in each skill
+**Depends on**: Phase 1: Build cortex-critique skill
 **Requirements**: None formalized
 **Success Criteria** (what must be TRUE):
-  1. `cortex-clarify` Phase 4c calls `cortex-vault-extractor.py` after writing the clarify brief
-  2. `cortex-research` Phase 2.9 calls `cortex-vault-extractor.py` after writing the research dossier
-  3. `cortex-spec` Phase 2c calls `cortex-vault-extractor.py` after writing the spec
+  1. `skills/cortex-clarify/SKILL.md` invokes cortex-critique after writing the clarify brief (Phase 4c) before completing continuity state update
+  2. `skills/cortex-research/SKILL.md` invokes cortex-critique after writing each dossier before setting `research_complete: true`
+  3. `skills/cortex-spec/SKILL.md` invokes cortex-critique against spec.md before presenting the contract approval gate
+  4. In full-auto mode, AI critique runs and findings are persisted; the `human_critique` gate is skipped and the gate advances automatically
+  5. In supervised mode, the owner is shown the AI critique findings in plain language and given the opportunity to respond before the gate advances
 **Research**: Unlikely
 **Plans**: 0 plans
 
@@ -40,5 +38,5 @@ Wire the existing memory vault (`~/memory/vault/`) into Cortex's intelligence ph
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| Phase 1: Build extractor and hook injection | 0/0 | Not started | - |
-| Phase 2: Wire skill insertions | 0/0 | Not started | - |
+| Phase 1: Build cortex-critique skill | 0/0 | Not started | - |
+| Phase 2: Wire critique into existing skills | 0/0 | Not started | - |
