@@ -1,24 +1,24 @@
-# Requirements: eval-system-refactor
+# Requirements: clarify-research-loop
 
-**Defined:** 2026-04-10
-**Core Value:** Every slug that ships has independently verified results rather than self-reported ones, making the owner-intent "honest quality signal" objective achievable and measurable.
+**Defined:** 2026-04-12
+**Core Value:** The Cortex pre-spec phase becomes a terminal-state finder: every slug converges to one of seven valid resolutions, so the human-on-the-loop can always answer "which terminal am I heading toward?" without reading every dossier.
 
-## Implementation Requirements
+## Requirements
 
-- None formalized — all work tracked via done criteria in `docs/cortex/contracts/eval-system-refactor/contract-001.md`
+No formalized REQ-IDs exist for this slug — the GSD handoff records "None formalized" in the Requirements section. The contract's done_criteria function as the de-facto requirements and are tracked verbatim against ROADMAP phases per AUTON-06.
+
+- [ ] **None formalized** — Requirements are tracked via contract done_criteria mapped to ROADMAP phase success criteria.
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| generate-eval-plan.py + tests | Phase 1 | Pending |
-| eval-capsule template + eval-result schema | Phase 2a | Pending |
-| generate-eval-capsule.py + tests | Phase 2a | Pending |
-| codex-eval-executor.sh + tests | Phase 2b | Pending |
-| format-eval-results.py + tests | Phase 2c | Pending |
-| cortex-eval-run skill + wiring | Phase 2d | Pending |
-| Cleanup + EVALS.md annotations | Phase 4 | Pending |
+| Audit complete + threshold met | Phase 1: Pre-pilot Retroactive Audit | Pending |
+| Templates added | Phase 2: Templates | Pending |
+| Skill modifications complete | Phase 3: Skill Modifications | Pending |
+| Documentation complete | Phase 4: Documentation | Pending |
+| Dogfood + validation complete | Phase 5: Dogfood + Validate | Pending |
 
 **Coverage:**
-- All requirements tracked directly in contract-001.md done criteria
+- Formal requirements: 0 total — all mapped via contract done_criteria
 - Unmapped: 0
