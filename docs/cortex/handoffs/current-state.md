@@ -1,26 +1,20 @@
 # Current State
 
-**slug:** report-clarity
+**slug:** (none)
 
-**mode:** spec
+**mode:** (not started)
 
-**approval_status:** pending
+**approval_status:** (not started)
 
-**active_contract_path:** docs/cortex/contracts/report-clarity/contract-001.md
+**active_contract_path:** (none)
 
 **recent_artifacts:**
-- docs/cortex/clarify/report-clarity/20260412T060000Z-clarify-brief.md
-- docs/cortex/research/report-clarity/current-understanding.md
-- docs/cortex/research/report-clarity/concept-20260412T061500Z.md
-- docs/cortex/specs/report-clarity/spec.md
-- docs/cortex/specs/report-clarity/project-context.md
-- docs/cortex/specs/report-clarity/gsd-handoff.md
-- docs/cortex/contracts/report-clarity/contract-001.md
+- (none)
 
 **open_questions:**
-- (see docs/cortex/handoffs/open-questions.md)
+- (none)
 
 **blockers:**
 - (none)
 
-**next_action:** Run /cortex-status for full reconstruction
+**next_action:** Run /cortex-clarify to begin a new work item
