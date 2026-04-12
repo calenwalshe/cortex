@@ -3,6 +3,8 @@
 <!-- ART-03: Spec Template — produced by /cortex-spec -->
 <!-- Copy this template to docs/cortex/specs/{SLUG}/spec.md in the target project repo -->
 <!-- All 9 sections are mandatory — omitting any section is an error -->
+<!-- Section order: Problem → Acceptance Criteria → Scope → Architecture → Interfaces → Dependencies → Risks → Sequencing → Tasks -->
+<!-- Owner approval path: read §1 (what problem) + §2 (what winning looks like) — approve or reject before reading further -->
 
 **Slug:** {SLUG} <!-- lowercase-hyphenated identifier matching the active clarify brief -->
 **Timestamp:** {TIMESTAMP} <!-- ISO 8601 UTC timestamp when this spec was created -->
@@ -20,7 +22,19 @@
 
 ---
 
-## 2. Scope
+## 2. Acceptance Criteria
+
+{ACCEPTANCE_CRITERIA}
+
+<!-- Measurable, testable criteria — each gets a checkbox -->
+<!-- Format: - [ ] {criterion — must be objectively verifiable} -->
+<!-- Every criterion must have a clear pass/fail definition -->
+<!-- These criteria are the source of truth for the contract's done_criteria -->
+<!-- Owner: if you agree these criteria define success, the spec is approvable — read §3+ for implementation detail -->
+
+---
+
+## 3. Scope
 
 ### In Scope
 
@@ -37,7 +51,7 @@
 
 ---
 
-## 3. Architecture Decision
+## 4. Architecture Decision
 
 {ARCHITECTURE_DECISION}
 
@@ -53,7 +67,7 @@
 
 ---
 
-## 4. Interfaces
+## 5. Interfaces
 
 {INTERFACES}
 
@@ -63,7 +77,7 @@
 
 ---
 
-## 5. Dependencies
+## 6. Dependencies
 
 {DEPENDENCIES}
 
@@ -73,7 +87,7 @@
 
 ---
 
-## 6. Risks
+## 7. Risks
 
 {RISKS}
 
@@ -84,7 +98,7 @@
 
 ---
 
-## 7. Sequencing
+## 8. Sequencing
 
 {SEQUENCING}
 
@@ -94,21 +108,10 @@
 
 ---
 
-## 8. Tasks
+## 9. Tasks
 
 {TASKS}
 
 <!-- Discrete implementation tasks — each gets a checkbox -->
 <!-- Format: - [ ] {task description} -->
 <!-- Tasks should be small enough to commit atomically -->
-
----
-
-## 9. Acceptance Criteria
-
-{ACCEPTANCE_CRITERIA}
-
-<!-- Measurable, testable criteria — each gets a checkbox -->
-<!-- Format: - [ ] {criterion — must be objectively verifiable} -->
-<!-- Every criterion must have a clear pass/fail definition -->
-<!-- These criteria are the source of truth for the contract's done_criteria -->

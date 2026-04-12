@@ -56,7 +56,7 @@ The following gates apply to this skill:
 
 3. Read the `Complexity:` field from the clarify brief.
    - **If `complexity: trivial`:** Skip step 3a (research check). Research is not required for trivial slugs.
-     Generate a **thin spec** — include only sections 1 (Problem), 2 (Scope), 4 (Interfaces), 7 (Sequencing as single phase), and 8 (Tasks). Omit sections 3 (Architecture Decision), 5 (Dependencies), 6 (Risks), and 9 (Acceptance Criteria — done criteria in contract suffice).
+     Generate a **thin spec** — include only sections 1 (Problem), 2 (Acceptance Criteria), 3 (Scope), 5 (Interfaces), 8 (Sequencing as single phase), and 9 (Tasks). Omit sections 4 (Architecture Decision), 6 (Dependencies), and 7 (Risks).
    - **If `complexity: standard` or not set:** Full pipeline — enforce research check, generate full spec.
    - **If `complexity: complex`:** Full pipeline with extended validators in the contract.
    Note: If the clarify brief says `trivial` but the problem statement indicates significant unknowns, override to `standard` and note the override.
@@ -202,26 +202,28 @@ Read the template at `templates/cortex/spec.md`.
 
 Populate ALL 9 mandatory sections — omitting any section is an error:
 
+Section order: 1=Problem, 2=Acceptance Criteria, 3=Scope, 4=Architecture Decision, 5=Interfaces, 6=Dependencies, 7=Risks, 8=Sequencing, 9=Tasks
+
 1. **Problem** — What is being built and why (one paragraph). Describes the problem, not the solution. Answers: what problem does this solve, for whom, and why now?
 
-2. **Scope** — In-scope items (what this spec covers) and explicit out-of-scope exclusions (what is intentionally excluded to prevent scope creep).
+2. **Acceptance Criteria** — Measurable, testable criteria with clear pass/fail definitions (`- [ ] {criterion}`). These are the source of truth for the contract's done_criteria. Owner reads §1 + §2 to approve or reject the spec — they should not need to read further to decide.
 
-3. **Architecture Decision** — The chosen approach, rationale, and alternatives considered and rejected. Format:
+3. **Scope** — In-scope items (what this spec covers) and explicit out-of-scope exclusions (what is intentionally excluded to prevent scope creep).
+
+4. **Architecture Decision** — The chosen approach, rationale, and alternatives considered and rejected. Format:
    - **Chosen approach:** {description}
    - **Rationale:** {why this over alternatives}
    - **Alternatives Considered:** bulleted list with rejection reason per alternative
 
-4. **Interfaces** — External interfaces touched: APIs, contracts, module boundaries, file paths. Include: what the interface is, who owns it, what this spec reads vs. writes.
+5. **Interfaces** — External interfaces touched: APIs, contracts, module boundaries, file paths. Include: what the interface is, who owns it, what this spec reads vs. writes.
 
-5. **Dependencies** — Libraries, services, or other Cortex artifacts this spec depends on. Include name, version if applicable, and what it is used for.
+6. **Dependencies** — Libraries, services, or other Cortex artifacts this spec depends on. Include name, version if applicable, and what it is used for.
 
-6. **Risks** — List of risks with one mitigation per risk. Format: `- **{Risk}** — Mitigation: {mitigation}`
+7. **Risks** — List of risks with one mitigation per risk. Format: `- **{Risk}** — Mitigation: {mitigation}`
 
-7. **Sequencing** — Ordered implementation steps, numbered, each producing a verifiable checkpoint or artifact.
+8. **Sequencing** — Ordered implementation steps, numbered, each producing a verifiable checkpoint or artifact.
 
-8. **Tasks** — Discrete implementation tasks as checkbox items (`- [ ] {task}`), small enough to commit atomically.
-
-9. **Acceptance Criteria** — Measurable, testable criteria with clear pass/fail definitions (`- [ ] {criterion}`). These are the source of truth for the contract's done_criteria.
+9. **Tasks** — Discrete implementation tasks as checkbox items (`- [ ] {task}`), small enough to commit atomically.
 
 Write to: `docs/cortex/specs/{slug}/spec.md`
 Create directory if it does not exist: `mkdir -p docs/cortex/specs/{slug}/`

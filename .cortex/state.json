@@ -1,14 +1,33 @@
 {
-  "slug": null,
-  "mode": "done",
-  "approval_status": "pending",
-  "active_contract": null,
-  "artifacts": [],
-  "approvals": { "contract": false, "evals": false },
+  "slug": "report-clarity",
+  "mode": "execute",
+  "approval_status": "approved",
+  "active_contract": "docs/cortex/contracts/report-clarity/contract-001.md",
+  "artifacts": [
+    "docs/cortex/clarify/report-clarity/20260412T060000Z-clarify-brief.md",
+    "docs/cortex/research/report-clarity/current-understanding.md",
+    "docs/cortex/research/report-clarity/concept-20260412T061500Z.md",
+    "docs/cortex/specs/report-clarity/spec.md",
+    "docs/cortex/specs/report-clarity/project-context.md",
+    "docs/cortex/specs/report-clarity/gsd-handoff.md",
+    "docs/cortex/contracts/report-clarity/contract-001.md"
+  ],
+  "approvals": {
+    "contract": true,
+    "evals": false
+  },
   "gates": {
-    "clarify_complete": false,
-    "research_complete": false,
-    "spec_complete": false,
-    "contract_approved": false
+    "clarify_complete": true,
+    "research_complete": true,
+    "spec_complete": true,
+    "contract_approved": false,
+    "pr_opened": false,
+    "pr_merged": false
+  },
+  "github": {
+    "pr_number": null,
+    "pr_url": null,
+    "issue_number": null,
+    "branch": null
   }
 }

@@ -11,11 +11,25 @@
 
 ---
 
+## Owner Summary
+
+{OWNER_SUMMARY}
+
+<!-- PLAIN LANGUAGE ONLY — no jargon, no file paths, no slug names, no artifact references -->
+<!-- 3 bullets maximum. Necessity filter: cut any sentence that doesn't help the owner decide or act right now. -->
+<!--   - What we found: the single most important discovery from this research pass -->
+<!--   - What it changes: how this finding affects the decision or approach for this slug -->
+<!--   - What's still open: the biggest unresolved question, or "Nothing — research complete" -->
+<!-- This section is for the owner returning cold. Everything else below is for research continuity. -->
+
+---
+
 ## Summary
 
 {SUMMARY}
 
 <!-- One paragraph: the single most important takeaway from this research pass -->
+<!-- Written for research continuity — more detail than Owner Summary, technical depth ok -->
 <!-- Written so a reader who skips everything else still gets the core finding -->
 
 ---

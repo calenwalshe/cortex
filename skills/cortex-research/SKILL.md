@@ -533,7 +533,13 @@ Steps:
    mkdir -p docs/cortex/research/{slug}/
    ```
 3. Read `templates/cortex/research-dossier.md`
-4. Populate all fields (SLUG, PHASE, TIMESTAMP, DEPTH, SUMMARY, FINDINGS, TRADE_OFFS, RECOMMENDATIONS, ADJACENT_FINDINGS, OPEN_QUESTIONS, SOURCES)
+4. Populate all fields (SLUG, PHASE, TIMESTAMP, DEPTH, OWNER_SUMMARY, SUMMARY, FINDINGS, TRADE_OFFS, RECOMMENDATIONS, ADJACENT_FINDINGS, OPEN_QUESTIONS, SOURCES)
+   - **OWNER_SUMMARY:** Populate first — before Summary. Plain language only: no jargon, no file paths, no slug names, no artifact references. Exactly 3 bullets:
+     - "What we found: {the single most important discovery from this research pass}"
+     - "What it changes: {how this finding affects the decision or approach for this slug}"
+     - "What's still open: {the biggest unresolved question, or 'Nothing — research complete'}"
+     Necessity filter: cut any sentence that doesn't help the owner decide or act right now. If a sentence requires knowing what a slug is, what a dossier is, or what a specific file contains — cut it.
+   - **SUMMARY:** One paragraph for research continuity — more detail than Owner Summary, technical depth is acceptable. Written so a reader who skips everything else gets the core finding.
    - **ADJACENT_FINDINGS:** If the filter pipeline (Step 5) produced 1-3 findings, populate the `## Adjacent Findings` section with BLUF-formatted findings. If zero findings passed the filter, **omit the entire section** — remove the `## Adjacent Findings` heading, the placeholder, and all comments. Do not leave an empty section or write "None."
 5. Write to target path
 

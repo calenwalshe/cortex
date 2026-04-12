@@ -112,34 +112,42 @@ Before dispatching, check these conditions. If any are true, stop immediately:
 
 ### Phase 6: Completion Summary
 
-**Follow the HITL report template** at `templates/cortex/hitl-report.md`. Read `docs/cortex/display.json` for `report_level` (default: 1).
+Read `docs/cortex/display.json` for `report_level` (default: 1).
 
-**Level 1 (owner) example:**
+**Level 1 formula (owner) — apply exactly:**
+
+(a) **1-sentence status line** naming what was built in plain language. No file paths, no slug names, no jargon. Format: "{What the owner can now do} — {COMPLETE|STOPPED|ERROR}."
+
+(b) **≤3 delta bullets** in past tense describing what changed. No file paths. Focus on outcomes visible to the owner, not implementation steps. Example: "Search results now include citations" not "Added citation field to SearchResult class."
+
+(c) **1 risk line** — one sentence naming the biggest known limitation or gap. If none: "No risks identified."
+
+(d) **Explicit owner ask** — one sentence stating exactly what the owner needs to do next, if anything. If complete and no action needed: omit this line.
+
+**Level 1 template:**
 
 ```
 ## {slug} — {COMPLETE|STOPPED|ERROR}
 
-**What was built:** {One sentence: what the user can do now that they couldn't before.}
+{One sentence: what the owner can now do that they couldn't before. Plain language only.}
 
-**What happened:**
-- {2-4 bullets: key outcomes, not step-by-step process}
-- {Focus on results: "retrieval works in under 1 second" not "wrote cortex-retrieve.py"}
+**Changes:**
+- {Past tense outcome — no file paths}
+- {Past tense outcome — no file paths}
+- {Past tense outcome — no file paths, omit if fewer than 3}
 
-**Risks:**
-- {What's not covered, known limitations}
+**Risk:** {One sentence: biggest known gap or limitation. "No risks identified" if none.}
 
-{If stopped: **Why it stopped:** {plain language reason}}
-{If complete: **Status:** Done. Slug archived.}
-{If error: **Needs your attention:** {what to do}}
+{If stopped or error: **Next step:** {One sentence: what the owner must do.}}
 ```
 
-**Level 2+ adds:**
+**Level 2+ adds technical detail below a separator:**
+
 ```
-Actions: {count}
-Duration: {elapsed}
-Actions taken:
-  1. {action} — {outcome}
-  2. ...
+---
+Actions: {count} | Duration: {elapsed}
+1. {action} — {outcome}
+2. ...
 ```
 
 ## Decision Logging
