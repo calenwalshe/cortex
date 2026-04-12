@@ -28,6 +28,7 @@ The eight valid values for the `mode` field in `.cortex/state.json`:
 **clarify → research**
 - Trigger: Clarify brief is written and approved.
 - State field written: `mode: research`; `reclarify_required: false` (reset on each new brief).
+- See §7 Terminal States: each clarify iteration narrows the set of possible terminals toward one.
 
 **research → clarify (backtrack)**
 - Trigger: Research evidence invalidates the original problem frame or core assumptions.
@@ -215,6 +216,8 @@ BLOCKED: [N] core assumption(s) have no evidence backing.
 Run /cortex-research or /cortex-experiment to gather supporting evidence.
 ```
 
+See also: §7 Terminal States — the spec-readiness gate permits spec only when terminal is `commit-to-build`. The other six terminals represent earlier stopping points.
+
 ### experiment_complete Gate (Conditional)
 
 This gate applies only when the uncertainty register contains one or more entries with both `severity: critical` AND `resolution_path: experiment`.
@@ -300,6 +303,8 @@ Every learning contract must be closeable with one of four explicit outcomes. No
 | `re-clarify` | Hypothesis was wrong because the frame was wrong | `clarify` |
 | `abandon` | Hypothesis falsified; this path is not worth pursuing | `research` or human decision |
 
+See also: §7 Terminal States for the convergence model that determines when the discovery loop ends.
+
 ### Guardrail 6: WIP Limit
 
 A slug must not have more than one active (status: open) learning contract simultaneously. `/cortex-experiment open` must check the `docs/cortex/experiments/{slug}/` directory for any existing open learning contracts and warn loudly if one is found:
@@ -310,3 +315,57 @@ Close the existing experiment before opening a new one.
 ```
 
 This warning does not block — it is surfaced to the human who makes the final call.
+
+---
+
+## 7. Terminal States
+
+The discovery loop is a **terminal-state finder**, not a spec-generator. Every slug is heading toward one of seven valid resolutions. The loop converges when the set of possible terminals narrows to exactly one. `/cortex-close --terminal <name>` records which terminal was reached when a slug closes.
+
+### The Seven Terminals
+
+| Terminal | Category | When Reached | Commit Action | Artifact |
+|---|---|---|---|---|
+| `commit-to-build` | Non-transitional | Real problem, viable solution, scope confirmed | Proceed to spec and execution | spec.md, contract |
+| `kill-with-learning` | Non-transitional | Problem is real but this solution approach has no value; stop and document why | Record rationale, archive slug | decisions.md entry |
+| `decompose` | Non-transitional | Problem is real but too broad; must split into N focused child slugs | Create N child clarify briefs | child briefs |
+| `experiment-required` | Non-transitional | Evidence insufficient; a bounded test is needed before committing | Open a learning contract | learning-contract.md |
+| `already-exists` | Non-transitional | The existing system already handles this adequately, even if imperfectly | Document the existing mechanism | decisions.md entry |
+| `hold-on-dependency` | Non-transitional | Blocked by an external dependency; no action possible until it resolves | Record blocker and trigger | decisions.md entry |
+| `reframe-and-continue` | **Transitional** | Research has invalidated the current problem frame; the loop must restart with a new clarify brief | Produce iter N+1 clarify brief (supersedes current) | new clarify brief |
+
+**`reframe-and-continue` is transitional** — reaching it does not close the slug. It triggers a new clarify iteration. The six non-transitional terminals are the only valid `--terminal` values for `/cortex-close`.
+
+### 4→7 Refinement: Mapping from Necessity-Gate Verdicts
+
+The existing `/cortex-spec` necessity gate (§4) produces four verdicts. Each verdict refines into one or two of the seven terminals. This is a refinement, not a replacement — the necessity gate still runs, and the four verdicts are still valid. The seven terminals are a more precise vocabulary for *which* BUILD/NARROW/DEFER/REJECT outcome applies to a specific slug.
+
+| Necessity Verdict | Terminal Refinement | Split Criterion |
+|---|---|---|
+| `BUILD` | `commit-to-build` | 1:1 — no refinement needed |
+| `NARROW` | `decompose` OR `reframe-and-continue` | Decompose: the problem is structurally too broad (splits into N children). Reframe: the scope is narrowable within the same slug by reconsidering the frame. |
+| `DEFER` | `experiment-required` OR `hold-on-dependency` | Experiment-required: closeable by running a bounded test. Hold-on-dependency: blocked by something external; no test helps. |
+| `REJECT` | `kill-with-learning` OR `already-exists` | Kill-with-learning: problem exists but this solution has no value. Already-exists: the problem is already solved by the existing system. |
+
+**The REJECT split is already in the existing code.** `/cortex-spec` SKILL.md describes REJECT as: *"This solves a problem that doesn't exist, OR the existing system already handles it."* The OR is precisely the Kill-with-Learning vs Already-Exists split — mechanically grounded in existing prose, not a new abstraction.
+
+### Convergence Model
+
+At the start of a slug, the clarify brief's `initial_terminal_set:` frontmatter declares the full set of terminals the slug could plausibly reach. On each clarify iteration, research evidence eliminates terminals from the set. The `ruled_out:` frontmatter field accumulates eliminated terminals with their ruling-out evidence.
+
+**The loop converges when `initial_terminal_set` minus `ruled_out` has exactly one terminal remaining.**
+
+At that point, `/cortex-close --terminal <name>` closes the slug at the surviving terminal.
+
+**Loop stops earlier** if: (a) the surviving set reaches one terminal before all iterations complete, (b) `/cortex-spec` necessity gate fires with high confidence (≥0.7) before the set is formally narrowed — the necessity verdict maps to a terminal and the slug closes at that terminal.
+
+**Example:** A slug starts with `initial_terminal_set: [commit-to-build, already-exists, experiment-required]`. After iter-1 research, `already-exists` is ruled out (the feature doesn't exist). After iter-2 research, `experiment-required` is ruled out (the mechanism is well-understood). The set is now `[commit-to-build]` — exactly one terminal — and the slug proceeds to spec via `commit-to-build`.
+
+### Terminal Declaration in `/cortex-close`
+
+`/cortex-close --terminal <name>` is required when closing any slug. The `--terminal` argument:
+1. Must be one of the seven terminal slugs listed above
+2. Must not appear in the brief's `ruled_out:` list
+3. Is recorded in `decisions.md` Archive Index: `terminal: {name}`
+
+Cross-reference: §1 Mode Transitions describes how `reframe-and-continue` (the transitional terminal) produces a new clarify iteration. §4 Spec-Readiness Gate governs when `commit-to-build` is reachable.
