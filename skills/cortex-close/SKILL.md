@@ -14,7 +14,8 @@ Also trigger when the user says:
 
 ## Arguments
 
-`/cortex-close` — no flags or arguments.
+`/cortex-close --terminal <name>` — **`--terminal` is required.** Name must be one of the seven valid terminals:
+`commit-to-build`, `kill-with-learning`, `decompose`, `experiment-required`, `already-exists`, `hold-on-dependency`, `reframe-and-continue`.
 
 ## Instructions
 
@@ -22,7 +23,14 @@ Also trigger when the user says:
 
 1. Read `.cortex/state.json`.
 2. Extract: `slug`, `mode`, `active_contract`, `artifacts[]`.
-3. **Guard — no active slug:** If `slug` is `null` or `state.json` is missing, output:
+3. **Guard — `--terminal` required:** Validate the `--terminal` argument:
+   - If `--terminal` is missing: ERROR: "`--terminal` is required. Valid values: commit-to-build, kill-with-learning, decompose, experiment-required, already-exists, hold-on-dependency, reframe-and-continue"
+   - If `--terminal` value is not in that list: ERROR: "Unknown terminal '{name}'. Valid values: commit-to-build, kill-with-learning, decompose, experiment-required, already-exists, hold-on-dependency, reframe-and-continue"
+   - Find the most recent clarify brief for this slug in `docs/cortex/clarify/{slug}/`. Read its YAML frontmatter `ruled_out:` field. If the field exists and contains the requested terminal value: ERROR: "Terminal '{name}' was ruled out in the brief at {brief_path}. Choose a terminal that was not ruled out."
+   - Cases where validation passes without ruling-out check: (a) brief has no YAML frontmatter, (b) frontmatter has no `ruled_out:` field, (c) `ruled_out:` is an empty list.
+   Stop. Do not proceed.
+
+4. **Guard — no active slug:** If `slug` is `null` or `state.json` is missing, output:
    ```
    ERROR: No active slug. Nothing to close.
    Run /cortex-clarify to start a new work item.
@@ -89,9 +97,9 @@ Also trigger when the user says:
 3. Find the `## Archive Index` section.
 4. Replace the placeholder line `(No archived slugs yet)` — or append after the last existing entry — with a new line in this exact format:
    ```
-   - {ISO8601} | {slug} | closed | contract: {active_contract} | eval-plan: {eval_plan_path}
+   - {ISO8601} | {slug} | closed | terminal: {terminal_name} | contract: {active_contract} | eval-plan: {eval_plan_path}
    ```
-   Where `{eval_plan_path}` is the eval-plan path found in Phase 3, or `(none)` if not present.
+   Where `{terminal_name}` is the validated `--terminal` argument value, and `{eval_plan_path}` is the eval-plan path found in Phase 3, or `(none)` if not present.
 5. Write the updated file.
 
 ### Phase 6: Reset current-state.md

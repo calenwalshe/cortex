@@ -146,6 +146,23 @@ Steps:
 
 Output is always a repo-local artifact. Chat-only responses do not satisfy this command.
 
+### Phase 4b: Auto-write current-understanding.md
+
+After writing the clarify brief, check for and conditionally write `current-understanding.md`:
+
+1. Check if `docs/cortex/research/{slug}/current-understanding.md` already exists.
+2. **If it does NOT exist:**
+   a. Read `templates/cortex/current-understanding.md`.
+   b. Read brief YAML frontmatter `initial_terminal_set:` — if absent, default to all six non-transitional terminals: `commit-to-build`, `kill-with-learning`, `decompose`, `experiment-required`, `already-exists`, `hold-on-dependency`.
+   c. Read brief YAML frontmatter `ruled_out:` — if absent, default to `[]`.
+   d. Populate the Possible Terminals table: status = `live` for terminals in `initial_terminal_set`, status = `ruled-out` for terminals in `ruled_out`. Ruled-Out Reason and Evidence blank for live rows.
+   e. Fill YAML frontmatter: `slug: {slug}`, `brief_iteration: 1`, `last_updated: {today}`.
+   f. Populate Iteration History with the current brief as iteration 1 (dossier = TBD, reframe reason = "(initial)").
+   g. Create directory if needed: `mkdir -p docs/cortex/research/{slug}/`
+   h. Write to `docs/cortex/research/{slug}/current-understanding.md`.
+   i. Append path to `recent_artifacts` in continuity state (Step 5 below).
+3. **If it already exists:** No-op. Updates to existing `current-understanding.md` are out of scope for this pilot (deferred to a follow-up slug).
+
 ### Phase 5: Update continuity state
 
 **Update `docs/cortex/handoffs/current-state.md`:**
