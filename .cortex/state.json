@@ -1,30 +1,14 @@
 {
-  "slug": "gate-critique",
-  "mode": "execute",
-  "approval_status": "approved",
-  "active_contract": "docs/cortex/contracts/gate-critique/contract-001.md",
-  "artifacts": [
-    "docs/cortex/clarify/gate-critique/20260412T082000Z-clarify-brief.md",
-    "docs/cortex/research/gate-critique/current-understanding.md",
-    "docs/cortex/research/gate-critique/concept-20260412T071223Z.md",
-    "docs/cortex/specs/gate-critique/spec.md",
-    "docs/cortex/specs/gate-critique/project-context.md",
-    "docs/cortex/specs/gate-critique/gsd-handoff.md",
-    "docs/cortex/contracts/gate-critique/contract-001.md"
-  ],
+  "slug": null,
+  "mode": "done",
+  "approval_status": "pending",
+  "active_contract": null,
+  "artifacts": [],
   "approvals": { "contract": false, "evals": false },
   "gates": {
-    "clarify_complete": true,
-    "research_complete": true,
-    "spec_complete": true,
-    "contract_approved": false,
-    "pr_opened": false,
-    "pr_merged": false
-  },
-  "github": {
-    "pr_number": null,
-    "pr_url": null,
-    "issue_number": null,
-    "branch": "cortex/gate-critique"
+    "clarify_complete": false,
+    "research_complete": false,
+    "spec_complete": false,
+    "contract_approved": false
   }
 }

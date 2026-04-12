@@ -1,26 +1,20 @@
 # Current State
 
-**slug:** gate-critique
+**slug:** (none)
 
-**mode:** spec
+**mode:** (not started)
 
-**approval_status:** approved
+**approval_status:** (not started)
 
-**active_contract_path:** docs/cortex/contracts/gate-critique/contract-001.md
+**active_contract_path:** (none)
 
 **recent_artifacts:**
-- docs/cortex/clarify/gate-critique/20260412T082000Z-clarify-brief.md
-- docs/cortex/research/gate-critique/current-understanding.md
-- docs/cortex/research/gate-critique/concept-20260412T071223Z.md
-- docs/cortex/specs/gate-critique/spec.md
-- docs/cortex/specs/gate-critique/project-context.md
-- docs/cortex/specs/gate-critique/gsd-handoff.md
-- docs/cortex/contracts/gate-critique/contract-001.md
+- (none)
 
 **open_questions:**
-- (see docs/cortex/handoffs/open-questions.md)
+- (none)
 
 **blockers:**
 - (none)
 
-**next_action:** Run /cortex-status for full reconstruction
+**next_action:** Run /cortex-clarify to begin a new work item

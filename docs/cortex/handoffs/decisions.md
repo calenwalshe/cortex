@@ -53,3 +53,4 @@ Benchmark pilot found that baselines without skills produce substantive analysis
 - 2026-04-12T08:00:00Z | report-clarity | closed | terminal: commit-to-build | contract: docs/cortex/contracts/report-clarity/contract-001.md | eval-plan: (none)
 - 2026-04-12T09:00:00Z | gate: necessity | verdict: BUILD | confidence: 0.92 | slug: gate-critique | command: /cortex-spec
 - 2026-04-12T09:30:00Z | gate: contract_approval | value: true (approved by owner) | preset: supervised | command: /cortex-spec
+- 2026-04-12T10:00:00Z | gate-critique | closed | terminal: commit-to-build | contract: docs/cortex/contracts/gate-critique/contract-001.md | eval-plan: (none)
