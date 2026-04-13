@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: cortex-vault
-status: planning
-stopped_at: Bridge import complete
-last_updated: "2026-04-13T15:00:00Z"
-last_activity: 2026-04-13 — Bridge import from Cortex artifacts
+status: in_progress
+stopped_at: Phase 2 skill wiring complete
+last_updated: "2026-04-13T16:00:00Z"
+last_activity: 2026-04-13 — Completed Phase 2 skill insertions (cortex-clarify, cortex-research, cortex-spec)
 progress:
   total_phases: 2
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 2
+  completed_plans: 2
+  percent: 100
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Each new Cortex slug starts with accumulated cross-slug learnings rather than from zero — decisions made, approaches failed, and lessons learned in prior slugs are automatically available at session start without any manual curation.
-**Current focus:** Phase 1 — Build extractor and hook injection
+**Current focus:** Phase 2 complete — all skill insertions wired
 
 ## Current Position
 
-Phase: 1 — Build extractor and hook injection
-Plan: Not started
-Status: Ready for planning
-Last activity: 2026-04-13 — Bridge import complete
+Phase: 2 of 2 (Wire skill insertions)
+Plan: 2 of 2
+Status: Phase complete
+Last activity: 2026-04-13 — Completed 02-02-PLAN (skill wiring)
 
-Progress: [░░░░░░░░░░░░░░░░░░░░░] 0/0 plans; 0/2 phases complete
+Progress: [█████████████████████] 2/2 plans; 1/2 phases complete (Phase 1 done per prompt context; Phase 2 now done)
 
 ## Performance Metrics
 
@@ -67,8 +67,16 @@ None.
 
 eval_plan is pending — run /cortex-research --phase evals to produce eval plan before final close.
 
+### Phase 2 Decisions
+
+| Decision | Context |
+|----------|---------|
+| Rename critique phases (4c→4d, 2.9→2.95, 2c→2d) | Contract done criteria name Phase 4c/2.9/2c for vault extractor — vault extractor must claim those labels |
+| Synchronous extractor invocation | Consistent with cortex-critique pattern; no async benefit |
+| Extractor skip on evals path (research) | Evals artifacts have different schema; skip condition inherited from existing Phase 2.9 pattern |
+
 ## Session Continuity
 
-Last session: 2026-04-13T15:00:00Z
-Stopped at: Bridge import complete
+Last session: 2026-04-13T16:00:00Z
+Stopped at: Completed 02-02-PLAN — all Phase 2 skill insertions wired
 Resume file: None
