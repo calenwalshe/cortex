@@ -163,6 +163,18 @@ After writing the clarify brief, check for and conditionally write `current-unde
    i. Append path to `recent_artifacts` in continuity state (Step 5 below).
 3. **If it already exists:** No-op. Updates to existing `current-understanding.md` are out of scope for this pilot (deferred to a follow-up slug).
 
+### Phase 4c: Invoke cortex-critique
+
+After writing the clarify brief (Phase 4) and current-understanding.md (Phase 4b), invoke cortex-critique on the clarify brief before updating continuity state:
+
+```
+/cortex-critique --artifact docs/cortex/clarify/{slug}/{timestamp}-clarify-brief.md --gate clarify --slug {slug}
+```
+
+This runs adversarial AI review of the brief, persists findings to `docs/cortex/reviews/{slug}/critique-clarify.md`, and writes a gate receipt to `.cortex/state.json`.
+
+**Failure handling:** If cortex-critique is not available or returns a non-zero exit, record `CRITIQUE_FAILED` in the gate receipt and proceed. Critique failure must not block the pipeline.
+
 ### Phase 5: Update continuity state
 
 **Update `docs/cortex/handoffs/current-state.md`:**

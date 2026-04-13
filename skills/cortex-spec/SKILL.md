@@ -260,6 +260,18 @@ After writing the spec, generate a `project-context.md` file that encodes the ta
 
 3. If a `project-context.md` already exists for this slug, overwrite it (spec is the source of truth).
 
+### Phase 2c: Invoke cortex-critique on spec
+
+After writing spec.md and project-context.md, invoke cortex-critique on the spec before proceeding to GSD handoff or contract approval gate:
+
+```
+/cortex-critique --artifact docs/cortex/specs/{slug}/spec.md --gate spec --slug {slug}
+```
+
+This runs adversarial AI review of the spec, persists findings to `docs/cortex/reviews/{slug}/critique-spec.md`, and writes a gate receipt to `.cortex/state.json`.
+
+**Failure handling:** If cortex-critique is not available or returns a non-zero exit, record `CRITIQUE_FAILED` in the gate receipt and proceed. Critique failure must not block the pipeline.
+
 ### Phase 3: Write GSD Handoff
 
 Read the template at `templates/cortex/gsd-handoff.md`.
