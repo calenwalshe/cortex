@@ -60,7 +60,7 @@ Build `cortex-vault-extractor.py` and wire it into `cortex-session-start.sh` and
 
 - [ ] `cortex-session-start.sh` calls `recall_query.py` and injects vault facts into `additionalContext` under a distinct `VAULT MEMORY` section header
 - [ ] Total `additionalContext` length after vault injection remains under 10,000 characters
-- [ ] Vault read uses `--top-k 5 --project cortex` to scope retrieval to Cortex-relevant facts
+- [ ] Vault read uses `--top-k 5 --project cortex-memory-platform` to scope retrieval to Cortex-relevant facts
 - [ ] Vault read soft-fails gracefully (empty string, no error) when vault index is absent or query returns nothing
 - [ ] `scripts/cortex/cortex-vault-extractor.py` exists and accepts `--artifact <path> --slug <slug>` arguments
 - [ ] Extractor correctly identifies artifact type using path-pattern truth table: `clarify/`→brief, `research/`+not `current-understanding.md`→dossier, `specs/spec.md`→spec; any other path→error

@@ -18,7 +18,7 @@ Write `scripts/cortex/cortex-vault-extractor.py` with full extraction logic and 
 
 - **Vault write path:** Direct `add_fact()` via `sys.path.insert(0, os.path.expanduser("~/memory/vault/scripts/"))` + `from fact_store import add_fact`. Do NOT call as subprocess — `fact_store.py` has no CLI interface; its `__main__` block is a test harness. Verified: no relative imports in fact_store.py, safe to import from any working directory.
 
-- **Vault read path:** `python3 ~/memory/vault/recall_query.py "QUERY" --top-k 5 --project cortex` returns synthesized prose. No `--deep` flag (shallow mode targets <3s for session start latency). No `--type episodic` — Cortex-written facts use `memory_type=semantic`, not episodic.
+- **Vault read path:** `python3 ~/memory/vault/recall_query.py "QUERY" --top-k 5 --project cortex-memory-platform` returns synthesized prose. No `--deep` flag (shallow mode targets <3s for session start latency). No `--type episodic` — Cortex-written facts use `memory_type=semantic`, not episodic.
 
 - **Idempotency key:** `(session_id, topic, content[:50])` — check SQLite before every `add_fact()` call. First extraction wins; re-runs are no-ops.
 
@@ -35,7 +35,7 @@ Write `scripts/cortex/cortex-vault-extractor.py` with full extraction logic and 
   - adjacent-finding → `confidence=0.75, importance=0.65, memory_type="semantic"`
   - failed-approach → `confidence=0.85, importance=0.75, memory_type="procedural"`
   - risk-mitigation → `confidence=0.80, importance=0.70, memory_type="semantic"`
-  - Common fields: `project_scope="cortex"`, `session_id="cortex-{slug}"`, `scope="learning"`
+  - Common fields: `project_scope="cortex-memory-platform"`, `session_id="cortex-{slug}"`, `scope="learning"`
 
 - **Path-pattern truth table for artifact type detection:**
   - path contains `clarify/` → `brief`
