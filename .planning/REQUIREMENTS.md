@@ -1,11 +1,11 @@
-# Requirements: clarify-research-loop
+# Requirements: cortex-vault
 
-**Defined:** 2026-04-12
-**Core Value:** The Cortex pre-spec phase becomes a terminal-state finder: every slug converges to one of seven valid resolutions, so the human-on-the-loop can always answer "which terminal am I heading toward?" without reading every dossier.
+**Defined:** 2026-04-13
+**Core Value:** Each new Cortex slug starts with accumulated cross-slug learnings rather than from zero — decisions made, approaches failed, and lessons learned in prior slugs are automatically available at session start without any manual curation.
 
 ## Requirements
 
-No formalized REQ-IDs exist for this slug — the GSD handoff records "None formalized" in the Requirements section. The contract's done_criteria function as the de-facto requirements and are tracked verbatim against ROADMAP phases per AUTON-06.
+No formalized REQ-IDs exist for this slug. The contract's done_criteria function as the de-facto requirements and are tracked verbatim against ROADMAP phases per AUTON-06.
 
 - [ ] **None formalized** — Requirements are tracked via contract done_criteria mapped to ROADMAP phase success criteria.
 
@@ -13,11 +13,8 @@ No formalized REQ-IDs exist for this slug — the GSD handoff records "None form
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| Audit complete + threshold met | Phase 1: Pre-pilot Retroactive Audit | Pending |
-| Templates added | Phase 2: Templates | Pending |
-| Skill modifications complete | Phase 3: Skill Modifications | Pending |
-| Documentation complete | Phase 4: Documentation | Pending |
-| Dogfood + validation complete | Phase 5: Dogfood + Validate | Pending |
+| cortex-vault-extractor.py built + cortex-session-start.sh modified | Phase 1: Build extractor and hook injection | Pending |
+| cortex-clarify, cortex-research, cortex-spec wired to invoke extractor | Phase 2: Wire skill insertions | Pending |
 
 **Coverage:**
 - Formal requirements: 0 total — all mapped via contract done_criteria

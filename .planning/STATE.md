@@ -1,36 +1,36 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: clarify-research-loop
-status: planning
-stopped_at: Bridge import complete
-last_updated: "2026-04-12T03:23:59Z"
-last_activity: 2026-04-12 — Bridge import from Cortex artifacts
+milestone_name: cortex-vault
+status: in_progress
+stopped_at: Phase 2 skill wiring complete
+last_updated: "2026-04-13T16:00:00Z"
+last_activity: 2026-04-13 — Completed Phase 2 skill insertions (cortex-clarify, cortex-research, cortex-spec)
 progress:
-  total_phases: 5
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_phases: 2
+  completed_phases: 1
+  total_plans: 2
+  completed_plans: 2
+  percent: 100
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-12)
+See: .planning/PROJECT.md (updated 2026-04-13)
 
-**Core value:** The Cortex pre-spec phase becomes a terminal-state finder: every slug converges to one of seven valid resolutions, so the human-on-the-loop can always answer "which terminal am I heading toward?" without reading every dossier.
-**Current focus:** Phase 1 — Pre-pilot Retroactive Audit (HARD GATE)
+**Core value:** Each new Cortex slug starts with accumulated cross-slug learnings rather than from zero — decisions made, approaches failed, and lessons learned in prior slugs are automatically available at session start without any manual curation.
+**Current focus:** Phase 2 complete — all skill insertions wired
 
 ## Current Position
 
-Phase: 1 — Pre-pilot Retroactive Audit
-Plan: Not started
-Status: Ready for planning
-Last activity: 2026-04-12 — Bridge import complete
+Phase: 2 of 2 (Wire skill insertions)
+Plan: 2 of 2
+Status: Phase complete
+Last activity: 2026-04-13 — Completed 02-02-PLAN (skill wiring)
 
-Progress: [░░░░░░░░░░░░░░░░░░░░░] 0/0 plans; 0/5 phases complete
+Progress: [█████████████████████] 2/2 plans; 1/2 phases complete (Phase 1 done per prompt context; Phase 2 now done)
 
 ## Performance Metrics
 
@@ -49,7 +49,15 @@ Progress: [░░░░░░░░░░░░░░░░░░░░░] 0/0 
 
 ### Decisions
 
-Bridge import from Cortex contract: docs/cortex/contracts/clarify-research-loop/contract-001.md
+Bridge import from Cortex contract: docs/cortex/contracts/cortex-vault/contract-001.md
+
+Key architectural decisions already locked:
+- Write path: direct `add_fact()` via `sys.path.insert` import (NOT subprocess — fact_store.py has no CLI interface)
+- Read path: `recall_query.py --top-k 5 --project cortex` shallow mode (no --deep, target <3s)
+- Idempotency key: `(session_id, topic, content[:50])` — check before every `add_fact()` call
+- Budget guard: `max(0, 9500 - len(existing_content))` — truncate vault facts to available space
+- Hook injection point: after outer `if [[ -f "$FACTS_FILE"...]]` closes, before `HEALTH=""` line
+- 9 extraction categories: scope-exclusion, owner-constraint, design-assumption, research-finding, architecture-decision, adjacent-finding, failed-approach, risk-mitigation (memory_type=procedural), open-question
 
 ### Pending Todos
 
@@ -57,10 +65,18 @@ None.
 
 ### Blockers/Concerns
 
-None — both contract and eval plan are approved.
+eval_plan is pending — run /cortex-research --phase evals to produce eval plan before final close.
+
+### Phase 2 Decisions
+
+| Decision | Context |
+|----------|---------|
+| Rename critique phases (4c→4d, 2.9→2.95, 2c→2d) | Contract done criteria name Phase 4c/2.9/2c for vault extractor — vault extractor must claim those labels |
+| Synchronous extractor invocation | Consistent with cortex-critique pattern; no async benefit |
+| Extractor skip on evals path (research) | Evals artifacts have different schema; skip condition inherited from existing Phase 2.9 pattern |
 
 ## Session Continuity
 
-Last session: 2026-04-12T03:23:59Z
-Stopped at: Bridge import complete
+Last session: 2026-04-13T16:00:00Z
+Stopped at: Completed 02-02-PLAN — all Phase 2 skill insertions wired
 Resume file: None
