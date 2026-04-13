@@ -40,6 +40,14 @@ if [[ -f "$FACTS_FILE" && -f "$STATE_FILE" ]]; then
   fi
 fi
 
+# Inject cross-session vault facts (non-blocking, budget-guarded)
+VAULT_FACTS=""
+VAULT_SCRIPT="${HOME}/memory/vault/scripts/recall_query.py"
+if [[ -f "$VAULT_SCRIPT" ]]; then
+  VAULT_QUERY="cortex intelligence architecture decisions lessons learned"
+  VAULT_FACTS=$(python3 "$VAULT_SCRIPT" "$VAULT_QUERY" --top-k 5 --project cortex-memory-platform 2>/dev/null || true)
+fi
+
 # Run quick coherence check (non-blocking)
 HEALTH=""
 HEALTH_SCRIPT="${CLAUDE_PROJECT_DIR}/scripts/cortex/cortex-health.py"
@@ -62,12 +70,25 @@ fi
 
 python3 -c "
 import json, sys
+
 content = sys.stdin.read()
 extra = '''$EXTRA'''
+vault_facts = '''$VAULT_FACTS'''
+
+base = 'CORTEX STATE RESTORED\n\n' + content + extra
+existing_len = len(base)
+
+# Budget guard: cap at 9500 chars to stay under 10K total additionalContext
+vault_budget = max(0, 9500 - existing_len)
+if vault_facts.strip() and vault_budget > 0:
+    vault_section = '\n\nVAULT MEMORY (cross-session):\n' + vault_facts.strip()
+    vault_section = vault_section[:vault_budget]
+    base = base + vault_section
+
 output = {
     'hookSpecificOutput': {
         'hookEventName': 'SessionStart',
-        'additionalContext': 'CORTEX STATE RESTORED\n\n' + content + extra
+        'additionalContext': base
     }
 }
 print(json.dumps(output))
