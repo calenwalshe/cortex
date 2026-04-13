@@ -260,9 +260,21 @@ After writing the spec, generate a `project-context.md` file that encodes the ta
 
 3. If a `project-context.md` already exists for this slug, overwrite it (spec is the source of truth).
 
-### Phase 2c: Invoke cortex-critique on spec
+### Phase 2c: Extract vault facts from spec
 
-After writing spec.md and project-context.md, invoke cortex-critique on the spec before proceeding to GSD handoff or contract approval gate:
+After writing spec.md and project-context.md (Phase 2b), call the vault extractor to persist typed facts before invoking critique or proceeding to GSD handoff:
+
+```bash
+python3 scripts/cortex/cortex-vault-extractor.py \
+  --artifact docs/cortex/specs/{slug}/spec.md \
+  --slug {slug}
+```
+
+Soft-fail: if the extractor exits non-zero or is not found, log a warning and continue. Do not block Phase 2d or Phase 3.
+
+### Phase 2d: Invoke cortex-critique on spec
+
+After writing spec.md, project-context.md, and extracting vault facts (Phase 2c), invoke cortex-critique on the spec before proceeding to GSD handoff or contract approval gate:
 
 ```
 /cortex-critique --artifact docs/cortex/specs/{slug}/spec.md --gate spec --slug {slug}
