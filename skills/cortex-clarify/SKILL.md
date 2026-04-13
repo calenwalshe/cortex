@@ -163,9 +163,21 @@ After writing the clarify brief, check for and conditionally write `current-unde
    i. Append path to `recent_artifacts` in continuity state (Step 5 below).
 3. **If it already exists:** No-op. Updates to existing `current-understanding.md` are out of scope for this pilot (deferred to a follow-up slug).
 
-### Phase 4c: Invoke cortex-critique
+### Phase 4c: Extract vault facts from clarify brief
 
-After writing the clarify brief (Phase 4) and current-understanding.md (Phase 4b), invoke cortex-critique on the clarify brief before updating continuity state:
+After writing the clarify brief (Phase 4) and current-understanding.md (Phase 4b), call the vault extractor to persist typed facts before updating continuity state:
+
+```bash
+python3 scripts/cortex/cortex-vault-extractor.py \
+  --artifact docs/cortex/clarify/{slug}/{timestamp}-clarify-brief.md \
+  --slug {slug}
+```
+
+Soft-fail: if the extractor exits non-zero or is not found, log a warning and continue. Do not block Phase 4d or Phase 5.
+
+### Phase 4d: Invoke cortex-critique
+
+After writing the clarify brief (Phase 4), current-understanding.md (Phase 4b), and extracting vault facts (Phase 4c), invoke cortex-critique on the clarify brief before updating continuity state:
 
 ```
 /cortex-critique --artifact docs/cortex/clarify/{slug}/{timestamp}-clarify-brief.md --gate clarify --slug {slug}
