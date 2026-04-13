@@ -64,3 +64,4 @@ Open question in dossier: "Can `fact_store.py` be imported from cortex repo scri
 - 2026-04-12T09:00:00Z | gate: necessity | verdict: BUILD | confidence: 0.92 | slug: gate-critique | command: /cortex-spec
 - 2026-04-12T09:30:00Z | gate: contract_approval | value: true (approved by owner) | preset: supervised | command: /cortex-spec
 - 2026-04-12T10:00:00Z | gate-critique | closed | terminal: commit-to-build | contract: docs/cortex/contracts/gate-critique/contract-001.md | eval-plan: (none)
+- 2026-04-13T15:30:00Z | cortex-vault | closed | terminal: commit-to-build | contract: docs/cortex/contracts/cortex-vault/contract-001.md | eval-plan: (none)

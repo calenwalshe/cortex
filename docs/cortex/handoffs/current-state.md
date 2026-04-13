@@ -1,25 +1,20 @@
 # Current State
 
-**slug:** cortex-vault
+**slug:** (none)
 
-**mode:** execute
+**mode:** (not started)
 
-**approval_status:** approved
+**approval_status:** (not started)
 
-**active_contract_path:** docs/cortex/contracts/cortex-vault/contract-001.md
+**active_contract_path:** (none)
 
 **recent_artifacts:**
-- docs/cortex/clarify/cortex-vault/20260413T020000Z-clarify-brief.md
-- docs/cortex/research/cortex-vault/current-understanding.md
-- docs/cortex/research/cortex-vault/concept-20260413T140000Z.md
-- docs/cortex/specs/cortex-vault/spec.md
-- docs/cortex/specs/cortex-vault/gsd-handoff.md
-- docs/cortex/contracts/cortex-vault/contract-001.md
+- (none)
 
 **open_questions:**
-- (see docs/cortex/handoffs/open-questions.md)
+- (none)
 
 **blockers:**
 - (none)
 
-**next_action:** Run /cortex-status for full reconstruction
+**next_action:** Run /cortex-clarify to begin a new work item
