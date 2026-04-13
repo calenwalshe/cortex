@@ -1,14 +1,54 @@
 {
-  "slug": null,
-  "mode": "done",
-  "approval_status": "pending",
-  "active_contract": null,
-  "artifacts": [],
-  "approvals": { "contract": false, "evals": false },
+  "slug": "cortex-vault",
+  "mode": "execute",
+  "approval_status": "approved",
+  "active_contract": "docs/cortex/contracts/cortex-vault/contract-001.md",
+  "artifacts": [
+    "docs/cortex/clarify/cortex-vault/20260413T020000Z-clarify-brief.md",
+    "docs/cortex/research/cortex-vault/current-understanding.md",
+    "docs/cortex/research/cortex-vault/concept-20260413T140000Z.md",
+    "docs/cortex/specs/cortex-vault/spec.md",
+    "docs/cortex/specs/cortex-vault/gsd-handoff.md",
+    "docs/cortex/contracts/cortex-vault/contract-001.md"
+  ],
+  "approvals": { "contract": true, "evals": false },
+  "critique_receipts": [
+    {
+      "gate": "dossier",
+      "slug": "cortex-vault",
+      "timestamp": "2026-04-13T14:00:00Z",
+      "severity": "STOP",
+      "finding_count": 4,
+      "stop_count": 2,
+      "caution_count": 2,
+      "engine": "codex",
+      "artifact": "docs/cortex/reviews/cortex-vault/critique-dossier-20260413T140000Z.md"
+    },
+    {
+      "gate": "spec",
+      "slug": "cortex-vault",
+      "timestamp": "2026-04-13T14:30:00Z",
+      "severity": "CAUTION",
+      "finding_count": 3,
+      "stop_count": 0,
+      "caution_count": 3,
+      "engine": "codex",
+      "note": "STOP findings resolved in spec before advancing: path-pattern truth table added, per-category field values specified, import strategy fixed to subprocess",
+      "artifact": "docs/cortex/reviews/cortex-vault/critique-spec.md"
+    }
+  ],
   "gates": {
-    "clarify_complete": false,
-    "research_complete": false,
-    "spec_complete": false,
-    "contract_approved": false
+    "clarify_complete": true,
+    "research_complete": true,
+    "spec_complete": true,
+    "contract_approved": true,
+    "pr_opened": false,
+    "pr_merged": false
+  },
+  "github": {
+    "pr_number": null,
+    "pr_url": null,
+    "issue_number": null,
+    "branch": "cortex/cortex-vault"
   }
 }

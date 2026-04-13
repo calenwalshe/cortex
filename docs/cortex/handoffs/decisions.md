@@ -12,6 +12,16 @@ Benchmark-driven fix landing as commit `abf1295`. Phase 1 rules told the LLM to 
 
 Benchmark pilot found that baselines without skills produce substantive analysis — they just don't know the specific artifact format. Skills' measured "lift" is really a format-compliance delta, not an intelligence delta. Time/token savings come from convergence (no exploration), not compression. **Implication for future skill design:** for first-step tools like `cortex-clarify`, the skill should preserve/encourage baseline's investigative depth, not just enforce format. Concrete action: iteration-3 of `cortex-clarify` to add "answer codebase-type questions by reading files first" instruction.
 
+## Design Decisions
+
+### 2026-04-13 — cortex-vault: inbox/promotion constraint overturned by research
+
+Clarify brief constraint: "Vault writes must go through the inbox/promotion model from the Drive doc, not directly to the durable store." Research (Q2 audit) found: inbox/promotion extractors (`episodic_extractor.py`, `procedural_extractor.py`) expect session JSONL format (turns), not structured Cortex artifacts. Sending a dossier through the pipeline would require LLM reclassification of content that is already classified by artifact section — adding noise, not value. Decision: use `add_fact()` direct import instead. Constraint was based on the assumption that Cortex writes would be "raw events"; research showed they are structured, reviewed artifacts with explicit classification. Authorized by: research evidence + user approval of spec (2026-04-13T14:30:00Z).
+
+### 2026-04-13 — cortex-vault: fact_store.py import method
+
+Open question in dossier: "Can `fact_store.py` be imported from cortex repo scripts directory?" Resolution: verified no relative imports in fact_store.py (only stdlib + third-party). Direct import via `sys.path.insert` is safe. fact_store.py has no CLI interface — its `__main__` is a test harness. The spec initially specified subprocess as the "required pattern" (incorrect); corrected post-audit to direct import.
+
 ## Autonomy Decisions
 
 <!-- Auto-appended by Cortex skills when a gate is auto-skipped (autonomy preset != supervised) -->

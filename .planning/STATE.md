@@ -1,11 +1,11 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: gate-critique
+milestone_name: cortex-vault
 status: planning
 stopped_at: Bridge import complete
-last_updated: "2026-04-12T09:30:00Z"
-last_activity: 2026-04-12 — Bridge import from Cortex artifacts
+last_updated: "2026-04-13T15:00:00Z"
+last_activity: 2026-04-13 — Bridge import from Cortex artifacts
 progress:
   total_phases: 2
   completed_phases: 0
@@ -18,17 +18,17 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-12)
+See: .planning/PROJECT.md (updated 2026-04-13)
 
-**Core value:** Every Cortex gate has a structured dual-critique step so bad assumptions and poor framing are caught before they propagate downstream into expensive work — the owner no longer approves AI-generated artifacts in a vacuum.
-**Current focus:** Phase 1 — Build cortex-critique skill
+**Core value:** Each new Cortex slug starts with accumulated cross-slug learnings rather than from zero — decisions made, approaches failed, and lessons learned in prior slugs are automatically available at session start without any manual curation.
+**Current focus:** Phase 1 — Build extractor and hook injection
 
 ## Current Position
 
-Phase: 1 — Build cortex-critique skill
+Phase: 1 — Build extractor and hook injection
 Plan: Not started
 Status: Ready for planning
-Last activity: 2026-04-12 — Bridge import complete
+Last activity: 2026-04-13 — Bridge import complete
 
 Progress: [░░░░░░░░░░░░░░░░░░░░░] 0/0 plans; 0/2 phases complete
 
@@ -49,14 +49,15 @@ Progress: [░░░░░░░░░░░░░░░░░░░░░] 0/0 
 
 ### Decisions
 
-Bridge import from Cortex contract: docs/cortex/contracts/gate-critique/contract-001.md
+Bridge import from Cortex contract: docs/cortex/contracts/cortex-vault/contract-001.md
 
 Key architectural decisions already locked:
-- Codex CLI exec mode: `codex exec --full-auto --profile llm --skip-git-repo-check --cd /tmp "<prompt>"`
-- Fallback: `claude -p` subprocess with same adversarial prompt when codex binary not found
-- Three-tier severity: STOP / CAUTION / GO (not binary pass/fail)
-- Adversarial prompt must open with role declaration before presenting artifact
-- AI critique always runs; human_critique is the only autonomy-conditional gate
+- Write path: direct `add_fact()` via `sys.path.insert` import (NOT subprocess — fact_store.py has no CLI interface)
+- Read path: `recall_query.py --top-k 5 --project cortex` shallow mode (no --deep, target <3s)
+- Idempotency key: `(session_id, topic, content[:50])` — check before every `add_fact()` call
+- Budget guard: `max(0, 9500 - len(existing_content))` — truncate vault facts to available space
+- Hook injection point: after outer `if [[ -f "$FACTS_FILE"...]]` closes, before `HEALTH=""` line
+- 9 extraction categories: scope-exclusion, owner-constraint, design-assumption, research-finding, architecture-decision, adjacent-finding, failed-approach, risk-mitigation (memory_type=procedural), open-question
 
 ### Pending Todos
 
@@ -68,6 +69,6 @@ eval_plan is pending — run /cortex-research --phase evals to produce eval plan
 
 ## Session Continuity
 
-Last session: 2026-04-12T09:30:00Z
+Last session: 2026-04-13T15:00:00Z
 Stopped at: Bridge import complete
 Resume file: None

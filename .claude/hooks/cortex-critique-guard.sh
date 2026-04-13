@@ -36,7 +36,8 @@ SLUG=$(jq -r '.slug // ""' "$CORTEX_STATE" 2>/dev/null || echo "")
 [[ -z "$SLUG" ]] && exit 0
 
 # Read critique receipts already on disk (written by cortex-critique before this gate)
-RECEIPTS=$(jq -c '.critique_receipts // []' "$CORTEX_STATE" 2>/dev/null || echo "[]")
+# Pre-filter to current slug only — prevents a prior slug's dossier receipt from satisfying this guard
+RECEIPTS=$(jq -c "[.critique_receipts // [] | .[] | select(.slug == \"${SLUG}\")]" "$CORTEX_STATE" 2>/dev/null || echo "[]")
 
 # Find most recent dossier critique artifact for this slug
 REVIEWS_DIR="${CLAUDE_PROJECT_DIR}/docs/cortex/reviews/${SLUG}"
