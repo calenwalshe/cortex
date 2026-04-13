@@ -670,9 +670,25 @@ If `approval_required: false` OR `Approval Status: approved`:
      Update the contract's eval_plan field to: docs/cortex/evals/{slug}/eval-plan.md
      ```
 
-### Phase 2.9: Invoke cortex-critique
+### Phase 2.9: Extract vault facts from research dossier
 
-After writing the dossier to disk (Phase 3), invoke cortex-critique before updating continuity state or setting `research_complete: true`:
+After writing the dossier to disk (Phase 3), call the vault extractor to persist typed facts before invoking critique or updating continuity state:
+
+```bash
+python3 scripts/cortex/cortex-vault-extractor.py \
+  --artifact {dossier_path} \
+  --slug {slug}
+```
+
+Where `{dossier_path}` is the path just written (e.g., `docs/cortex/research/{slug}/concept-{timestamp}.md`).
+
+**Skip condition:** If `--phase evals` or `--write-plan` was the invocation reason (eval plan write path, not dossier write path), skip this step.
+
+Soft-fail: if the extractor exits non-zero or is not found, log a warning and continue. Do not block Phase 2.95 or Phase 4.
+
+### Phase 2.95: Invoke cortex-critique
+
+After writing the dossier to disk (Phase 3) and extracting vault facts (Phase 2.9), invoke cortex-critique before updating continuity state or setting `research_complete: true`:
 
 ```
 /cortex-critique --artifact {dossier_path} --gate dossier --slug {slug} --timestamp {timestamp}
