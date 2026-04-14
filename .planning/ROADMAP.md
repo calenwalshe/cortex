@@ -39,4 +39,4 @@ Build the operational map layer — a PostToolUse hook, rolling edit ledger, and
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | Phase 1: Core Script and Hook Registration | 3/3 | ✓ Complete | 2026-04-14 |
-| Phase 2: Skill Integration and Session-Start Anchor | 0/0 | Not started | - |
+| Phase 2: Skill Integration and Session-Start Anchor | 2/2 | ✓ Complete | 2026-04-14 |

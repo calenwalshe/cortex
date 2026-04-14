@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: operational-map-layer
-status: in-progress
-stopped_at: "02-02 complete — OP-LEDGER anchor added to cortex-session-start.sh"
-last_updated: "2026-04-14T00:50:00Z"
-last_activity: "2026-04-14 — Completed 02-02-PLAN.md (OP-LEDGER staleness anchor)"
+status: complete
+stopped_at: "Phase 2 verified — all 8 REQ-OML requirements satisfied"
+last_updated: "2026-04-14T01:05:00Z"
+last_activity: "2026-04-14 — Phase 2 complete and verified (6/6 must-haves). Milestone complete."
 progress:
   total_phases: 2
-  completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  completed_phases: 2
+  total_plans: 5
+  completed_plans: 5
   percent: 100
 ---
 
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-04-14)
 
 ## Current Position
 
-Phase: 2 — Skill Injection — In progress
-Plan: 02-02 complete; 02-03 next
-Status: In progress
-Last activity: 2026-04-14 — Completed 02-02-PLAN.md
+Phase: 2 — Skill Integration and Session-Start Anchor — COMPLETE
+Plan: All 5 plans complete
+Status: Milestone complete — all phases verified
+Last activity: 2026-04-14 — Phase 2 verified (6/6 must-haves); all 8 REQ-OML requirements complete
 
-Progress: [████████████████████░] 4/5 plans (Phase 1 complete; Phase 2 plan 1-2 complete)
+Progress: [█████████████████████] 5/5 plans; 2/2 phases complete
 
 ## Performance Metrics
 
