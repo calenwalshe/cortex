@@ -334,6 +334,224 @@ def call_judge(prompt):
     return json.loads(text), result['usage']
 
 
+def _call_model_raw(prompt, max_tokens=800):
+    """Call Claude Haiku and return raw text response (no JSON parsing)."""
+    api_key = os.environ.get('ANTHROPIC_API_KEY')
+    if not api_key:
+        print('ERROR: ANTHROPIC_API_KEY not set.', file=sys.stderr)
+        sys.exit(1)
+
+    data = json.dumps({
+        'model': MODEL,
+        'max_tokens': max_tokens,
+        'messages': [{'role': 'user', 'content': prompt}],
+        'temperature': 0.3,
+    }).encode()
+
+    req = urllib.request.Request(API_URL, data=data, headers={
+        'Content-Type': 'application/json',
+        'x-api-key': api_key,
+        'anthropic-version': '2023-06-01',
+    })
+
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        result = json.loads(resp.read())
+
+    return result['content'][0]['text'].strip()
+
+
+# ── Communication Judge ───────────────────────────────────────────────────────
+
+def build_communication_judge_prompt(message_text, rubric):
+    """Build judge prompt for communication quality evaluation.
+
+    Args:
+        message_text: The AI-generated summary text to evaluate.
+        rubric: Parsed rubric dict with 'dimensions' and 'aggregate_threshold'.
+
+    Returns:
+        Prompt string for call_judge().
+    """
+    dimensions = rubric.get('dimensions', [])
+    dim_lines = '\n'.join(
+        f"  - {d['name']} (0-{d['scale']}): {d['description']}"
+        for d in dimensions
+    )
+    dim_names = ', '.join(f'"{d["name"]}": <integer 0-{d["scale"]}>' for d in dimensions)
+    agg_threshold = rubric.get('aggregate_threshold', 0.7)
+
+    return f"""You are a communication quality judge evaluating an AI-generated summary for an owner.
+
+REJECTION RULE: If calibrated_uncertainty < 2, verdict MUST be FAIL regardless of other scores.
+
+DIMENSIONS (score 0-4 each):
+{dim_lines}
+
+AGGREGATE THRESHOLD: Compute mean of all dimension scores divided by 4 (their maximum). If mean/4 >= {agg_threshold}, verdict is PASS (unless rejection rule applies).
+
+OUTPUT: Respond ONLY with JSON (no markdown fences, no extra text):
+{{"verdict": "PASS" or "FAIL", "per_dimension_scores": {{{dim_names}}}, "aggregate_score": <float 0.0-1.0>, "critique": "<specific findings: what failed and why>"}}
+
+MESSAGE TO EVALUATE:
+{message_text}"""
+
+
+def _load_comm_rubric(rubric_path):
+    """Load and parse communication rubric from YAML file."""
+    import yaml
+    with open(rubric_path, 'r') as f:
+        return yaml.safe_load(f)
+
+
+def _write_comm_jsonl(entry, rubric_hash):
+    """Append a judge run entry to the communication judge JSONL calibration log."""
+    os.makedirs(CALIBRATION_DIR, exist_ok=True)
+    jsonl_path = os.path.join(CALIBRATION_DIR, f'comm-judge-{rubric_hash}.jsonl')
+    with open(jsonl_path, 'a') as f:
+        f.write(json.dumps(entry) + '\n')
+
+
+def _build_rewrite_prompt(message, critique):
+    """Build a rewrite prompt that preserves uncertainty markers."""
+    return f"""You are rewriting an AI-generated drive summary to fix communication quality issues.
+
+CRITIQUE OF ORIGINAL (what failed):
+{critique}
+
+RULES FOR REWRITE:
+- Preserve all caveats, uncertainty markers, and open questions from the original. Do not add false confidence.
+- Fix the specific issues identified in the critique.
+- Keep the same 3-part structure: status line, delta bullets, risk line.
+- Do not add file paths, technical jargon, or slug names.
+
+ORIGINAL MESSAGE:
+{message}
+
+Respond with ONLY the rewritten message text. No preamble, no explanation."""
+
+
+def _apply_rejection_rules(per_dimension_scores, rubric):
+    """Apply explicit rejection rules from rubric. Returns FAIL verdict or None."""
+    for rule in rubric.get('rejection_rules', []):
+        dim = rule.get('dimension')
+        condition = rule.get('condition', '')
+        if dim and dim in per_dimension_scores:
+            score = per_dimension_scores[dim]
+            if condition == '< 2' and score < 2:
+                return 'FAIL'
+    return None
+
+
+def _compute_aggregate(per_dimension_scores, rubric):
+    """Compute normalized aggregate score (mean / scale)."""
+    dimensions = rubric.get('dimensions', [])
+    if not dimensions:
+        return 0.0
+    scale = dimensions[0].get('scale', 4)
+    total = sum(per_dimension_scores.get(d['name'], 0) for d in dimensions)
+    return total / (len(dimensions) * scale)
+
+
+def judge_communication(message, rubric_path, max_retries=3):
+    """Evaluate a drive completion summary against the communication rubric.
+
+    Applies a retry loop with critique-guided rewrites on failure. Returns an
+    escalation struct if the retry cap is exhausted without a passing verdict.
+
+    Args:
+        message: The AI-generated summary text to evaluate.
+        rubric_path: Path to the YAML rubric file.
+        max_retries: Hard cap on evaluation attempts (default: 3).
+
+    Returns:
+        dict with 'verdict' key. On PASS: includes per_dimension_scores, aggregate_score.
+        On ESCALATE: includes original_message, final_rewrite, critique, attempts.
+    """
+    rubric = _load_comm_rubric(rubric_path)
+
+    # Compute rubric hash for JSONL filename
+    with open(rubric_path, 'rb') as f:
+        rubric_hash = hashlib.sha256(f.read()).hexdigest()[:12]
+
+    original_message = message
+    current_message = message
+    last_critique = ''
+    last_rewrite = message
+
+    for attempt in range(1, max_retries + 1):
+        # Build and call judge
+        prompt = build_communication_judge_prompt(current_message, rubric)
+        judge_response, usage = call_judge(prompt)
+
+        per_dimension_scores = judge_response.get('per_dimension_scores', {})
+        critique = judge_response.get('critique', '')
+        confidence = judge_response.get('confidence', 0.0)
+
+        # Apply explicit rejection rules (override judge verdict)
+        forced_verdict = _apply_rejection_rules(per_dimension_scores, rubric)
+        if forced_verdict:
+            verdict = forced_verdict
+        else:
+            # Apply aggregate threshold
+            agg = _compute_aggregate(per_dimension_scores, rubric)
+            verdict = 'PASS' if agg >= rubric.get('aggregate_threshold', 0.7) else 'FAIL'
+            if judge_response.get('verdict') == 'FAIL':
+                verdict = 'FAIL'
+
+        aggregate_score = _compute_aggregate(per_dimension_scores, rubric)
+
+        # Compute rewrite diff (simple: original vs current if attempt > 1)
+        rewrite_diff = '' if attempt == 1 else f'Rewrite attempt {attempt - 1} → {attempt}'
+
+        # Write JSONL entry
+        entry = {
+            'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+            'slug': '',
+            'surface': rubric.get('surface', 'drive_completion_summary'),
+            'judge_model': MODEL,
+            'rubric_hash': rubric_hash,
+            'original_message': original_message,
+            'rewrite_attempt': attempt,
+            'per_dimension_scores': per_dimension_scores,
+            'aggregate_score': aggregate_score,
+            'verdict': verdict,
+            'critique': critique,
+            'rewrite_diff': rewrite_diff,
+            'confidence': confidence,
+            'calibration_corrections_applied': 0,
+        }
+        _write_comm_jsonl(entry, rubric_hash)
+
+        if verdict == 'PASS':
+            return {
+                'verdict': 'PASS',
+                'per_dimension_scores': per_dimension_scores,
+                'aggregate_score': aggregate_score,
+                'critique': critique,
+                'attempts': attempt,
+            }
+
+        last_critique = critique
+        last_rewrite = current_message
+
+        # Build rewrite for next attempt (if not at cap)
+        if attempt < max_retries:
+            rewrite_prompt = _build_rewrite_prompt(current_message, critique)
+            rewritten = _call_model_raw(rewrite_prompt)
+            if rewritten:
+                last_rewrite = rewritten
+                current_message = rewritten
+
+    # Retry cap exhausted — escalate
+    return {
+        'verdict': 'ESCALATE',
+        'original_message': original_message,
+        'final_rewrite': last_rewrite,
+        'critique': last_critique,
+        'attempts': max_retries,
+    }
+
+
 # ── Commands ─────────────────────────────────────────────────────────────────
 
 def cmd_run(slug):

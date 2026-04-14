@@ -1,0 +1,30 @@
+rubric: drive-summary
+version: 1
+surface: drive_completion_summary
+dimensions:
+  - name: clarity
+    description: "Single reading comprehension; no ambiguous referents"
+    threshold: 3
+    scale: 4
+  - name: actionability
+    description: "Owner can derive next step without follow-up question"
+    threshold: 3
+    scale: 4
+  - name: evidence_traceability
+    description: "Every claim references a specific artifact or finding"
+    threshold: 2
+    scale: 4
+  - name: completeness
+    description: "All 3 formula bullets present (what found / what changes / what's open)"
+    threshold: 3
+    scale: 4
+  - name: calibrated_uncertainty
+    description: "Caveats and open questions preserved; no false confidence"
+    threshold: 3
+    scale: 4
+aggregate_threshold: 0.7
+rejection_rules:
+  - dimension: calibrated_uncertainty
+    condition: "< 2"
+    verdict: FAIL
+    note: "Applies regardless of aggregate score"
