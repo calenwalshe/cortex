@@ -8,12 +8,15 @@ Captures Edit/Write PostToolUse events into a rolling JSONL ledger so that
 Modes:
   --hook      PostToolUse hook mode: filter Edit/Write, read slug, append
               JSONL entry to .cortex/edit-ledger.jsonl, prune to 500
-  --summary   Aggregate ledger into hotspots and co_change_pairs JSON
-              (stub placeholder — implemented in Plan 02)
+  --summary   Aggregate ledger into hotspots and co_change_pairs JSON;
+              outputs valid JSON (exit 0 always, soft-fail when ledger absent)
 
 Flags:
-  --ledger    Override ledger path (default: .cortex/edit-ledger.jsonl)
-  --state     Override state.json path (default: .cortex/state.json)
+  --ledger      Override ledger path (default: .cortex/edit-ledger.jsonl)
+  --state       Override state.json path (default: .cortex/state.json)
+  --min-count N Minimum edit_count threshold for hotspots (default: 2)
+  --top-files N Max hotspot entries (default: 20; 0 = unlimited)
+  --top-pairs N Max co_change_pairs entries (default: 20; 0 = unlimited)
 
 Always exits 0 — never blocks Claude.
 """
