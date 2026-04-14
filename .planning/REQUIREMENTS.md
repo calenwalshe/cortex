@@ -18,12 +18,12 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| **REQ-OML-1** | Phase 1: Core Script and Hook Registration | Pending |
-| **REQ-OML-2** | Phase 1: Core Script and Hook Registration | Pending |
-| **REQ-OML-3** | Phase 1: Core Script and Hook Registration | Pending |
-| **REQ-OML-4** | Phase 1: Core Script and Hook Registration | Pending |
-| **REQ-OML-5** | Phase 1: Core Script and Hook Registration | Pending |
-| **REQ-OML-6** | Phase 1: Core Script and Hook Registration | Pending |
+| **REQ-OML-1** | Phase 1: Core Script and Hook Registration | ✓ Complete |
+| **REQ-OML-2** | Phase 1: Core Script and Hook Registration | ✓ Complete |
+| **REQ-OML-3** | Phase 1: Core Script and Hook Registration | ✓ Complete |
+| **REQ-OML-4** | Phase 1: Core Script and Hook Registration | ✓ Complete |
+| **REQ-OML-5** | Phase 1: Core Script and Hook Registration | ✓ Complete |
+| **REQ-OML-6** | Phase 1: Core Script and Hook Registration | ✓ Complete |
 | **REQ-OML-7** | Phase 2: Skill Integration and Session-Start Anchor | Pending |
 | **REQ-OML-8** | Phase 2: Skill Integration and Session-Start Anchor | Pending |
 

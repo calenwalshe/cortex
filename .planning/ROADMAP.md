@@ -20,7 +20,7 @@ Build the operational map layer — a PostToolUse hook, rolling edit ledger, and
   6. AC6: `--summary` filters out files with `edit_count < 2`; threshold overridable via `--min-count N`
   10. AC10: `--summary` on fixture JSONL (≥3 simulated sessions, ≥2 files in multiple sessions) produces `hotspots` entry with `edit_count ≥ 2` and `co_change_pairs` entry with `session_count ≥ 2`
 **Research**: Unlikely
-**Plans**: 0 plans
+**Plans**: 3 plans ✓ COMPLETE
 
 ### Phase 2: Skill Integration and Session-Start Anchor
 
@@ -38,5 +38,5 @@ Build the operational map layer — a PostToolUse hook, rolling edit ledger, and
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| Phase 1: Core Script and Hook Registration | 0/0 | Not started | - |
+| Phase 1: Core Script and Hook Registration | 3/3 | ✓ Complete | 2026-04-14 |
 | Phase 2: Skill Integration and Session-Start Anchor | 0/0 | Not started | - |
