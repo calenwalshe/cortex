@@ -19,7 +19,9 @@ Always exits 0 — never blocks Claude.
 """
 
 import argparse
+import collections
 import datetime
+import itertools
 import json
 import os
 import sys
@@ -118,18 +120,83 @@ def cmd_hook(args: argparse.Namespace) -> None:
 def cmd_summary(args: argparse.Namespace) -> None:
     """Summary mode — aggregate ledger into hotspots and co_change_pairs.
 
-    Plan 02 will implement this fully. For now, output a valid stub so that
-    --summary does not crash.
+    Reads all ledger entries, computes per-file edit counts (hotspots) and
+    per-pair session co-occurrence counts (co_change_pairs).
     """
+    ledger_path = args.ledger
+    min_count: int = args.min_count
+    top_files: int = args.top_files
+    top_pairs: int = args.top_pairs
+
+    as_of = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    caveat = (
+        "co-change pairs are session-scoped; /clear within a task will split "
+        "the session and undercount coupling"
+    )
+
+    # Soft-fail when ledger is absent
+    if not os.path.exists(ledger_path):
+        result = {
+            "hotspots": [],
+            "co_change_pairs": [],
+            "entry_count": 0,
+            "as_of": as_of,
+            "caveat": caveat,
+            "ledger_absent": True,
+        }
+        print(json.dumps(result, indent=2))
+        return
+
+    raw_lines = read_ledger(ledger_path)
+    entry_count = len(raw_lines)
+
+    # Parse entries — skip malformed lines silently
+    file_counter: collections.Counter = collections.Counter()
+    session_files: collections.defaultdict = collections.defaultdict(set)
+
+    for line in raw_lines:
+        try:
+            entry = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        fp = str(entry.get("file_path", ""))
+        sid = str(entry.get("session_id", ""))
+        if fp:
+            file_counter[fp] += 1
+        if fp and sid:
+            session_files[sid].add(fp)
+
+    # Build hotspots: filter by min_count, sort desc
+    hotspots = [
+        {"file_path": fp, "edit_count": cnt}
+        for fp, cnt in file_counter.most_common()
+        if cnt >= min_count
+    ]
+    # most_common() already returns desc; slice if top_files > 0
+    if top_files > 0:
+        hotspots = hotspots[:top_files]
+
+    # Build co_change_pairs: enumerate unordered pairs per session, count sessions
+    pair_counter: collections.Counter = collections.Counter()
+    for sid, files in session_files.items():
+        if len(files) < 2:
+            continue
+        for a, b in itertools.combinations(sorted(files), 2):
+            pair_counter[(a, b)] += 1
+
+    co_change_pairs = [
+        {"files": list(pair), "session_count": cnt}
+        for pair, cnt in pair_counter.most_common()
+    ]
+    if top_pairs > 0:
+        co_change_pairs = co_change_pairs[:top_pairs]
+
     result = {
-        "hotspots": [],
-        "co_change_pairs": [],
-        "entry_count": 0,
-        "as_of": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "caveat": (
-            "co-change pairs are session-scoped; /clear within a task will split "
-            "the session and undercount coupling"
-        ),
+        "hotspots": hotspots,
+        "co_change_pairs": co_change_pairs,
+        "entry_count": entry_count,
+        "as_of": as_of,
+        "caveat": caveat,
     }
     print(json.dumps(result, indent=2))
 
@@ -152,6 +219,30 @@ def main() -> None:
         metavar="PATH",
         default=DEFAULT_STATE,
         help="Override state.json path (default: .cortex/state.json)",
+    )
+    parser.add_argument(
+        "--min-count",
+        metavar="N",
+        type=int,
+        default=2,
+        dest="min_count",
+        help="Minimum edit_count to include in hotspots (default: 2)",
+    )
+    parser.add_argument(
+        "--top-files",
+        metavar="N",
+        type=int,
+        default=20,
+        dest="top_files",
+        help="Max hotspot entries (default: 20; 0 = unlimited)",
+    )
+    parser.add_argument(
+        "--top-pairs",
+        metavar="N",
+        type=int,
+        default=20,
+        dest="top_pairs",
+        help="Max co_change_pairs entries (default: 20; 0 = unlimited)",
     )
 
     args = parser.parse_args()
