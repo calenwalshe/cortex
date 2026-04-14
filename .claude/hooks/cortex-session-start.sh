@@ -41,12 +41,9 @@ if [[ -f "$FACTS_FILE" && -f "$STATE_FILE" ]]; then
 fi
 
 # Inject cross-session vault facts (non-blocking, budget-guarded)
+# Lock prevents multiple concurrent sessions from each spawning a heavy FAISS+LLM process.
+# DISABLED: vault recall injection — was spawning concurrent FAISS+Claude subprocesses
 VAULT_FACTS=""
-VAULT_SCRIPT="${HOME}/memory/vault/scripts/recall_query.py"
-if [[ -f "$VAULT_SCRIPT" ]]; then
-  VAULT_QUERY="cortex intelligence architecture decisions lessons learned"
-  VAULT_FACTS=$(python3 "$VAULT_SCRIPT" "$VAULT_QUERY" --top-k 5 --project cortex-memory-platform 2>/dev/null || true)
-fi
 
 # Run quick coherence check (non-blocking)
 HEALTH=""
@@ -59,11 +56,57 @@ if [[ -f "$HEALTH_SCRIPT" ]]; then
   fi
 fi
 
+# Read system-map.md staleness anchor (soft-fail if absent)
+MAP_ANCHOR=""
+MAP_FILE="${CLAUDE_PROJECT_DIR}/docs/cortex/system-map.md"
+if [[ -f "$MAP_FILE" ]]; then
+  VALID_UNTIL=$(grep "^valid_until:" "$MAP_FILE" | awk '{print $2}' | tr -d '"' | head -1)
+  CONFIDENCE=$(grep "^confidence:" "$MAP_FILE" | awk '{print $2}' | tr -d '"' | head -1)
+  if [[ -n "$VALID_UNTIL" ]]; then
+    TODAY=$(date +%Y-%m-%d)
+    if [[ "$TODAY" > "$VALID_UNTIL" ]]; then
+      MAP_ANCHOR="system-map valid_until:${VALID_UNTIL} confidence:${CONFIDENCE} [STALE — refresh with /cortex-map]"
+    else
+      MAP_ANCHOR="system-map valid_until:${VALID_UNTIL} confidence:${CONFIDENCE}"
+    fi
+  fi
+fi
+
 # Build context with optional facts and health
 EXTRA=""
 if [[ -n "$FACTS" ]]; then
   EXTRA="\n\nRELEVANT FACTS FROM PRIOR WORK:\n${FACTS}"
 fi
+if [[ -n "$MAP_ANCHOR" ]]; then
+  EXTRA="${EXTRA}\n\nSYSTEM MAP: ${MAP_ANCHOR}"
+fi
+
+# Structural graph staleness anchor (≤50 chars)
+STRUCT_DIR="${CLAUDE_PROJECT_DIR}/.cortex/structural"
+if [[ -d "$STRUCT_DIR" ]]; then
+  STRUCT_COUNT=$(ls "${STRUCT_DIR}"/*.json 2>/dev/null | wc -l | tr -d ' ')
+  STRUCT_DATE=$(ls -t "${STRUCT_DIR}"/*.json 2>/dev/null | head -1 | xargs -I{} python3 -c "import json,sys; d=json.load(open('{}'));print(d.get('indexed_at','')[:10])" 2>/dev/null || echo "")
+  if [[ -n "$STRUCT_COUNT" && "$STRUCT_COUNT" -gt 0 ]]; then
+    STRUCT_ANCHOR="struct-graph: ${STRUCT_COUNT} files, ${STRUCT_DATE}"
+    EXTRA="${EXTRA}\nSTRUCT: ${STRUCT_ANCHOR}"
+  fi
+fi
+
+# Operational ledger staleness anchor (≤50 chars)
+OP_LEDGER="${CLAUDE_PROJECT_DIR}/.cortex/edit-ledger.jsonl"
+if [[ -f "$OP_LEDGER" ]]; then
+  OP_COUNT=$(wc -l < "$OP_LEDGER" | tr -d ' ')
+  OP_DATE=$(tail -1 "$OP_LEDGER" 2>/dev/null | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('timestamp','')[:10])" 2>/dev/null || echo "")
+  if [[ -n "$OP_DATE" ]]; then
+    OP_ANCHOR="OP-LEDGER: ${OP_COUNT} entries, ${OP_DATE}"
+  else
+    OP_ANCHOR="OP-LEDGER: ${OP_COUNT} entries"
+  fi
+else
+  OP_ANCHOR="OP-LEDGER: absent"
+fi
+EXTRA="${EXTRA}\nOP: ${OP_ANCHOR}"
+
 if [[ -n "$HEALTH" ]]; then
   EXTRA="${EXTRA}${HEALTH}"
 fi

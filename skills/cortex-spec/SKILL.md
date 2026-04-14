@@ -196,6 +196,45 @@ Before synthesizing the spec, verify that the spec will address all goals from t
    ```
    This IS a block — the spec must not include explicitly excluded items.
 
+### Phase 1c: Read system-map.md (if available)
+
+If `docs/cortex/system-map.md` exists, read the **Component Registry** section before synthesizing the spec. Use the component boundaries and key interfaces to inform write roots (Section 5 Interfaces) and acceptance criteria. Use the Crosscutting Conventions to confirm scope boundaries are consistent with established architectural invariants.
+
+If `docs/cortex/system-map.md` does not exist, skip this step and proceed without error.
+
+### Phase 1d: Read structural graph (if available)
+
+If `.cortex/structural/` exists and contains JSON files, read all entries and inject a compact structural excerpt before synthesizing the spec. The excerpt provides actual function names and import patterns from the Cortex Python codebase, enabling precise write roots (Section 5) and accurate acceptance criteria.
+
+**Steps:**
+1. Run reconciliation: for each `.cortex/structural/*.json` entry, verify `source_path` still exists on disk; skip stale entries without error.
+2. For each valid entry, produce one compact line: `{basename} ({lines}L): imports=[top-3], fns=[top-5]`
+3. Prefix the excerpt with `### Structural Context (auto-indexed):` and include it in your working context before writing the spec.
+
+Soft-fail: if `.cortex/structural/` does not exist or contains no valid entries, log a note ("no structural context available") and proceed without error.
+
+### Phase 1e: Read operational context (if available)
+
+Run the operational indexer to get hotspot and co-change context from the edit ledger:
+
+```bash
+python3 "$CLAUDE_PROJECT_DIR/scripts/cortex/operational-indexer.py" --summary 2>/dev/null \
+  || echo '{"hotspots":[],"co_change_pairs":[],"caveat":"ledger absent"}'
+```
+
+Parse the JSON output. If `hotspots` is non-empty, inject a compact section into your working context before synthesizing the spec:
+
+```
+### Operational Context (auto-indexed):
+Hotspots (most-edited): {top-3 file_path entries with edit_count}
+Co-change pairs (edited together): {top-3 pairs with session_count}
+Caveat: {caveat field from JSON}
+```
+
+Use hotspot files to inform **Section 5 Interfaces** write roots — frequently edited files are likely in scope. Use co-change pairs to identify coupling risks worth including in **Section 7 Risks**.
+
+Soft-fail: if the command fails, outputs invalid JSON, or `hotspots` is empty, log "no operational context available" and proceed without error. Never block the pipeline on ledger absence.
+
 ### Phase 2: Synthesize Spec
 
 Read the template at `templates/cortex/spec.md`.

@@ -34,8 +34,13 @@ DOCS_ROOT="${CLAUDE_PROJECT_DIR}/docs/cortex"
 CORTEX_ROOT="${CLAUDE_PROJECT_DIR}/.cortex"
 FIT_ROOT="${CLAUDE_PROJECT_DIR}/docs/cortex/fit"
 EXPERIMENTS_ROOT="${CLAUDE_PROJECT_DIR}/docs/cortex/experiments"
+CLAUDE_INFRA_ROOT="${CLAUDE_PROJECT_DIR}/.claude"  # hooks, settings, skills — infrastructure always writable
 
-if [[ "$FILE_PATH" == "$FIT_ROOT"* ]] || [[ "$FILE_PATH" == "$DOCS_ROOT"* ]] || [[ "$FILE_PATH" == "$CORTEX_ROOT"* ]] || [[ "$FILE_PATH" == "$EXPERIMENTS_ROOT"* ]]; then
+if [[ "$FILE_PATH" == "$FIT_ROOT"* ]] || \
+   [[ "$FILE_PATH" == "$DOCS_ROOT"* ]] || \
+   [[ "$FILE_PATH" == "$CORTEX_ROOT"* ]] || \
+   [[ "$FILE_PATH" == "$EXPERIMENTS_ROOT"* ]] || \
+   [[ "$FILE_PATH" == "$CLAUDE_INFRA_ROOT"* ]]; then
   exit 0  # Within permitted roots
 fi
 

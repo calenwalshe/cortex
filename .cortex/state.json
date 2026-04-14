@@ -1,14 +1,57 @@
 {
-  "slug": null,
-  "mode": "done",
-  "approval_status": "pending",
-  "active_contract": null,
-  "artifacts": [],
-  "approvals": { "contract": false, "evals": false },
+  "slug": "operational-map-layer",
+  "mode": "execute",
+  "approval_status": "approved",
+  "active_contract": "docs/cortex/contracts/operational-map-layer/contract-001.md",
+  "artifacts": [
+    "docs/cortex/clarify/operational-map-layer/20260413T200000Z-clarify-brief.md",
+    "docs/cortex/research/operational-map-layer/current-understanding.md",
+    "docs/cortex/research/operational-map-layer/concept-20260413T193000Z.md",
+    "docs/cortex/specs/operational-map-layer/spec.md",
+    "docs/cortex/specs/operational-map-layer/gsd-handoff.md",
+    "docs/cortex/contracts/operational-map-layer/contract-001.md"
+  ],
+  "github": { "branch": "cortex/operational-map-layer", "pr_number": null, "pr_url": null, "issue_number": null },
+  "approvals": { "contract": true, "evals": false },
   "gates": {
-    "clarify_complete": false,
-    "research_complete": false,
-    "spec_complete": false,
-    "contract_approved": false
-  }
+    "clarify_complete": true,
+    "research_complete": true,
+    "spec_complete": true,
+    "contract_approved": true
+  },
+  "critique_receipts": [
+    {
+      "gate": "clarify",
+      "slug": "operational-map-layer",
+      "timestamp": "2026-04-13T19:12:00Z",
+      "severity": "STOP",
+      "finding_count": 4,
+      "stop_count": 2,
+      "caution_count": 2,
+      "engine": "codex",
+      "artifact": "docs/cortex/reviews/operational-map-layer/critique-clarify.md"
+    },
+    {
+      "gate": "dossier",
+      "slug": "operational-map-layer",
+      "timestamp": "2026-04-13T19:30:00Z",
+      "severity": "STOP",
+      "finding_count": 4,
+      "stop_count": 2,
+      "caution_count": 2,
+      "engine": "codex",
+      "artifact": "docs/cortex/reviews/operational-map-layer/critique-dossier-20260413T193000Z.md"
+    },
+    {
+      "gate": "spec",
+      "slug": "operational-map-layer",
+      "timestamp": "2026-04-13T19:40:00Z",
+      "severity": "STOP",
+      "finding_count": 4,
+      "stop_count": 2,
+      "caution_count": 2,
+      "engine": "codex",
+      "artifact": "docs/cortex/reviews/operational-map-layer/critique-spec.md"
+    }
+  ]
 }

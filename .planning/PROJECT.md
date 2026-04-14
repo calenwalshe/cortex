@@ -1,52 +1,57 @@
-# cortex-vault — Memory Vault Integration
+# operational-map-layer — Operational Map Layer
 
 ## What This Is
 
-Each Cortex intelligence session starts from zero. When a new slug begins, accumulated learnings from prior slugs — architectural decisions, failed approaches, open questions with trigger conditions, and research findings — exist in the memory vault at `~/memory/vault/` but are never injected into the new session. The vault has a working FAISS semantic index, a SQLite fact store, a retrieval API (`recall_query.py`), and an ingestion API (`add_fact()`), but Cortex's intelligence phases have no interface to it. This work wires the existing vault into Cortex at two defined event boundaries — reading at session start and writing at gate transitions — so that each new slug begins with accumulated cross-slug intelligence rather than from a cold start.
+Cortex intelligence phases (clarify, research, spec) make scope decisions blind to operational reality. The structural map layer surfaces symbol graphs; the distilled layer surfaces architectural intent — but neither answers: which files are edited frequently, and which files change together? Without edit-frequency and co-change data, clarify briefs under-weight volatile files, specs pick write roots without knowing which paths are coupled, and risk sections miss the highest-churn areas. This work adds a PostToolUse hook that records Edit/Write events to a rolling JSONL ledger, a summary CLI that aggregates hotspot and co-change data, and injection steps in the clarify and spec skills.
 
 ## Core Value
 
-Each new Cortex slug starts with accumulated cross-slug learnings rather than from zero — decisions made, approaches failed, and lessons learned in prior slugs are automatically available at session start without any manual curation.
+Intelligence phases know which files are volatile and which are coupled before making scope decisions — so write roots, risk sections, and clarify briefs reflect actual development patterns, not just structural intent.
 
 ## Requirements
 
 ### Active
 
-- None formalized
+- [ ] **REQ-OML-1**: Edit/Write calls append one JSONL entry to `.cortex/edit-ledger.jsonl` with `{timestamp, session_id, file_path, tool_name, slug}`
+- [ ] **REQ-OML-2**: Non-edit tools (Bash, Read, Glob, Grep) do not produce ledger entries
+- [ ] **REQ-OML-3**: Hook always exits 0 for any valid PostToolUse payload
+- [ ] **REQ-OML-4**: Ledger is pruned to 500 entries when overflow occurs
+- [ ] **REQ-OML-5**: `--summary` mode outputs valid JSON with `hotspots` and `co_change_pairs` fields
+- [ ] **REQ-OML-6**: `--summary` applies `--min-count` noise filter (default 2)
+- [ ] **REQ-OML-7**: cortex-clarify and cortex-spec skills have soft-fail operational-context read steps
+- [ ] **REQ-OML-8**: cortex-session-start.sh emits OP-LEDGER staleness anchor (≤50 chars)
 
 ### Out of Scope
 
-- Redesigning or modifying the vault itself (`~/memory/vault/` stays as-is)
-- Improving the autoresearch classification loop (F1=0.25 targeting 0.7 — separate slug)
-- Replacing `.cortex/facts.jsonl` — it stays as the per-session local facts store
-- General-purpose conversation memory (only Cortex gate-transition artifacts are ingested)
-- Adding a database or external service — vault is already file-based (SQLite, FAISS, JSONL)
-- Wiring vault reads/writes into GSD execution phases (execute, validate, repair) — intelligence phases only
-- inbox/promotion pipeline for Cortex artifacts
-- cortex-close vault integration (deferred)
+- Modifications to `~/.claude/skills/cortex-research/SKILL.md`
+- Modifications to `dirty-files.json`, `token-ledger.db`, or `token-ledger.js`
+- Stop, TaskCompleted, PreToolUse hooks
+- Git log-based co-change analysis
+- Cross-session analysis beyond the 500-entry rolling window
+- Multi-project ledger tracking
 
 ## Context
 
-**Current baseline:** Cortex sessions start cold — no cross-slug memory injected. `.cortex/facts.jsonl` stores per-project facts but not cross-slug learnings. Vault exists and is operational but unconnected to Cortex.
-
-**Target:** Session start injects top-5 cross-slug vault facts via `recall_query.py`. Gate transitions (clarify, research, spec) write typed facts to vault via `cortex-vault-extractor.py` calling `add_fact()` directly.
-
-**Contract:** docs/cortex/contracts/cortex-vault/contract-001.md
+**Slug:** operational-map-layer
+**Contract:** docs/cortex/contracts/operational-map-layer/contract-001.md
+**Spec:** docs/cortex/specs/operational-map-layer/spec.md
+**Handoff:** docs/cortex/specs/operational-map-layer/gsd-handoff.md
 
 ## Constraints
 
-- 10K character hard cap on `additionalContext` — vault injection must stay within budget (`max(0, 9500 - len(existing_content))`)
-- Must survive /clear, /compact, and session crashes — vault is disk-resident; injection happens at SessionStart, not during conversation
-- Must be additive — must not modify existing gate logic, break existing skill flows, or require changes to primary artifact formats
-- `fact_store.py` is imported directly via `sys.path.insert` (no relative imports, verified) — do NOT call as subprocess
-- Vault writes use `add_fact()` directly (not inbox/promotion) — structured artifacts don't need LLM reclassification
-- Shallow mode only in hooks (`recall_query.py` without `--deep`) — target <3s latency
+- Python stdlib only (`json`, `os`, `datetime`, `collections`, `argparse`) — no pip dependencies
+- Hook must exit 0 always — never block tool execution
+- PostToolUse hook registration is additive — does not replace existing entries in `.claude/settings.json`
+- SKILL.md injection is additive-only — no existing steps removed
+- `.cortex/edit-ledger.jsonl` is written by `--hook` mode; created on first fire (does not pre-exist)
+- Ledger hard cap: 500 entries (enforced at append time, not via cron)
+- Session_id from PostToolUse payload is the co-change grouping key
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Direct `add_fact()` over inbox/promotion | inbox/promotion extractors expect session JSONL (turns), not structured artifacts; Cortex artifacts are already classified | Use `sys.path.insert` + direct import |
-| Top-k=5 for session start | ~800–1500 chars synthesized prose; fits 5K–8K remaining additionalContext budget | Default top-k=5, configurable via VAULT_TOP_K env var |
-| Synthesized output over raw facts | LLM synthesis trades granularity for compactness; right trade at 5K char budget | Use `recall_query.py` default output |
-| sys.path.insert over subprocess | fact_store.py has no CLI interface; `__main__` is test harness; no relative imports verified | `sys.path.insert(0, "~/memory/vault/scripts/")` + import |
+| PostToolUse hook (not Stop/TaskCompleted) | Only hook with both `session_id` and `tool_input.file_path` in payload — confirmed from `token-ledger.js:39` | PostToolUse async hook selected |
+| JSONL append (not per-session JSON files) | Matches `facts.jsonl` pattern; 230 bytes/entry; simpler read path; no directory proliferation | `.cortex/edit-ledger.jsonl` rolling ledger |
+| Per-skill inline reads (not additionalContext) | Bypasses 1,604-char additionalContext budget constraint; 200K context window used instead | `--summary` called inline in clarify/spec skills |
+| `session_id` as co-change key | `/clear` fragments session_id — documented limitation; caveat field in `--summary` JSON output | session_id grouping with explicit caveat |
