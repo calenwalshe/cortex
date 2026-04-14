@@ -92,6 +92,45 @@ Before evaluating slug conflict, resolve the autonomy config:
 - If the file does not exist, proceed without warning.
 - If `slug` matches the derived slug, proceed without warning.
 
+### Phase 2b: Read system-map.md (if available)
+
+If `docs/cortex/system-map.md` exists, read the **Crosscutting Conventions** and **Key Decisions** sections before populating the clarify brief. Use the conventions to pre-populate constraints (architectural invariants belong in the brief's `## Constraints` section) and use key decisions to avoid re-litigating settled choices in open questions.
+
+If `docs/cortex/system-map.md` does not exist, skip this step and proceed without error.
+
+### Phase 2c: Read structural graph (if available)
+
+If `.cortex/structural/` exists and contains JSON files, read all entries and inject a compact structural excerpt before populating the clarify brief. The excerpt surfaces actual function definitions and import patterns from the Cortex Python codebase, so constraints and open questions can reference real symbols rather than guessing.
+
+**Steps:**
+1. Run reconciliation: for each `.cortex/structural/*.json` entry, verify `source_path` still exists on disk; skip stale entries (do not error on them).
+2. For each valid entry, produce one compact line: `{basename} ({lines}L): imports=[top-3], fns=[top-5]`
+3. Prefix the excerpt with `### Structural Context (auto-indexed):` and include it in your working context before writing the brief.
+
+Soft-fail: if `.cortex/structural/` does not exist or contains no valid entries, log a note ("no structural context available") and proceed without error. The distilled layer (system-map.md) remains sufficient.
+
+### Phase 2d: Read operational context (if available)
+
+Run the operational indexer to get hotspot and co-change context from the edit ledger:
+
+```bash
+python3 "$CLAUDE_PROJECT_DIR/scripts/cortex/operational-indexer.py" --summary 2>/dev/null \
+  || echo '{"hotspots":[],"co_change_pairs":[],"caveat":"ledger absent"}'
+```
+
+Parse the JSON output. If `hotspots` is non-empty, inject a compact section into your working context before writing the clarify brief:
+
+```
+### Operational Context (auto-indexed):
+Hotspots (most-edited): {top-3 file_path entries with edit_count}
+Co-change pairs (edited together): {top-3 pairs with session_count}
+Caveat: {caveat field from JSON}
+```
+
+Use hotspot files to inform the **Write Roots** section of the clarify brief — files edited frequently are likely write roots. Use co-change pairs to flag potential coupling risks in **Open Questions**.
+
+Soft-fail: if the command fails, outputs invalid JSON, or `hotspots` is empty, log "no operational context available" and proceed without error. Never block the pipeline on ledger absence.
+
 ### Phase 3: Populate clarify brief
 
 Read the template at `templates/cortex/clarify-brief.md`.
