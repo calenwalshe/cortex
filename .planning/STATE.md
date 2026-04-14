@@ -61,6 +61,7 @@ Progress: [████████████████████░] 4/5 
 | Async hook registration — no new decisions | 01-03 | Additive settings.json entry; followed async: true pattern from structural-indexer; no architectural choices needed |
 | wc -l for OP-LEDGER entry count | 02-02 | Matches one-entry-per-line ledger structure from Phase 1 |
 | EXTRA prefix "\nOP: " | 02-02 | Consistent with "\nSTRUCT: " pattern already established in hook |
+| Inject as new Phase 2d/1e steps (additive) | 02-01 | Preserves existing phase semantics; soft-fail pattern matches Phase 2c/1d structural graph steps |
 
 ### Pending Todos
 
