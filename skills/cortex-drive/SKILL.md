@@ -141,6 +141,39 @@ Read `docs/cortex/display.json` for `report_level` (default: 1).
 {If stopped or error: **Next step:** {One sentence: what the owner must do.}}
 ```
 
+**Judge Gate (Level 1 summaries only):**
+
+After generating the Level 1 summary using the formula above, evaluate it before delivery:
+
+1. Call `judge_communication(summary, rubric_path='docs/cortex/rubrics/communication-judge-loop/drive-summary.yaml')` from `scripts/cortex/cortex-judge.py`.
+2. If `verdict == PASS`: deliver summary as-is. Proceed to Decision Logging.
+3. If `verdict == FAIL` and attempts < 3:
+   - Log the critique to `docs/cortex/handoffs/decisions.md` under `## Autonomy Decisions`.
+   - Rewrite the summary guided by the critique findings. **Preserve all uncertainty markers, caveats, and open questions from the original — do not add false confidence.**
+   - Increment attempt counter. Return to step 1.
+4. If `verdict == FAIL` and attempts == 3 (retry cap exhausted):
+   - **ESCALATE** — do NOT silently deliver any version.
+   - Present to owner:
+
+     ```
+     ## Summary Quality Escalation — {slug}
+
+     The communication judge could not produce a passing summary after 3 attempts.
+
+     **Original summary:**
+     {original_summary}
+
+     **Final rewrite attempt:**
+     {final_rewrite}
+
+     **Critique (why it failed):**
+     {critique}
+
+     Owner action required: accept one of the above, request another rewrite, or proceed without a summary.
+     ```
+
+Note: This gate applies to Level 1 (owner-facing) summaries only. Level 2+ summaries and internal drive log messages are not evaluated by the communication judge.
+
 **Level 2+ adds technical detail below a separator:**
 
 ```

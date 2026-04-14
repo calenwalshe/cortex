@@ -72,3 +72,5 @@ Open question in dossier: "Can `fact_store.py` be imported from cortex repo scri
 - 20260413T075000Z | gate: contract_approval | value: false (auto-skipped) | preset: full-auto | command: /cortex-spec
 - 2026-04-13T19:35:00Z | gate: necessity | verdict: BUILD | confidence: 0.88 | slug: operational-map-layer | command: /cortex-spec
 - 2026-04-14T00:00:00Z | drive: gsd-phase-loop | row: 8 | slug: operational-map-layer | mode: execute | reasoning: .planning/STATE.md exists with 2 incomplete phases — cortex orchestrating GSD directly via plan-phase/execute-phase loop
+- 2026-04-14T01:15:00Z | ship | PR #17 opened for slug operational-map-layer | https://github.com/calenwalshe/cortex/pull/17
+- 2026-04-14T01:20:00Z | operational-map-layer | closed | terminal: commit-to-build | contract: docs/cortex/contracts/operational-map-layer/contract-001.md | eval-plan: (none)
