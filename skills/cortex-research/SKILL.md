@@ -35,6 +35,12 @@ If `--dry-run` is passed:
 
 ### Phase 0: Resolve slug and input context
 
+**Phase 0a: Read structural graph (if available)**
+
+Before resolving the slug, check if `.cortex/structural/` exists. If it does, read all valid JSON entries (skip any whose `source_path` no longer exists on disk) and produce a compact structural excerpt: one line per file — `{basename} ({lines}L): imports=[top-3], fns=[top-5]`. Include the excerpt under `### Structural Context (auto-indexed):` in your working context. This surfaces actual function definitions and import patterns from the Cortex Python codebase before question routing begins, enabling codebase questions to be answered with precise symbol names.
+
+Soft-fail: if `.cortex/structural/` does not exist or is empty, log a note ("no structural context available") and proceed without error.
+
 1. Read `.cortex/state.json` to get the active slug.
 2. Read `docs/cortex/clarify/{slug}/` to find the clarify brief.
    - **If no clarify brief exists for the active slug:** block with:

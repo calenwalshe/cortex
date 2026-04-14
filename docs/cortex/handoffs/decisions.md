@@ -28,6 +28,7 @@ Open question in dossier: "Can `fact_store.py` be imported from cortex repo scri
 <!-- Format: - {timestamp} | gate: {name} | value: false (auto-skipped) | preset: {preset} | command: /cortex-{cmd} -->
 
 - 2026-04-03T22:45:00Z | gate: slug_conflict | value: false (auto-skipped) | preset: full-auto | command: /cortex-clarify
+- 2026-04-13T19:00:00Z | gate: necessity | verdict: BUILD | confidence: 0.85 | slug: structural-map-layer | command: /cortex-spec
 - 2026-04-03T22:55:00Z | gate: critical_uncertainty | value: false (auto-skipped) | preset: full-auto | command: /cortex-spec
 - 2026-04-03T22:55:00Z | gate: evidence_backing | value: false (auto-skipped) | preset: full-auto | command: /cortex-spec
 - 2026-04-03T22:55:00Z | gate: contract_approval | value: false (auto-skipped) | preset: full-auto | command: /cortex-spec
@@ -65,3 +66,9 @@ Open question in dossier: "Can `fact_store.py` be imported from cortex repo scri
 - 2026-04-12T09:30:00Z | gate: contract_approval | value: true (approved by owner) | preset: supervised | command: /cortex-spec
 - 2026-04-12T10:00:00Z | gate-critique | closed | terminal: commit-to-build | contract: docs/cortex/contracts/gate-critique/contract-001.md | eval-plan: (none)
 - 2026-04-13T15:30:00Z | cortex-vault | closed | terminal: commit-to-build | contract: docs/cortex/contracts/cortex-vault/contract-001.md | eval-plan: (none)
+- 2026-04-13T08:00:00Z | system-map-memory | closed | terminal: commit-to-build | contract: docs/cortex/contracts/system-map-memory/contract-001.md | eval-plan: (none)
+- 2026-04-13T19:30:00Z | structural-map-layer | closed | terminal: commit-to-build | contract: docs/cortex/contracts/structural-map-layer/contract-001.md | eval-plan: (none)
+- 20260413T075000Z | gate: human_critique | value: false (auto-skipped) | preset: full-auto | slug: system-map-memory | gate-point: spec
+- 20260413T075000Z | gate: contract_approval | value: false (auto-skipped) | preset: full-auto | command: /cortex-spec
+- 2026-04-13T19:35:00Z | gate: necessity | verdict: BUILD | confidence: 0.88 | slug: operational-map-layer | command: /cortex-spec
+- 2026-04-14T00:00:00Z | drive: gsd-phase-loop | row: 8 | slug: operational-map-layer | mode: execute | reasoning: .planning/STATE.md exists with 2 incomplete phases — cortex orchestrating GSD directly via plan-phase/execute-phase loop
