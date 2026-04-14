@@ -80,6 +80,24 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/scripts/cortex/structural-indexer.py\" --hook",
+            "async": true
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/scripts/cortex/operational-indexer.py\" --hook",
+            "async": true
+          }
+        ]
       }
     ],
     "TaskCreated": [
