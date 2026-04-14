@@ -2,7 +2,7 @@
 
 **slug:** communication-judge-loop
 
-**mode:** execute
+**mode:** assure
 
 **approval_status:** approved
 
@@ -24,4 +24,4 @@
 **blockers:**
 - (none)
 
-**next_action:** Run /cortex-status for full reconstruction
+**next_action:** PR #18 open at https://github.com/calenwalshe/cortex/pull/18. Poll CI with `gh pr checks 18`. Merge when ready, then run /cortex-close --terminal commit-to-build.

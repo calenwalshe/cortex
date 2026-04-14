@@ -19,7 +19,7 @@
     "research_complete": true,
     "spec_complete": true,
     "contract_approved": true,
-    "pr_opened": false,
+    "pr_opened": true,
     "pr_merged": false
   },
   "critique_receipts": [
@@ -57,5 +57,5 @@
       "artifact": "docs/cortex/reviews/communication-judge-loop/critique-spec.md"
     }
   ],
-  "github": { "pr_number": null, "pr_url": null, "issue_number": null, "branch": "cortex/communication-judge-loop" }
+  "github": { "pr_number": 18, "pr_url": "https://github.com/calenwalshe/cortex/pull/18", "issue_number": null, "branch": "cortex/communication-judge-loop" }
 }
