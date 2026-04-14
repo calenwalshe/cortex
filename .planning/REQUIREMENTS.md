@@ -1,32 +1,18 @@
-# Requirements: operational-map-layer
+# Requirements: communication-judge-loop
 
 **Defined:** 2026-04-14
-**Core Value:** Intelligence phases know which files are volatile and which are coupled before making scope decisions — so write roots, risk sections, and clarify briefs reflect actual development patterns, not just structural intent.
+**Core Value:** Owners receive drive completion summaries that meet a minimum quality bar before delivery — judge-scored, critique-guided rewrites where needed, bounded retries, and clear escalation when the system cannot produce a passing message on its own.
 
-## Operational Map Requirements
+## Communication Quality Requirements
 
-- [ ] **REQ-OML-1**: Edit/Write calls append one JSONL entry to `.cortex/edit-ledger.jsonl` with `{timestamp, session_id, file_path, tool_name, slug}`
-- [ ] **REQ-OML-2**: Non-edit tools (Bash, Read, Glob, Grep) do not produce ledger entries
-- [ ] **REQ-OML-3**: Hook always exits 0 for any valid PostToolUse payload
-- [ ] **REQ-OML-4**: Ledger is pruned to 500 entries when overflow occurs
-- [ ] **REQ-OML-5**: `--summary` mode outputs valid JSON with `hotspots` and `co_change_pairs` fields
-- [ ] **REQ-OML-6**: `--summary` applies `--min-count` noise filter (default 2)
-- [ ] **REQ-OML-7**: cortex-clarify and cortex-spec skills have soft-fail operational-context read steps
-- [ ] **REQ-OML-8**: cortex-session-start.sh emits OP-LEDGER staleness anchor (≤50 chars)
+- None formalized (no REQ-IDs assigned)
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| **REQ-OML-1** | Phase 1: Core Script and Hook Registration | ✓ Complete |
-| **REQ-OML-2** | Phase 1: Core Script and Hook Registration | ✓ Complete |
-| **REQ-OML-3** | Phase 1: Core Script and Hook Registration | ✓ Complete |
-| **REQ-OML-4** | Phase 1: Core Script and Hook Registration | ✓ Complete |
-| **REQ-OML-5** | Phase 1: Core Script and Hook Registration | ✓ Complete |
-| **REQ-OML-6** | Phase 1: Core Script and Hook Registration | ✓ Complete |
-| **REQ-OML-7** | Phase 2: Skill Integration and Session-Start Anchor | ✓ Complete |
-| **REQ-OML-8** | Phase 2: Skill Integration and Session-Start Anchor | ✓ Complete |
+| All 8 done criteria | Phase 1: Judge Functions and Rubric | Pending |
 
 **Coverage:**
-- Operational Map requirements: 8 total -- all mapped
+- All done criteria mapped to Phase 1
 - Unmapped: 0

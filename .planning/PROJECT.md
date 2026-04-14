@@ -1,57 +1,50 @@
-# operational-map-layer — Operational Map Layer
+# Communication Judge Loop — Drive Summary Quality Gate
 
 ## What This Is
 
-Cortex intelligence phases (clarify, research, spec) make scope decisions blind to operational reality. The structural map layer surfaces symbol graphs; the distilled layer surfaces architectural intent — but neither answers: which files are edited frequently, and which files change together? Without edit-frequency and co-change data, clarify briefs under-weight volatile files, specs pick write roots without knowing which paths are coupled, and risk sections miss the highest-churn areas. This work adds a PostToolUse hook that records Edit/Write events to a rolling JSONL ledger, a summary CLI that aggregates hotspot and co-change data, and injection steps in the clarify and spec skills.
+Cortex delivers owner-facing messages at three key moments — drive completion summaries, gate transition messages, and eval result summaries — but generates these messages without any quality gate. The drive completion summary is the owner's primary signal that work is done and what changed; a hedged, caveat-dropping, or incomplete summary causes the owner to open the next slug based on incorrect premises. This milestone adds a quality gate to drive completion summaries: before delivery, a judge evaluates the message against a 5-dimension rubric, rewrites failures with structured critique guidance (up to 3 attempts), and escalates to the owner when the retry cap is exhausted.
 
 ## Core Value
 
-Intelligence phases know which files are volatile and which are coupled before making scope decisions — so write roots, risk sections, and clarify briefs reflect actual development patterns, not just structural intent.
+Owners receive drive completion summaries that meet a minimum quality bar before delivery — judge-scored, critique-guided rewrites where needed, bounded retries, and clear escalation when the system cannot produce a passing message on its own.
 
 ## Requirements
 
 ### Active
 
-- [ ] **REQ-OML-1**: Edit/Write calls append one JSONL entry to `.cortex/edit-ledger.jsonl` with `{timestamp, session_id, file_path, tool_name, slug}`
-- [ ] **REQ-OML-2**: Non-edit tools (Bash, Read, Glob, Grep) do not produce ledger entries
-- [ ] **REQ-OML-3**: Hook always exits 0 for any valid PostToolUse payload
-- [ ] **REQ-OML-4**: Ledger is pruned to 500 entries when overflow occurs
-- [ ] **REQ-OML-5**: `--summary` mode outputs valid JSON with `hotspots` and `co_change_pairs` fields
-- [ ] **REQ-OML-6**: `--summary` applies `--min-count` noise filter (default 2)
-- [ ] **REQ-OML-7**: cortex-clarify and cortex-spec skills have soft-fail operational-context read steps
-- [ ] **REQ-OML-8**: cortex-session-start.sh emits OP-LEDGER staleness anchor (≤50 chars)
+- None formalized
 
 ### Out of Scope
 
-- Modifications to `~/.claude/skills/cortex-research/SKILL.md`
-- Modifications to `dirty-files.json`, `token-ledger.db`, or `token-ledger.js`
-- Stop, TaskCompleted, PreToolUse hooks
-- Git log-based co-change analysis
-- Cross-session analysis beyond the 500-entry rolling window
-- Multi-project ledger tracking
+- Gate transition messages (clarify/spec/contract gates) — v2 surface
+- Eval result summaries — v2 surface
+- Rubric editing GUI
+- Internal machine-to-machine messages (routing logs, state transitions)
+- Changes to gate-critique, which reviews artifacts
+- Unbounded self-rewrite loops
+- Model-agnostic judge infrastructure (Haiku 4.5 is settled)
 
 ## Context
 
-**Slug:** operational-map-layer
-**Contract:** docs/cortex/contracts/operational-map-layer/contract-001.md
-**Spec:** docs/cortex/specs/operational-map-layer/spec.md
-**Handoff:** docs/cortex/specs/operational-map-layer/gsd-handoff.md
+See docs/cortex/clarify/communication-judge-loop/20260414T021615Z-clarify-brief.md for the full clarify brief and docs/cortex/research/communication-judge-loop/concept-20260414T023306Z.md for research findings.
+
+**Baseline:** Drive summaries generated without quality gate; gate-critique covers artifacts only; report-clarity defined 3-bullet formula but does not enforce it.
+**Target:** Drive summaries are judge-evaluated before delivery; failures are rewritten up to 3 times; escalation path exists for persistent failures.
 
 ## Constraints
 
-- Python stdlib only (`json`, `os`, `datetime`, `collections`, `argparse`) — no pip dependencies
-- Hook must exit 0 always — never block tool execution
-- PostToolUse hook registration is additive — does not replace existing entries in `.claude/settings.json`
-- SKILL.md injection is additive-only — no existing steps removed
-- `.cortex/edit-ledger.jsonl` is written by `--hook` mode; created on first fire (does not pre-exist)
-- Ledger hard cap: 500 entries (enforced at append time, not via cron)
-- Session_id from PostToolUse payload is the co-change grouping key
+- Drive completion summary quality gate only — v1 does not touch gate transitions or eval results
+- `call_judge()` from `scripts/cortex/cortex-judge.py` must be reused; no new judge infrastructure
+- Retry cap is exactly 3 — hard cap, not configurable at call time
+- Explicit rejection rule: `calibrated_uncertainty < 2` → FAIL regardless of aggregate score
+- Haiku 4.5 is the settled judge model — do not change
+- JSONL persistence at `~/.cortex/calibration/` is mandatory on every judge attempt
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| PostToolUse hook (not Stop/TaskCompleted) | Only hook with both `session_id` and `tool_input.file_path` in payload — confirmed from `token-ledger.js:39` | PostToolUse async hook selected |
-| JSONL append (not per-session JSON files) | Matches `facts.jsonl` pattern; 230 bytes/entry; simpler read path; no directory proliferation | `.cortex/edit-ledger.jsonl` rolling ledger |
-| Per-skill inline reads (not additionalContext) | Bypasses 1,604-char additionalContext budget constraint; 200K context window used instead | `--summary` called inline in clarify/spec skills |
-| `session_id` as co-change key | `/clear` fragments session_id — documented limitation; caveat field in `--summary` JSON output | session_id grouping with explicit caveat |
+| Wrap `call_judge()`, not new script | Avoids duplicate judge entry points; `call_judge()` is already generic | New `build_communication_judge_prompt()` + `judge_communication()` in `cortex-judge.py` |
+| Sequential critique-revise over best-of-N | Simpler, cheaper; 3x latency of best-of-N not justified for v1 | Max 3 retry attempts, escalate on cap |
+| Drive summaries first, not all 3 surfaces | Highest owner visibility + highest quality variance; clearest rubric target | v1 scope: drive summaries only |
+| 5-dimension rubric (0-4 scale) with explicit rejection rule | G-Eval standard; prevents judge from rewarding polish over substance | calibrated_uncertainty < 2 → FAIL regardless |

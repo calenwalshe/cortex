@@ -1,42 +1,30 @@
-# Roadmap: operational-map-layer — Operational Map Layer
+# Roadmap: communication-judge-loop — Drive Summary Quality Gate
 
 ## Overview
 
-Build the operational map layer — a PostToolUse hook, rolling edit ledger, and summary CLI — so that Cortex intelligence phases receive hotspot and co-change context before making scope decisions.
+Add `judge_communication()` to `cortex-judge.py` and wire it into cortex-drive's completion summary output so that drive summaries are evaluated against a 5-dimension rubric, rewritten on failure (max 3 attempts), and escalated to the owner when the retry cap is exhausted.
 
 ## Phases
 
-### Phase 1: Core Script and Hook Registration
+### Phase 1: Judge Functions and Rubric
 
-**Goal**: Implement `scripts/cortex/operational-indexer.py` with `--hook` and `--summary` modes, write unit tests, and register the async PostToolUse hook in `.claude/settings.json`
+**Goal**: Implement `build_communication_judge_prompt()` and `judge_communication()` in `cortex-judge.py`, write the drive-summary rubric YAML, validate rubric discriminability on historical summaries, wire into cortex-drive Phase 6, and write tests.
 **Depends on**: Nothing
-**Requirements**: REQ-OML-1, REQ-OML-2, REQ-OML-3, REQ-OML-4, REQ-OML-5, REQ-OML-6
+**Requirements**: None formalized
 **Success Criteria** (what must be TRUE):
-  1. AC1: Edit/Write call appends one JSONL entry to `.cortex/edit-ledger.jsonl` with `{timestamp, session_id, file_path, tool_name, slug}`
-  2. AC2: Bash, Read, Glob, Grep calls do not produce ledger entries
-  3. AC3: Hook exits 0 when given a valid PostToolUse JSON payload (exit code confirmed mechanically)
-  4. AC4: Writing 502 entries to ledger results in exactly 500 entries (oldest 2 dropped)
-  5. AC5: `python3 scripts/cortex/operational-indexer.py --summary` outputs valid JSON with `hotspots` and `co_change_pairs` fields
-  6. AC6: `--summary` filters out files with `edit_count < 2`; threshold overridable via `--min-count N`
-  10. AC10: `--summary` on fixture JSONL (≥3 simulated sessions, ≥2 files in multiple sessions) produces `hotspots` entry with `edit_count ≥ 2` and `co_change_pairs` entry with `session_count ≥ 2`
-**Research**: Unlikely
-**Plans**: 3 plans ✓ COMPLETE
-
-### Phase 2: Skill Integration and Session-Start Anchor
-
-**Goal**: Inject operational-context read steps into `~/.claude/skills/cortex-clarify/SKILL.md` and `~/.claude/skills/cortex-spec/SKILL.md`, add OP-LEDGER staleness anchor to `.claude/hooks/cortex-session-start.sh`, and verify soft-fail behavior
-**Depends on**: Phase 1: Core Script and Hook Registration
-**Requirements**: REQ-OML-7, REQ-OML-8
-**Success Criteria** (what must be TRUE):
-  7. AC7: `grep -c "operational-indexer\|edit-ledger" ~/.claude/skills/cortex-clarify/SKILL.md` returns ≥ 1; soft-fail test passes (rename ledger, run clarify, confirm completion without error)
-  8. AC8: `grep -c "operational-indexer\|edit-ledger" ~/.claude/skills/cortex-spec/SKILL.md` returns ≥ 1; soft-fail test passes
-  9. AC9: `grep -c "OP-LEDGER" .claude/hooks/cortex-session-start.sh` returns ≥ 1; anchor string is ≤50 chars
-**Research**: Unlikely
+1. A drive completion summary that omits any of the 3 required formula elements (what was found, what it changes, what is still open) is blocked from delivery and rewritten before being shown to the owner
+2. A drive completion summary that drops a caveat or uncertainty scores < 2/4 on `calibrated_uncertainty` and is blocked from delivery (explicit rejection rule; applies regardless of aggregate score)
+3. A message that fails the rubric receives structured critique, is rewritten, and retried — up to a hard cap of 3 attempts
+4. When the retry cap is exhausted, the system escalates to the owner with the original message, the final rewrite attempt, and the critique — it does not silently deliver any version
+5. Each judge run is persisted to `~/.cortex/calibration/comm-judge-{rubric-hash}.jsonl` with: original message, per-dimension scores, aggregate score, verdict, rewrite diff, and judge model version
+6. The rubric file lives at `docs/cortex/rubrics/communication-judge-loop/drive-summary.yaml` and is human-editable
+7. The judge uses `call_judge()` from `scripts/cortex/cortex-judge.py` via a new `build_communication_judge_prompt()` function — no new judge infrastructure is introduced
+8. The communication judge does not gate internal machine-to-machine messages or v2 surfaces — only drive completion summaries in v1
+**Research**: Unlikely — all design decisions resolved in Cortex research phase
 **Plans**: 0 plans
 
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| Phase 1: Core Script and Hook Registration | 3/3 | ✓ Complete | 2026-04-14 |
-| Phase 2: Skill Integration and Session-Start Anchor | 2/2 | ✓ Complete | 2026-04-14 |
+| Phase 1: Judge Functions and Rubric | 0/0 | Not started | - |
