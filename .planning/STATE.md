@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: operational-map-layer
 status: in-progress
-stopped_at: "Phase 1 verified — Phase 2 planning next"
-last_updated: "2026-04-14T00:40:00Z"
-last_activity: "2026-04-14 — Phase 1 complete and verified (7/7 must-haves). Ready for Phase 2."
+stopped_at: "02-02 complete — OP-LEDGER anchor added to cortex-session-start.sh"
+last_updated: "2026-04-14T00:50:00Z"
+last_activity: "2026-04-14 — Completed 02-02-PLAN.md (OP-LEDGER staleness anchor)"
 progress:
   total_phases: 2
   completed_phases: 1
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-04-14)
 
 ## Current Position
 
-Phase: 1 — Core Script and Hook Registration — COMPLETE
-Plan: 01-03 complete; Phase 1 done
-Status: Phase 1 complete; Phase 2 next
-Last activity: 2026-04-14 — Completed 01-03-PLAN.md
+Phase: 2 — Skill Injection — In progress
+Plan: 02-02 complete; 02-03 next
+Status: In progress
+Last activity: 2026-04-14 — Completed 02-02-PLAN.md
 
-Progress: [█████████████████████] 3/3 plans; Phase 1 complete
+Progress: [████████████████████░] 4/5 plans (Phase 1 complete; Phase 2 plan 1-2 complete)
 
 ## Performance Metrics
 
@@ -59,6 +59,8 @@ Progress: [█████████████████████] 3/3 
 | os.path.exists before read_ledger for absent ledger | 01-02 | read_ledger silently returns [] on FileNotFoundError, masking absent case for ledger_absent:true |
 | session_files as set per session | 01-02 | Deduplicates within-session file repeats before pair enumeration; each pair counted once per session |
 | Async hook registration — no new decisions | 01-03 | Additive settings.json entry; followed async: true pattern from structural-indexer; no architectural choices needed |
+| wc -l for OP-LEDGER entry count | 02-02 | Matches one-entry-per-line ledger structure from Phase 1 |
+| EXTRA prefix "\nOP: " | 02-02 | Consistent with "\nSTRUCT: " pattern already established in hook |
 
 ### Pending Todos
 
@@ -70,6 +72,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-14T00:37:00Z
-Stopped at: Completed 01-03-PLAN.md (Phase 1 complete)
+Last session: 2026-04-14T00:50:00Z
+Stopped at: Completed 02-02-PLAN.md (OP-LEDGER anchor)
 Resume file: None
