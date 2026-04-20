@@ -1,50 +1,55 @@
-# Communication Judge Loop — Drive Summary Quality Gate
+# Cortex Belief Memory Integration
 
 ## What This Is
 
-Cortex delivers owner-facing messages at three key moments — drive completion summaries, gate transition messages, and eval result summaries — but generates these messages without any quality gate. The drive completion summary is the owner's primary signal that work is done and what changed; a hedged, caveat-dropping, or incomplete summary causes the owner to open the next slug based on incorrect premises. This milestone adds a quality gate to drive completion summaries: before delivery, a judge evaluates the message against a 5-dimension rubric, rewrites failures with structured critique guidance (up to 3 attempts), and escalates to the owner when the retry cap is exhausted.
+The Cortex discovery loop (clarify → research → spec) loses knowledge at every session boundary. Research cycle 2 doesn't know what cycle 1 established as stable. Spec generation reads dossier text, not a typed belief state. When a slug closes, everything learned during discovery evaporates. This project wires the existing SCAPE belief engine into the Cortex skill pipeline so that discovery cycles accumulate beliefs, research builds on stable ground, and knowledge earned during discovery survives slug closure.
 
 ## Core Value
 
-Owners receive drive completion summaries that meet a minimum quality bar before delivery — judge-scored, critique-guided rewrites where needed, bounded retries, and clear escalation when the system cannot produce a passing message on its own.
+Every Cortex discovery cycle accumulates typed, provenanced beliefs that persist across session boundaries, so research doesn't re-cover stable ground, specs are generated from the belief state, and knowledge earned during discovery survives slug closure to inform future work.
 
 ## Requirements
 
 ### Active
 
-- None formalized
+- [ ] **BM-01**: Schema migration — add scope_type/scope_id to logical_forms + derived_dependencies table
+- [ ] **BM-02**: Bridge script — cortex_belief_bridge.py with query, ingest, promote, invalidate functions
+- [ ] **BM-03**: Skill reads — belief queries injected into cortex-clarify, cortex-research, cortex-spec
+- [ ] **BM-04**: Skill writes — L3 extraction wired into cortex-clarify, cortex-research, cortex-spec
+- [ ] **BM-05**: Promotion — cortex-close promotes lessons/design_rules to global scope
+- [ ] **BM-06**: Dependency tracking — derived_dependencies with cascading invalidation
+- [ ] **BM-07**: Soft-fail — all vault calls wrapped in try/except, skills work without vault
+- [ ] **BM-08**: Tests — 8+ pytest tests covering all integration points
 
 ### Out of Scope
 
-- Gate transition messages (clarify/spec/contract gates) — v2 surface
-- Eval result summaries — v2 surface
-- Rubric editing GUI
-- Internal machine-to-machine messages (routing logs, state transitions)
-- Changes to gate-critique, which reviews artifacts
-- Unbounded self-rewrite loops
-- Model-agnostic judge infrastructure (Haiku 4.5 is settled)
+- New inference rules beyond existing 4
+- CortexModule as separate L3 module
+- Formal logic engines (Datalog, TMS, OWL)
+- Dashboard UI changes
+- GSD execution modifications
+- Replacing .cortex/facts.jsonl
+- canonical_hash deduplication
 
 ## Context
 
-See docs/cortex/clarify/communication-judge-loop/20260414T021615Z-clarify-brief.md for the full clarify brief and docs/cortex/research/communication-judge-loop/concept-20260414T023306Z.md for research findings.
+Baseline: Belief engine exists (beliefs.db, 2330 forms, 388 derived objects, 8 Kripke worlds) but no Cortex skill reads from or invokes it. Vault writes exist in 3 skills via cortex-vault-extractor.py but L3 engine is never called.
 
-**Baseline:** Drive summaries generated without quality gate; gate-critique covers artifacts only; report-clarity defined 3-bullet formula but does not enforce it.
-**Target:** Drive summaries are judge-evaluated before delivery; failures are rewritten up to 3 times; escalation path exists for persistent failures.
+Target: 4 Cortex skills wired with belief read/write phases. Short-term beliefs scoped per slug, long-term promoted on close.
 
 ## Constraints
 
-- Drive completion summary quality gate only — v1 does not touch gate transitions or eval results
-- `call_judge()` from `scripts/cortex/cortex-judge.py` must be reused; no new judge infrastructure
-- Retry cap is exactly 3 — hard cap, not configurable at call time
-- Explicit rejection rule: `calibrated_uncertainty < 2` → FAIL regardless of aggregate score
-- Haiku 4.5 is the settled judge model — do not change
-- JSONL persistence at `~/.cortex/calibration/` is mandatory on every judge attempt
+- Vault at ~/memory/vault/ is global, Cortex state is per-project
+- All claude -p calls use env -u ANTHROPIC_API_KEY
+- Existing skills must work unchanged when vault is unavailable
+- Belief injection capped at 2000 chars per skill invocation
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Wrap `call_judge()`, not new script | Avoids duplicate judge entry points; `call_judge()` is already generic | New `build_communication_judge_prompt()` + `judge_communication()` in `cortex-judge.py` |
-| Sequential critique-revise over best-of-N | Simpler, cheaper; 3x latency of best-of-N not justified for v1 | Max 3 retry attempts, escalate on cap |
-| Drive summaries first, not all 3 surfaces | Highest owner visibility + highest quality variance; clearest rubric target | v1 scope: drive summaries only |
-| 5-dimension rubric (0-4 scale) with explicit rejection rule | G-Eval standard; prevents judge from rewarding polish over substance | calibrated_uncertainty < 2 → FAIL regardless |
+| Explicit scope columns on logical_forms | Rebuild independence, clear provenance | scope_type + scope_id columns |
+| Selective promotion only | Prevents semantic pollution of long-term memory | Lessons/design_rules auto-promote |
+| JTMS Lite dependency tracking | More than logging, less than full TMS | derived_dependencies table |
+| Inline extraction (not async) | Stale beliefs cost more than 1-2s latency | L3 extraction runs inline |
+| 3-stage cross-project retrieval | Prevents contamination | Global stable → recurring → caution |
