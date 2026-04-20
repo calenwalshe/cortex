@@ -75,3 +75,9 @@ Open question in dossier: "Can `fact_store.py` be imported from cortex repo scri
 - 2026-04-14T01:15:00Z | ship | PR #17 opened for slug operational-map-layer | https://github.com/calenwalshe/cortex/pull/17
 - 2026-04-14T01:20:00Z | operational-map-layer | closed | terminal: commit-to-build | contract: docs/cortex/contracts/operational-map-layer/contract-001.md | eval-plan: (none)
 - 2026-04-14T04:00:00Z | ship | PR #18 opened for slug communication-judge-loop | https://github.com/calenwalshe/cortex/pull/18
+
+## Autonomy Decisions
+
+- 2026-04-20T03:35:00Z | gate: critical_uncertainty | value: false (auto-skipped) | preset: supervised (invocation override) | command: /cortex-spec
+- 2026-04-20T03:35:00Z | gate: evidence_backing | value: false (auto-skipped) | preset: supervised (invocation override) | command: /cortex-spec
+- 2026-04-20T03:35:00Z | gate: necessity | value: false (auto-skipped) | preset: supervised (invocation override) | command: /cortex-spec

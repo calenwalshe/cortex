@@ -1,61 +1,40 @@
 {
-  "slug": "communication-judge-loop",
-  "mode": "assure",
+  "slug": "cortex-belief-memory",
+  "mode": "spec",
   "approval_status": "approved",
-  "active_contract": "docs/cortex/contracts/communication-judge-loop/contract-001.md",
+  "active_contract": "docs/cortex/contracts/cortex-belief-memory/contract-001.md",
   "artifacts": [
-    "docs/cortex/clarify/communication-judge-loop/20260413T232623Z-clarify-brief.md",
-    "docs/cortex/clarify/communication-judge-loop/20260414T021615Z-clarify-brief.md",
-    "docs/cortex/research/communication-judge-loop/current-understanding.md",
-    "docs/cortex/research/communication-judge-loop/prior-context-20260414T021615Z.md",
-    "docs/cortex/research/communication-judge-loop/concept-20260414T023306Z.md",
-    "docs/cortex/specs/communication-judge-loop/spec.md",
-    "docs/cortex/specs/communication-judge-loop/gsd-handoff.md",
-    "docs/cortex/contracts/communication-judge-loop/contract-001.md"
+    "docs/cortex/clarify/cortex-belief-memory/20260420T010000Z-clarify-brief.md",
+    "docs/cortex/research/cortex-belief-memory/current-understanding.md",
+    "docs/cortex/research/cortex-belief-memory/concept-20260420T020000Z.md",
+    "docs/cortex/specs/cortex-belief-memory/spec.md",
+    "docs/cortex/specs/cortex-belief-memory/gsd-handoff.md",
+    "docs/cortex/contracts/cortex-belief-memory/contract-001.md"
   ],
-  "approvals": { "contract": true, "evals": false },
   "gates": {
     "clarify_complete": true,
     "research_complete": true,
     "spec_complete": true,
-    "contract_approved": true,
-    "pr_opened": true,
+    "pr_opened": false,
     "pr_merged": false
+  },
+  "github": {
+    "pr_number": null,
+    "pr_url": null,
+    "issue_number": null,
+    "branch": "feat/belief-engine-integration"
   },
   "critique_receipts": [
     {
-      "gate": "clarify",
-      "slug": "communication-judge-loop",
-      "timestamp": "2026-04-14T02:16:15Z",
+      "gate": "dossier",
+      "slug": "cortex-belief-memory",
+      "timestamp": "2026-04-20T03:29:00Z",
       "severity": "STOP",
       "finding_count": 4,
       "stop_count": 2,
       "caution_count": 2,
       "engine": "codex",
-      "artifact": "docs/cortex/reviews/communication-judge-loop/critique-clarify.md"
-    },
-    {
-      "gate": "dossier",
-      "slug": "communication-judge-loop",
-      "timestamp": "2026-04-14T02:35:21Z",
-      "severity": "STOP",
-      "finding_count": 5,
-      "stop_count": 3,
-      "caution_count": 2,
-      "engine": "codex",
-      "artifact": "docs/cortex/reviews/communication-judge-loop/critique-dossier-20260414T023521Z.md"
-    },
-    {
-      "gate": "spec",
-      "slug": "communication-judge-loop",
-      "timestamp": "2026-04-14T02:45:00Z",
-      "severity": "CAUTION",
-      "finding_count": 1,
-      "stop_count": 0,
-      "caution_count": 1,
-      "engine": "codex",
-      "artifact": "docs/cortex/reviews/communication-judge-loop/critique-spec.md"
+      "artifact": "docs/cortex/reviews/cortex-belief-memory/critique-dossier-20260420T020000Z.md"
     }
-  ],
-  "github": { "pr_number": 18, "pr_url": "https://github.com/calenwalshe/cortex/pull/18", "issue_number": null, "branch": "cortex/communication-judge-loop" }
+  ]
 }
