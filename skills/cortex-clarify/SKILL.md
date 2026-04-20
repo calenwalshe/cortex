@@ -131,6 +131,30 @@ Use hotspot files to inform the **Write Roots** section of the clarify brief —
 
 Soft-fail: if the command fails, outputs invalid JSON, or `hotspots` is empty, log "no operational context available" and proceed without error. Never block the pipeline on ledger absence.
 
+### Phase 2e: Query vault beliefs (if available)
+
+Query the vault belief engine for prior knowledge relevant to the new slug. This surfaces constraints, exclusions, and lessons from past slugs so the brief doesn't re-state known ground.
+
+```bash
+python3 ~/memory/vault/scripts/cortex_belief_bridge.py --test 2>/dev/null && echo "vault_ok" || echo "vault_unavailable"
+```
+
+If vault is available, run (in Python or via the bridge CLI):
+```python
+from cortex_belief_bridge import query_beliefs
+result = query_beliefs(topic="{slug_topic}", max_results=10)
+if result["formatted"]:
+    # Inject into working context before writing the brief
+    print(result["formatted"])
+```
+
+Inject the formatted output as a `### Known Beliefs (from vault)` section in your working context. Use it to:
+- Pre-populate Constraints with prior `owner-constraint` and `scope-exclusion` beliefs
+- Avoid re-stating assumptions already marked stable in the vault
+- Surface lessons from past slugs that apply to this problem area
+
+Soft-fail: if vault unavailable or query returns empty, proceed without injection. Log "no vault beliefs available" and continue.
+
 ### Phase 3: Populate clarify brief
 
 Read the template at `templates/cortex/clarify-brief.md`.
@@ -213,6 +237,27 @@ python3 scripts/cortex/cortex-vault-extractor.py \
 ```
 
 Soft-fail: if the extractor exits non-zero or is not found, log a warning and continue. Do not block Phase 4d or Phase 5.
+
+### Phase 4c.5: L3 belief extraction (inline)
+
+After vault fact extraction (Phase 4c), run the L3 belief engine to extract logical forms from the clarify brief and run inference. This makes the brief's claims, decisions, and plans immediately available as typed beliefs for subsequent research cycles.
+
+```python
+try:
+    import sys
+    sys.path.insert(0, str(Path.home() / "memory/vault/scripts"))
+    from cortex_belief_bridge import ingest_and_extract
+    result = ingest_and_extract(
+        artifact_path="docs/cortex/clarify/{slug}/{timestamp}-clarify-brief.md",
+        slug="{slug}"
+    )
+    if result:
+        print(f"[belief-bridge] Extracted {result.get('forms_extracted', 0)} forms from clarify brief")
+except Exception as e:
+    print(f"[belief-bridge] L3 extraction soft-fail: {e}")
+```
+
+Soft-fail: if the bridge or L3 engine is unavailable, log a warning and continue. Do not block Phase 4d or Phase 5.
 
 ### Phase 4d: Invoke cortex-critique
 

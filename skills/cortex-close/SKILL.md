@@ -102,6 +102,31 @@ Also trigger when the user says:
    Where `{terminal_name}` is the validated `--terminal` argument value, and `{eval_plan_path}` is the eval-plan path found in Phase 3, or `(none)` if not present.
 5. Write the updated file.
 
+### Phase 5.5: Promote durable beliefs to long-term (if vault available)
+
+After recording the close decision, promote durable beliefs from the slug's project scope to the global scope so they're available for future slugs.
+
+```python
+try:
+    import sys
+    sys.path.insert(0, str(Path.home() / "memory/vault/scripts"))
+    from cortex_belief_bridge import promote_on_close
+    result = promote_on_close(slug="{slug}")
+    if result.get("promoted", 0) > 0:
+        print(f"[belief-bridge] Promoted {result['promoted']} beliefs to global scope")
+    else:
+        print("[belief-bridge] No beliefs promoted (none met promotion criteria)")
+except Exception as e:
+    print(f"[belief-bridge] promotion soft-fail: {e}")
+```
+
+Promotion policy (selective):
+- Auto-promote: derived objects where type IN ('lesson', 'design_rule', 'anti_pattern', 'heuristic', 'stable_belief') AND not contradicted by global memory
+- Never promote: project-specific tasks, deadlines, contested/rejected forms
+- Test: "Would I want this retrieved as prior knowledge six months later in a different project?"
+
+Soft-fail: if vault unavailable, skip promotion. Log "vault unavailable — promotion skipped."
+
 ### Phase 6: Reset current-state.md
 
 Write `docs/cortex/handoffs/current-state.md` with this exact content:

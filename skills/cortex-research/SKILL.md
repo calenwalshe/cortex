@@ -56,6 +56,31 @@ Soft-fail: if `.cortex/structural/` does not exist or is empty, log a note ("no 
    - **If `complexity: standard` or not set:** Use the `--depth` flag as provided (default: `standard`).
    Note: This is a suggestion, not a hard gate. If the clarify brief says `trivial` but the open questions indicate significant unknowns, override to `standard` and note the override in the dossier.
 
+### Phase 0.5: Query vault beliefs (prior knowledge)
+
+Before routing questions, query the vault belief engine for prior knowledge on the research topic. This replaces the unimplemented facts.jsonl query from Phase 0 and surfaces stable beliefs, lessons, and contested areas from past work.
+
+```python
+try:
+    import sys
+    sys.path.insert(0, str(Path.home() / "memory/vault/scripts"))
+    from cortex_belief_bridge import query_beliefs
+    result = query_beliefs(topic="{slug_or_topic}", slug="{slug}", max_results=10)
+    if result["formatted"]:
+        print("### Known Beliefs (from vault)")
+        print(result["formatted"])
+        # Note in dossier preamble: "Building on prior work: {N} stable beliefs found"
+except Exception as e:
+    print(f"[belief-bridge] vault query soft-fail: {e}")
+```
+
+Use results to:
+- Skip questions whose answers are already stable beliefs (note: "Prior belief covers q{N} — skipping")
+- Surface contested beliefs as areas needing extra research attention
+- Inform question routing with lessons from past slugs
+
+Soft-fail: if vault unavailable, proceed with standard question routing. Log "no vault beliefs available."
+
 ### Phase 1: Question Type Routing (type routing table)
 
 Read the clarify brief. Parse the YAML frontmatter `questions:` array. For each question, route to the appropriate execution path using this **type routing table**:
@@ -691,6 +716,24 @@ Where `{dossier_path}` is the path just written (e.g., `docs/cortex/research/{sl
 **Skip condition:** If `--phase evals` or `--write-plan` was the invocation reason (eval plan write path, not dossier write path), skip this step.
 
 Soft-fail: if the extractor exits non-zero or is not found, log a warning and continue. Do not block Phase 2.95 or Phase 4.
+
+### Phase 2.9b: L3 belief extraction (inline)
+
+After vault fact extraction (Phase 2.9), run the L3 belief engine to extract logical forms from the dossier and run inference. This makes research findings immediately available as typed beliefs for subsequent research cycles or spec generation.
+
+```python
+try:
+    import sys
+    sys.path.insert(0, str(Path.home() / "memory/vault/scripts"))
+    from cortex_belief_bridge import ingest_and_extract
+    result = ingest_and_extract(artifact_path="{dossier_path}", slug="{slug}")
+    if result:
+        print(f"[belief-bridge] Extracted {result.get('forms_extracted', 0)} forms from dossier")
+except Exception as e:
+    print(f"[belief-bridge] L3 extraction soft-fail: {e}")
+```
+
+Soft-fail: if the bridge or L3 engine is unavailable, log a warning and continue. Do not block Phase 2.95 or Phase 4.
 
 ### Phase 2.95: Invoke cortex-critique
 

@@ -235,6 +235,28 @@ Use hotspot files to inform **Section 5 Interfaces** write roots — frequently 
 
 Soft-fail: if the command fails, outputs invalid JSON, or `hotspots` is empty, log "no operational context available" and proceed without error. Never block the pipeline on ledger absence.
 
+### Phase 1f: Query vault beliefs for architecture precedents (if available)
+
+Before synthesizing the spec, query the vault belief engine for prior architecture decisions, failed approaches, and stable findings. This informs Section 4 (Architecture Decision) and Section 7 (Risks) with evidence from past work.
+
+```python
+try:
+    import sys
+    sys.path.insert(0, str(Path.home() / "memory/vault/scripts"))
+    from cortex_belief_bridge import query_beliefs
+    result = query_beliefs(topic="{slug_topic}", slug="{slug}", max_results=15)
+    if result["formatted"]:
+        print("### Known Beliefs (from vault)")
+        print(result["formatted"])
+        # Use global stable beliefs to inform acceptance criteria
+        # Use contested beliefs to inform risks section
+        # Use lessons to inform alternatives considered
+except Exception as e:
+    print(f"[belief-bridge] vault query soft-fail: {e}")
+```
+
+Soft-fail: if vault unavailable, proceed without belief context. Log "no vault beliefs available."
+
 ### Phase 2: Synthesize Spec
 
 Read the template at `templates/cortex/spec.md`.
@@ -310,6 +332,27 @@ python3 scripts/cortex/cortex-vault-extractor.py \
 ```
 
 Soft-fail: if the extractor exits non-zero or is not found, log a warning and continue. Do not block Phase 2d or Phase 3.
+
+### Phase 2c.5: L3 belief extraction (inline)
+
+After vault fact extraction (Phase 2c), run the L3 belief engine to extract logical forms from the spec and run inference. This makes architecture decisions, scope constraints, and risk mitigations available as typed beliefs.
+
+```python
+try:
+    import sys
+    sys.path.insert(0, str(Path.home() / "memory/vault/scripts"))
+    from cortex_belief_bridge import ingest_and_extract
+    result = ingest_and_extract(
+        artifact_path="docs/cortex/specs/{slug}/spec.md",
+        slug="{slug}"
+    )
+    if result:
+        print(f"[belief-bridge] Extracted {result.get('forms_extracted', 0)} forms from spec")
+except Exception as e:
+    print(f"[belief-bridge] L3 extraction soft-fail: {e}")
+```
+
+Soft-fail: if the bridge or L3 engine is unavailable, log a warning and continue. Do not block Phase 2d or Phase 3.
 
 ### Phase 2d: Invoke cortex-critique on spec
 

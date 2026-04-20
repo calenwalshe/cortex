@@ -11,17 +11,15 @@
 **recent_artifacts:**
 - docs/cortex/clarify/cortex-belief-memory/20260420T010000Z-clarify-brief.md
 - docs/cortex/research/cortex-belief-memory/current-understanding.md
+- docs/cortex/research/cortex-belief-memory/concept-20260420T020000Z.md
+- docs/cortex/specs/cortex-belief-memory/spec.md
+- docs/cortex/specs/cortex-belief-memory/gsd-handoff.md
+- docs/cortex/contracts/cortex-belief-memory/contract-001.md
 
 **open_questions:**
-- Which Cortex skills need modification for vault ingest/l3 extract?
-- How should slug-scoped namespaces work in beliefs.db?
-- What is the right promotion policy on slug close?
-- How should /cortex-research query existing beliefs?
-- Inline vs async belief extraction?
-- TMS dependency tracking for belief retraction?
-- Cross-project belief queries?
+- (see docs/cortex/handoffs/open-questions.md)
 
 **blockers:**
 - (none)
 
-**next_action:** Approve contract-001, then begin execution (Step 1: schema migration)
+**next_action:** Run /cortex-status for full reconstruction
