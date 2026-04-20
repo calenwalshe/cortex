@@ -48,6 +48,34 @@ No layer owns what another layer owns. GSD does not adjudicate on spec quality. 
 
 Commands run in spine order for new work: clarify → research → spec → [GSD execute] → validate → repair → assure → done. Investigate, review, and audit can run at any time.
 
+### Sequential Spine
+
+The full lifecycle from idea to done follows a fixed spine:
+
+1. **clarify** — the idea is framed as a problem: goal, non-goals, constraints, assumptions, open questions.
+2. **research** — concept, implementation, and/or eval research produces a dossier.
+3. **spec** — clarify + research compress into a `spec.md`, `gsd-handoff.md`, and a `contract-001.md`. The spec must be approved before execution begins.
+4. **[GSD execute]** — execution is handed to GSD via `/cortex-bridge` (which generates the `.planning/` scaffold). GSD reads this as its work-order and owns the phase/plan lifecycle from this point.
+5. **validate** — after GSD completes, Cortex runs validators defined in the contract. Artifacts are checked against done criteria.
+6. **repair** — if validators fail, a repair contract opens. Repair feeds back to validate (not back to clarify).
+7. **assure** — all validators pass; eval suite runs; human approval is obtained if required.
+8. **done** — the contract is closed; continuity artifacts are updated.
+
+The pre-spec phases (clarify → research → spec) operate as a discovery loop, not a strict sequence. Research evidence can return the flow to clarify (`reclarify_required: true`). A critical uncertainty that cannot be resolved by research opens an experiment. Only when all three spec-readiness blockers clear does `/cortex-spec` permit commitment.
+
+### Continuity Model
+
+Chat history is ephemeral. All Cortex state lives in repo-local artifacts under `docs/cortex/` and `.cortex/`. After `/clear` or compaction, running `/cortex-status` reconstructs current context from `current-state.md`, `next-prompt.md`, and the active contract — no context is lost between sessions.
+
+### Artifact Roots
+
+Both roots live in the **target project repo** — the repository where Cortex is used, not in the framework repo.
+
+| Root | Location | Contents |
+|------|----------|----------|
+| `docs/cortex/` | Target project repo | Human-readable artifacts: clarify briefs, research dossiers, specs, contracts, eval proposals, investigations, reviews, audits |
+| `.cortex/` | Target project repo | Machine state: `state.json`, `dirty-files.json`, compaction snapshots, validator results, continuity files |
+
 Runtime artifacts are written to the **target project repo** where Cortex is installed (for example `docs/cortex/` and `.cortex/`); this framework repo may still contain `.cortex/` and `.planning/` for dogfooding and development.
 
 ### Autonomy System
